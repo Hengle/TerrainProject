@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CoreMinimal.h"
 #include "ProceduralMeshComponent.h"
 #include "RuntimeMeshCore.h"
@@ -10,15 +10,15 @@ UENUM()
 enum class ETerrainType: uint8
 {
 	None = 0,
-	Flat_Earth,			// Æ½ÃæÀàµØµØĞÎ
-	Globe_Earth,		// ÇòÃæÀàµØµØĞÎ TODO
+	Flat_Earth,			// å¹³é¢ç±»åœ°åœ°å½¢
+	Globe_Earth,		// çƒé¢ç±»åœ°åœ°å½¢ TODO
 };
 
 UENUM()
 enum class ENoiseType : uint8
 {
 	None = 0,
-	Perlin,				// PerlinÔëÉù
+	Perlin,				// Perlinå™ªå£°
 };
 
 UENUM()
@@ -45,15 +45,14 @@ USTRUCT()
 struct HITERRAINMAKER_API FTerrainInformation
 {
 	GENERATED_USTRUCT_BODY()
-	
-	UMaterialInterface* Material;
+
 	FVector Position;
 	ETerrainType TerrainType;
 	ENoiseType TerrainNoiseType;
 	int32 ChunkNum;
 	int32 Seed;
-	float HeightScale;
-	float PositionScale;
+	float Height;
+	float Scale;
 };
 
 struct FChunkInformation

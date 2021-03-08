@@ -9,23 +9,22 @@ class HITERRAINMAKER_API UHITerrainManager: public UObject
 	GENERATED_BODY()
 
 public:
-	static UHITerrainManager* Get() {
-		if (Instance == nullptr) {
-			Instance = NewObject<UHITerrainManager>();
-			Instance->AddToRoot();
-		}
-		return Instance;
-	}
+	static UHITerrainManager* Get();
 
 public:
-	class AHITerrainInstance* CreateTerrainInstance(UWorld* World, const FTerrainInformation& TerrainInformation);
+	//class AHITerrainInstance* CreateTerrainInstance(UWorld* World, const FTerrainInformation& TerrainInformation);
+
+	void CreateTerrain(UObject* WorldContextObject, const FTerrainInformation& TerrainInformation);
+
 
 public:
-	FVector GetPlayerLocation(UWorld* World) {
-		return World->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	FVector GetPlayerLocation(UObject* WorldContextObject)
+	{
+		return WorldContextObject->GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	}
 
 private:
+	UHITerrainManager();
 
 	static UHITerrainManager* Instance;
 };

@@ -3,9 +3,24 @@
 
 UHITerrainManager* UHITerrainManager::Instance = nullptr;
 
-AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UWorld* World, const FTerrainInformation& TerrainInformation) {
-	//AHITerrainInstance* TerrainInstance = NewObject<AHITerrainInstance>();
-	AHITerrainInstance* TerrainInstance = Cast<AHITerrainInstance>(World->SpawnActor(AHITerrainInstance::StaticClass(), &TerrainInformation.Position));
-	TerrainInstance->Init(TerrainInformation);
-	return TerrainInstance;
+void CreateTerrain(UObject* WorldContextObject, const FTerrainInformation& TerrainInformation) 
+{
+	
+}
+
+//AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UWorld* World, const FTerrainInformation& TerrainInformation) {
+//	//AHITerrainInstance* TerrainInstance = NewObject<AHITerrainInstance>();
+//	AHITerrainInstance* TerrainInstance = Cast<AHITerrainInstance>(World->SpawnActor(AHITerrainInstance::StaticClass(), &TerrainInformation.Position));
+//	TerrainInstance->Init(TerrainInformation);
+//	return TerrainInstance;
+//}
+
+UHITerrainManager* UHITerrainManager::Get()
+{
+	if (Instance == nullptr)
+	{
+		Instance = NewObject<UHITerrainManager>();
+		Instance->AddToRoot();
+	}
+	return Instance;
 }
