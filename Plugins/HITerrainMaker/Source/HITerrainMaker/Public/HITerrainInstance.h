@@ -3,6 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "Engine.h"
 #include "ProceduralMeshComponent.h"
+#include "Components/RuntimeMeshComponentStatic.h"
 #include "HITerrainCommons.h"
 #include "HITerrainInstance.generated.h"
 
@@ -30,7 +31,8 @@ private:
 	UPROPERTY()
 	class UHITerrainData* Data;
 
-	TMap<TPair<int32, int32>, UProceduralMeshComponent*> Chunks;
+	TMap<TPair<int32, int32>, URuntimeMeshComponentStatic*> Chunks;
+	//TMap<TPair<int32, int32>, USampleTerrainProvider*> Providers;
 
 	TQueue<TPair<int32, int32>> CreateChunkQueue;
 

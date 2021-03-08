@@ -18,6 +18,7 @@ public class HITerrainMaker : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
+				//"../../RuntimeMeshComponent"
 			}
 			);
 			
@@ -39,6 +40,7 @@ public class HITerrainMaker : ModuleRules
 				"Slate",
 				"SlateCore",
 				"ProceduralMeshComponent",
+				"RuntimeMeshComponent",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

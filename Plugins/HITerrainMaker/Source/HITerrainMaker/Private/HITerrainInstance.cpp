@@ -45,13 +45,21 @@ bool AHITerrainInstance::CreateThunk(TPair<int32, int32> Index)
 {
 	if (Chunks.Contains(Index)) 
 	{
-		UProceduralMeshComponent* ProceduralMesh = Chunks[Index];
+		/*UProceduralMeshComponent* ProceduralMesh = Chunks[Index];
 		ProceduralMesh->CreateMeshSection_LinearColor(0, Data->GetChunkData(Index).Vertices,
 			Data->GetChunkData(Index).Triangles,
 			Data->GetChunkData(Index).Normals,
 			Data->GetChunkData(Index).UV0,
 			Data->GetChunkData(Index).VertexColors,
-			Data->GetChunkData(Index).Tangents, true);
+			Data->GetChunkData(Index).Tangents, true);*/
+		URuntimeMeshComponentStatic* RuntimeMesh = Chunks[Index];
+		RuntimeMesh->CreateSectionFromComponents(0, 0, 0, Data->GetChunkData(Index).Vertices,
+			Data->GetChunkData(Index).Triangles,
+			Data->GetChunkData(Index).Normals,
+			Data->GetChunkData(Index).UV0,
+			Data->GetChunkData(Index).VertexColors,
+			Data->GetChunkData(Index).Tangents);
+		
 		UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
 		return true;
 	}
@@ -99,10 +107,9 @@ void AHITerrainInstance::TickChunks()
 			else 
 			{
 				UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
-				UProceduralMeshComponent* ProceduralMesh = NewObject<UProceduralMeshComponent>(this, UProceduralMeshComponent::StaticClass());
-				Chunks.Add(Index, ProceduralMesh);
-				ProceduralMesh->SetMaterial(0, TerrainInformation.Material);
-				ProceduralMesh->RegisterComponent();
+				URuntimeMeshComponentStatic* RuntimeMesh = NewObject<URuntimeMeshComponentStatic>(this, URuntimeMeshComponentStatic::StaticClass());
+				Chunks.Add(Index, RuntimeMesh);
+				RuntimeMesh->RegisterComponent();
 				CreateChunkQueue.Enqueue(Index);
 			}
 		}

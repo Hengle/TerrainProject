@@ -137,10 +137,10 @@ void UHITerrainData::GenerateChunkUVs(const TPair<int32, int32>& Index)
 
 void UHITerrainData::GenerateChunkTangents(const TPair<int32, int32>& Index)
 {
-	TArray<FProcMeshTangent>* Tangents = &(ChunkData[Index].Tangents);
+	TArray<FRuntimeMeshTangent>* Tangents = &(ChunkData[Index].Tangents);
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
-			Tangents->Add(FProcMeshTangent(1, 0, 0));
+			Tangents->Add(FRuntimeMeshTangent(1, 0, 0));
 		}
 	}
 }

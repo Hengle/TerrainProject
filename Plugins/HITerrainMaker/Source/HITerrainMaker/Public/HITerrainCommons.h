@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "ProceduralMeshComponent.h"
+#include "RuntimeMeshCore.h"
 #include "HITerrainCommons.generated.h"
 
 DECLARE_LOG_CATEGORY_CLASS(LOGHITerrain, Log, All)
@@ -61,6 +62,7 @@ struct FChunkInformation
 	TArray<int32> Triangles;
 	TArray<FVector> Normals;
 	TArray<FVector2D> UV0;
-	TArray<FProcMeshTangent> Tangents;
+	//TArray<FProcMeshTangent> Tangents;
+	TArray<FRuntimeMeshTangent> Tangents;
 	TArray<FLinearColor> VertexColors;
 };

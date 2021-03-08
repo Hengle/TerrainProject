@@ -20,8 +20,17 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"ProceduralMeshComponent"
+				"ProceduralMeshComponent",
+				"RuntimeMeshComponent"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "RuntimeMeshComponent",
+			"Enabled": true
+
+		}
+
 	]
 }
