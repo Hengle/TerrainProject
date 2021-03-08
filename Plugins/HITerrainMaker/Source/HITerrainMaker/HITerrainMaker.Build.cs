@@ -39,7 +39,6 @@ public class HITerrainMaker : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"ProceduralMeshComponent",
 				"RuntimeMeshComponent",
 				// ... add private dependencies that you statically link with here ...	
 			}

@@ -23,8 +23,10 @@ void UHITerrainProviderBase::Initialize()
 
 
 
-
-
+void UHITerrainProviderBase::SetData(UHITerrainDataBase* InData)
+{
+	Data = InData;
+}
 
 void UHITerrainProviderBase::SetSize(int32 InSize) 
 {
@@ -44,24 +46,4 @@ void UHITerrainProviderBase::SetStep(float InStep)
 float UHITerrainProviderBase::GetStep()
 {
 	return Step;
-}
-
-void UHITerrainProviderBase::SetHeight(float InHeight)
-{
-	Height = InHeight;
-}
-
-float UHITerrainProviderBase::GetHeight()
-{
-	return Height;
-}
-
-void UHITerrainProviderBase::SetScale(float InScale)
-{
-	Scale = InScale;
-}
-
-float UHITerrainProviderBase::GetScale()
-{
-	return Scale;
 }

@@ -5,7 +5,7 @@ bool USampleTerrainProvider::GetSectionMeshForLOD(int32 LODIndex, int32 SectionI
 	GeneratePositions(MeshData);
 	GenerateTriangles(MeshData);
 	GenerateTexCoords(MeshData);
-	//GenerateTangents(MeshData);
+	GenerateTangents(MeshData);
 	GenerateColors(MeshData);
 	return false;
 }
@@ -17,9 +17,7 @@ void USampleTerrainProvider::GeneratePositions(FRuntimeMeshRenderableMeshData& M
 		for (int32 j = 0; j <= Size; j++) {
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
-			/*float LocationZ = Height * TerrainNoiseGenerator->GetValue((RecentX / Size / Step + Index.Key) * Scale,
-				(RecentY / Size / Step + Index.Value) * Scale);*/
-			float LocationZ = 0;
+			float LocationZ = 0.0f;
 			MeshData.Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}
@@ -54,7 +52,6 @@ void USampleTerrainProvider::GenerateTangents(FRuntimeMeshRenderableMeshData& Me
 {
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
-			//Tangents->Add(FProcMeshTangent(1, 0, 0));
 			MeshData.Tangents.Add(FVector(0, 0, 1), FVector(1, 0, 0));
 		}
 	}

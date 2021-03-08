@@ -1,9 +1,5 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Engine.h"
-#include "ProceduralMeshComponent.h"
-#include "Components/RuntimeMeshComponentStatic.h"
 #include "HITerrainCommons.h"
 #include "HITerrainInstance.generated.h"
 
@@ -28,17 +24,15 @@ private:
 
 private:
 	FTerrainInformation TerrainInformation;
-	UPROPERTY()
-	class UHITerrainData* Data;
 
-	TMap<TPair<int32, int32>, URuntimeMeshComponentStatic*> Chunks;
-	//TMap<TPair<int32, int32>, USampleTerrainProvider*> Providers;
+	class UHITerrainDataBase* Data;
+
+	TMap<TPair<int32, int32>, class AHITerrainActor*> Chunks;
 
 	TQueue<TPair<int32, int32>> CreateChunkQueue;
 
 	float ProcessQueueInterval = FLAT_CHUNK_INTERVAL;
-	float RenderDistance = FLAT_RENDER_DISTANCE;
-	int32 RenderChunkNum = FLAT_RENDER_CHUNKNUM;
 	float ChunkSize = FLAT_CHUNK_SIZE;
+	float RenderDistance = FLAT_RENDER_DISTANCE;
 	FTimerHandle TimerHandle;
 };
