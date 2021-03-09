@@ -15,6 +15,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UMaterialInterface* Material;
+
 
 private:
 	void TickChunks();

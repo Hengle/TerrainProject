@@ -47,12 +47,16 @@ bool AHITerrainInstance::CreateThunk(TPair<int32, int32> Index)
 	if (Chunks.Contains(Index)) 
 	{
 		AHITerrainActor* TerrainActor = Chunks[Index];
-		USampleTerrainProvider* Provider = NewObject<USampleTerrainProvider>(this);
+		/*USampleTerrainProvider* Provider = NewObject<USampleTerrainProvider>(this);
 		Provider->SetData(Data);
 		Provider->SetIndex(Index);
 		Provider->SetSize(ChunkSize);
 		Provider->SetStep(25);
-		TerrainActor->Initialize(Provider);
+		TerrainActor->Initialize(Provider);*/
+		TerrainActor->Size = ChunkSize / 25;
+		TerrainActor->Step = 25;
+		TerrainActor->Material = Material;
+		TerrainActor->Initialize(Data, Index);
 		UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
 		return true;
 	}

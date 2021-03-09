@@ -30,7 +30,11 @@
 			"Name": "RuntimeMeshComponent",
 			"Enabled": true
 
-		}
+		},
+		{
+			"Name": "ProceduralMeshComponent",
+			"Enabled": true
 
+		}
 	]
 }

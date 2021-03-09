@@ -5,7 +5,7 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LOGHITerrain, Log, All)
 
-const float FLAT_CHUNK_INTERVAL = 1;
+const float FLAT_CHUNK_INTERVAL = 0.3;
 const float FLAT_RENDER_DISTANCE = 50001;
 const int32 FLAT_RENDER_CHUNKNUM = 10;
 const float FLAT_CHUNK_SIZE = 5000;
@@ -50,7 +50,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/* 区块信息                                                               */
 	/************************************************************************/
 	UPROPERTY(BlueprintReadWrite, Category = "Chunk Information")
-	float ChunkSize = 5000;	// 区块大小
+	float ChunkSize = 1000;	// 区块大小
 
 	/************************************************************************/
 	/* LOD信息                                                               */
