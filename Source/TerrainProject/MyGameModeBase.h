@@ -22,13 +22,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TerrainInformation")
-		int32 Seed = 10086;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TerrainInformation")
-		int32 ChunkNum = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TerrainInformation")
-		FVector Position = FVector(0, 0, 0);
+	FTerrainInformation TerrainInformation;
 
 private:
 	UPROPERTY()

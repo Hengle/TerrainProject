@@ -7,7 +7,7 @@ bool USampleTerrainProvider::GetSectionMeshForLOD(int32 LODIndex, int32 SectionI
 	GenerateTexCoords(MeshData);
 	GenerateTangents(MeshData);
 	GenerateColors(MeshData);
-	return false;
+	return true;
 }
 
 void USampleTerrainProvider::GeneratePositions(FRuntimeMeshRenderableMeshData& MeshData)
@@ -52,7 +52,7 @@ void USampleTerrainProvider::GenerateTangents(FRuntimeMeshRenderableMeshData& Me
 {
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
-			MeshData.Tangents.Add(FVector(0, 0, 1), FVector(1, 0, 0));
+			MeshData.Tangents.Add(FVector(0, 0, 0), FVector(0, 0, 0));
 		}
 	}
 }
@@ -84,6 +84,7 @@ void USampleTerrainProvider::GenerateColors(FRuntimeMeshRenderableMeshData& Mesh
 void USampleTerrainProvider::SetIndex(const TPair<int32, int32>& InIndex)
 {
 	Index = InIndex;
+	MarkAllLODsDirty();
 }
 
 const TPair<int32, int32>& USampleTerrainProvider::GetIndex()

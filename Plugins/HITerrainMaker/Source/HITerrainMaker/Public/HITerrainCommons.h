@@ -5,23 +5,64 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LOGHITerrain, Log, All)
 
-const float FLAT_CHUNK_INTERVAL = 0.1;
+const float FLAT_CHUNK_INTERVAL = 1;
 const float FLAT_RENDER_DISTANCE = 50001;
 const int32 FLAT_RENDER_CHUNKNUM = 10;
 const float FLAT_CHUNK_SIZE = 5000;
-const float FLAT_VERTICE_SIZE_HIGH = 20;
+const float FLAT_VERTICE_SIZE_HIGH = 25;
 const float FLAT_VERTICE_SIZE_MEDIUM = 50;
 const float FLAT_VERTICE_SIZE_LOW = 100;
 
-USTRUCT()
+UENUM()
+enum class ETerrainType 
+{
+	NONE = 0,
+	SAMPLE,
+};
+
+/**
+ * 用于生成特定地形的信息。
+ * 目标是通过这个地形信息，可以唯一地确定一个地形，不需要通过其他参数来调整地形。
+ */
+USTRUCT(BlueprintType)
 struct HITERRAINMAKER_API FTerrainInformation
 {
 	GENERATED_USTRUCT_BODY()
+	/************************************************************************/
+	/* 基础信息                                                               */
+	/************************************************************************/
+	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	ETerrainType TerrainType = ETerrainType::SAMPLE;	//地形种类
 
-	FVector Position;
-	int32 ChunkNum;
-	int32 Seed;
-	float Height;
+	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	FVector Position = FVector(0.0, 0.0, 0.0);	// 地形位置（左下角点）
+
+	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	int32 ChunkNum = 10;		// 地形长宽（区块个数）
+
+	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	int32 Seed = 10086;			// 地形随机数种子
+
+	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	float Height = 1000;		// 地形高度系数
+
+	/************************************************************************/
+	/* 区块信息                                                               */
+	/************************************************************************/
+	UPROPERTY(BlueprintReadWrite, Category = "Chunk Information")
+	float ChunkSize = 5000;	// 区块大小
+
+	/************************************************************************/
+	/* LOD信息                                                               */
+	/************************************************************************/
+	UPROPERTY(BlueprintReadWrite, Category = "LOD Information")
+	float LODHighQuality = 25;	// LOD高质量
+
+	UPROPERTY(BlueprintReadWrite, Category = "LOD Information")
+	float LODMediumQuality = 50;	// LOD中质量
+
+	UPROPERTY(BlueprintReadWrite, Category = "LOD Information")
+	float LODLowQuality = 100;	// LOD低质量
 };
 
 /**

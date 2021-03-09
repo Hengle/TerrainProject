@@ -15,6 +15,7 @@ void AHITerrainInstance::Init(const FTerrainInformation& InTerrainInformation)
 	TerrainInformation = InTerrainInformation;
 	Data = NewObject<UHITerrainDataSample>(this);
 	Data->SetSeed(TerrainInformation.Seed);
+	Data->SetChunkNums(10);
 	Data->OnDataGenerated.BindUObject(this, &AHITerrainInstance::OnDataGenerated);
 	FRunnableThread::Create(Data, TEXT("HITerrainData"));
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHITerrainInstance::ProcessQueue, ProcessQueueInterval, true, 0.0f);
@@ -22,36 +23,35 @@ void AHITerrainInstance::Init(const FTerrainInformation& InTerrainInformation)
 
 void AHITerrainInstance::ProcessQueue() 
 {
-	TPair<int32, int32> Index;
-	bool bCreated = false;
-	while (!bCreated)
+	if (!CreateChunkQueue.IsEmpty()) 
 	{
-		bool bSuccess = CreateChunkQueue.Dequeue(Index);
-		if (bSuccess) 
+		TPair<int32, int32> Index;
+		bool bCreated = false;
+		while (!bCreated)
 		{
-			bCreated = CreateThunk(Index);
-		}
-		else 
-		{
-			break;
+			bool bSuccess = CreateChunkQueue.Dequeue(Index);
+			if (bSuccess)
+			{
+				bCreated = CreateThunk(Index);
+			}
+			else
+			{
+				break;
+			}
 		}
 	}
-	
 }
 
 bool AHITerrainInstance::CreateThunk(TPair<int32, int32> Index)
 {
 	if (Chunks.Contains(Index)) 
 	{
-		/*UProceduralMeshComponent* ProceduralMesh = Chunks[Index];
-		ProceduralMesh->CreateMeshSection_LinearColor(0, Data->GetChunkData(Index).Vertices,
-			Data->GetChunkData(Index).Triangles,
-			Data->GetChunkData(Index).Normals,
-			Data->GetChunkData(Index).UV0,
-			Data->GetChunkData(Index).VertexColors,
-			Data->GetChunkData(Index).Tangents, true);*/
 		AHITerrainActor* TerrainActor = Chunks[Index];
 		USampleTerrainProvider* Provider = NewObject<USampleTerrainProvider>(this);
+		Provider->SetData(Data);
+		Provider->SetIndex(Index);
+		Provider->SetSize(ChunkSize);
+		Provider->SetStep(25);
 		TerrainActor->Initialize(Provider);
 		UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
 		return true;
@@ -84,16 +84,17 @@ void AHITerrainInstance::TickChunks()
 	for (int32 x = xStart; x < xEnd; x++) {
 		for (int32 y = yStart; y < yEnd; y++) {
 			TPair<int32, int32> Index(x, y);
+			if (x < 0 || x >= TerrainInformation.ChunkNum || y < 0 || y >= TerrainInformation.ChunkNum)
+			{
+				continue;
+			}
 			if (Chunks.Contains(Index)) 
 			{
-
+				// 考虑一下LOD更新逻辑在这里写？
 			}
 			else 
 			{
 				UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
-				//URuntimeMeshComponentStatic* RuntimeMesh = NewObject<URuntimeMeshComponentStatic>(this, URuntimeMeshComponentStatic::StaticClass());
-				//Chunks.Add(Index, RuntimeMesh);
-				//RuntimeMesh->RegisterComponent();
 				AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation.Position));
 				Chunks.Add(Index, TerrainActor);
 				CreateChunkQueue.Enqueue(Index);

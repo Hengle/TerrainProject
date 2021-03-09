@@ -11,9 +11,5 @@ void AMyGameModeBase::BeginPlay()
 void AMyGameModeBase::CreateTerrain() 
 {
 	UHITerrainManager* TerrainManager = UHITerrainManager::Get();
-	FTerrainInformation TerrainInformation;
-	TerrainInformation.ChunkNum = ChunkNum;
-	TerrainInformation.Position = Position;
-	TerrainInformation.Seed = Seed;
 	TerrainInstance = TerrainManager->CreateTerrainInstance(this, TerrainInformation);
 }

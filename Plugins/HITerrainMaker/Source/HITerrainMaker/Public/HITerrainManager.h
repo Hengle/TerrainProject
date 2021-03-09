@@ -23,6 +23,8 @@ public:
 	}
 
 private:
+	UHITerrainManager(){};
+
 	static UHITerrainManager* Instance;
 };
 

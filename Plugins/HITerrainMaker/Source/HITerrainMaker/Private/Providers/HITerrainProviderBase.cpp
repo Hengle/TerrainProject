@@ -7,7 +7,7 @@ void UHITerrainProviderBase::Initialize()
 
 	ConfigureLODs({ LODProperties });
 
-	SetupMaterialSlot(0, FName("Cube Base"), Material);
+	SetupMaterialSlot(0, FName("Material"), Material);
 
 	FRuntimeMeshSectionProperties Properties;
 	Properties.bCastsShadow = true;
@@ -26,11 +26,13 @@ void UHITerrainProviderBase::Initialize()
 void UHITerrainProviderBase::SetData(UHITerrainDataBase* InData)
 {
 	Data = InData;
+	MarkAllLODsDirty();
 }
 
 void UHITerrainProviderBase::SetSize(int32 InSize) 
 {
 	Size = InSize;
+	MarkAllLODsDirty();
 }
 
 int32 UHITerrainProviderBase::GetSize() 
@@ -41,6 +43,7 @@ int32 UHITerrainProviderBase::GetSize()
 void UHITerrainProviderBase::SetStep(float InStep)
 {
 	Step = InStep;
+	MarkAllLODsDirty();
 }
 
 float UHITerrainProviderBase::GetStep()

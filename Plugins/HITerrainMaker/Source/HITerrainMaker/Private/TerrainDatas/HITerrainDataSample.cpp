@@ -12,6 +12,7 @@ uint32 UHITerrainDataSample::Run()
 		for(int32 j = 0; j < ChunkNums; j++)
 		{
 			GenerateChunkData(i, j);
+			UE_LOG(LOGHITerrain, Log, TEXT("ChunkData[%d, %d] Generated!"), i, j)
 		}
 	}
 	OnDataGenerated.ExecuteIfBound();
