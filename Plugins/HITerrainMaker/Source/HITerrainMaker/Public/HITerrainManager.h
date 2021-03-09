@@ -12,6 +12,7 @@ public:
 	static UHITerrainManager* Get();
 
 public:
+	UFUNCTION()
 	class AHITerrainInstance* CreateTerrainInstance(UObject* WorldContextObject, const FTerrainInformation& TerrainInformation);
 
 
@@ -22,8 +23,6 @@ public:
 	}
 
 private:
-	UHITerrainManager();
-
 	static UHITerrainManager* Instance;
 };
 

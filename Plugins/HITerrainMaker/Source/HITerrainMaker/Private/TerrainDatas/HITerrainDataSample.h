@@ -2,9 +2,12 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 #include "HITerrainDataBase.h"
+#include "HITerrainDataSample.generated.h"
 
+UCLASS()
 class UHITerrainDataSample : public UHITerrainDataBase
 {
+	GENERATED_BODY()
 public:
 	virtual void InitData() override;
 

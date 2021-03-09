@@ -1,15 +1,19 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
+#include "HITerrainDataBase.generated.h"
 
 DECLARE_DELEGATE(OnDataGeneratedEvent)
 
+UCLASS()
 class UHITerrainDataBase: public UObject, public FRunnable
 {
+	GENERATED_BODY()
+
 public:
-	virtual void InitData() = 0;
-	virtual uint32 Run() = 0;
-	virtual TSharedPtr<FChunkInformation> GetChunkData(const TPair<int32, int32>& Index);
+	virtual void InitData(){};
+	virtual uint32 Run(){return 0;};
+	virtual FChunkInformationPtr GetChunkData(const TPair<int32, int32>& Index);
 
 public:
 	void SetSeed(int32 InSeed);

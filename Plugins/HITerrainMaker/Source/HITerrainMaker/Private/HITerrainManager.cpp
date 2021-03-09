@@ -3,7 +3,7 @@
 
 UHITerrainManager* UHITerrainManager::Instance = nullptr;
 
-AHITerrainInstance* CreateTerrainInstance(UObject* WorldContextObject, const FTerrainInformation& TerrainInformation)
+AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UObject* WorldContextObject, const FTerrainInformation& TerrainInformation)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull)) 
 	{
