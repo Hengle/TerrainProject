@@ -5,6 +5,7 @@
 
 class HITerrainPerlinGenerator: public HITerrainNoiseGenerator 
 {
+public:
 	virtual void Init(int32 InSeed) override;
 
 	virtual float GetValue(float X, float Y) override;

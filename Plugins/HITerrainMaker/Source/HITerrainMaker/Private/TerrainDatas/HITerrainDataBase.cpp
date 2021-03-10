@@ -78,3 +78,28 @@ void UHITerrainDataBase::GenerateChunkData(int32 X, int32 Y)
 	Data->SampleNums = ChunkSampleNums;
 	
 }
+
+void UHITerrainDataBase::SetMountainHeight(float InMountainHeight)
+{
+	MountainHeight = InMountainHeight;
+}
+
+void UHITerrainDataBase::SetMountainScale(float InMountainScale)
+{
+	MountainScale = InMountainScale;
+}
+
+void UHITerrainDataBase::SetPlainHeight(float InPlainHeight)
+{
+	PlainHeight = InPlainHeight;
+}
+
+void UHITerrainDataBase::SetPlainScale(float InPlainScale)
+{
+	PlainScale = InPlainScale;
+}
+
+void UHITerrainDataBase::SetPlainThreshold(float InPlainThreshold)
+{
+	PlainThreshold = InPlainThreshold;
+}

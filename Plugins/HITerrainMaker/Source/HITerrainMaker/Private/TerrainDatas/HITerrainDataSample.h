@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 #include "HITerrainDataBase.h"
+#include "HITerrainPerlinGenerator.h"
 #include "HITerrainDataSample.generated.h"
 
 UCLASS()
@@ -13,7 +14,13 @@ public:
 
 	virtual uint32 Run() override;
 
+public:
+	
+
 
 protected:
 	virtual void GenerateChunkData(int32 X, int32 Y) override;
+
+private:
+	
 };

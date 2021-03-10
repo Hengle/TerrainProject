@@ -10,15 +10,15 @@ AHITerrainActor::AHITerrainActor(const FObjectInitializer& ObjectInitializer)
 
 void AHITerrainActor::Initialize(UHITerrainDataBase* Data, const TPair<int32, int32>& InIndex)
 {
-	FChunkInformationPtr ChunkData = Data->GetChunkData(Index);
 	Index = InIndex;
+	ChunkData = Data->GetChunkData(Index);
 	URuntimeMeshProviderStatic* StaticProvider = NewObject<URuntimeMeshProviderStatic>(this, TEXT("RuntimeMeshProvider-Static"));
 	if (StaticProvider)
 	{
 		// The static provider should initialize before we use it
 		GetRuntimeMeshComponent()->Initialize(StaticProvider);
 
-		StaticProvider->SetupMaterialSlot(0, TEXT("TriMat"), Material);
+		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
 
 		TArray<FVector> Positions;
 		TArray<FColor> Colors;
@@ -59,7 +59,7 @@ void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions)
 		for (int32 j = 0; j <= Size; j++) {
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
-			float LocationZ = 0.0f;
+			float LocationZ = ChunkData->GetSample(i, j);
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}
@@ -114,15 +114,26 @@ void AHITerrainActor::GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents)
 
 void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords)
 {
-	float UVStepX = 1 / (Size + 1), UVStepY = 1 / (Size + 1);
+	bool bEvenX = false, bEvenY = false;
 	float RecentX = 0, RecentY = 0;
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
-			RecentY += UVStepY;
-			TexCoords.Add(FVector2D(RecentX, RecentY));
+			if(bEvenX && bEvenY){
+				TexCoords.Add(FVector2D(1, 1));
+			}
+			if (bEvenX && !bEvenY) {
+				TexCoords.Add(FVector2D(1, 0));
+			}
+			if (!bEvenX && bEvenY) {
+				TexCoords.Add(FVector2D(0, 1));
+			}
+			if (!bEvenX && !bEvenY) {
+				TexCoords.Add(FVector2D(0, 0));
+			}
+			bEvenX = !bEvenX;
 		}
-		RecentX += UVStepX;
-		RecentY = 0.0f;
+		bEvenY = !bEvenY;
+		bEvenX = false;
 	}
 }
 

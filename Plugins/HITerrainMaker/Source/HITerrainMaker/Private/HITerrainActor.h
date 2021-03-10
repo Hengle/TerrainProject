@@ -39,5 +39,6 @@ public:
 
 private:
 	UProceduralMeshComponent* ProceduralMesh;
+	FChunkInformationPtr ChunkData;
 
 };

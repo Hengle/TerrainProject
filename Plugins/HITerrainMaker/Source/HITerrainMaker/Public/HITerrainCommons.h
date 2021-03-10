@@ -31,37 +31,52 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/************************************************************************/
 	/* 基础信息                                                               */
 	/************************************************************************/
-	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	ETerrainType TerrainType = ETerrainType::SAMPLE;	//地形种类
 
-	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	FVector Position = FVector(0.0, 0.0, 0.0);	// 地形位置（左下角点）
 
-	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 ChunkNum = 10;		// 地形长宽（区块个数）
 
-	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 10086;			// 地形随机数种子
 
-	UPROPERTY(BlueprintReadWrite, Category = "Basic Information")
-	float Height = 1000;		// 地形高度系数
+	/************************************************************************/
+	/* 山峰、平原生成信息                                                       */
+	/************************************************************************/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
+	float MountainHeight = 2000;		// 山峰高度系数
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
+	float MountainScale = 0.1;		// 山峰位置系数
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
+	float PlainHeight = 100;		// 平原高度系数
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
+	float PlainScale = 1;		// 山峰位置系数
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
+	float PlainThreshold = 10;		// 平原阈值
 
 	/************************************************************************/
 	/* 区块信息                                                               */
 	/************************************************************************/
-	UPROPERTY(BlueprintReadWrite, Category = "Chunk Information")
-	float ChunkSize = 1000;	// 区块大小
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Chunk Information")
+	float ChunkSize = 5000;	// 区块大小
 
 	/************************************************************************/
 	/* LOD信息                                                               */
 	/************************************************************************/
-	UPROPERTY(BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODHighQuality = 25;	// LOD高质量
 
-	UPROPERTY(BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODMediumQuality = 50;	// LOD中质量
 
-	UPROPERTY(BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODLowQuality = 100;	// LOD低质量
 };
 
@@ -73,7 +88,8 @@ struct FChunkInformation
 	// 采样点个数
 	int32 SampleNums;
 	// 采样点数据
-	TArray<float> Samples;
+	//TArray<float> Samples;
+	TMap<TPair<int32, int32>, float> Samples;
 	
 	float GetSample(int32 X, int32 Y) 
 	{
@@ -83,13 +99,20 @@ struct FChunkInformation
 		}
 		else 
 		{
-			return Samples[X * SampleNums + Y];
+			return Samples[TPair<int32, int32>(X, Y)];
 		}
 	}
 
 	void SetSample(int32 X, int32 Y, float Value) 
 	{
-		Samples[X * SampleNums + Y] = Value;
+		if (X < 0 || X > SampleNums || Y < 0 || Y > SampleNums)
+		{
+			UE_LOG(LOGHITerrain, Error, TEXT("FChunkInformation::SetSample Out Of Index! [%d, %d]"), X, Y)
+		}
+		else
+		{
+			Samples.Add(TPair<int32, int32>(X, Y), Value);
+		}	
 	}
 };
 typedef TSharedPtr<FChunkInformation, ESPMode::ThreadSafe> FChunkInformationPtr;

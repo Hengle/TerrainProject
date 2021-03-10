@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
+#include "HITerrainPerlinGenerator.h"
 #include "HITerrainDataBase.generated.h"
 
 DECLARE_DELEGATE(OnDataGeneratedEvent)
@@ -19,6 +20,11 @@ public:
 	void SetSeed(int32 InSeed);
 	void SetChunkNums(int32 InChunkNums);
 	void SetChunkSampleNums(int32 InChunkSampleNums);
+	void SetMountainHeight(float InMountainHeight);
+	void SetMountainScale(float InMountainScale);
+	void SetPlainHeight(float InPlainHeight);
+	void SetPlainScale(float InPlainScale);
+	void SetPlainThreshold(float InPlainThreshold);
 
 public:
 	OnDataGeneratedEvent OnDataGenerated;
@@ -36,4 +42,12 @@ protected:
 	int32 ChunkSampleNums;
 	bool bIsGenerated = false;
 	TMap<TPair<int32, int32>, FChunkInformationPtr> ChunkData;
+	float MountainHeight;
+	float MountainScale;
+	float PlainHeight;
+	float PlainScale;
+	float PlainThreshold;
+
+	HITerrainPerlinGenerator MountainGenerator;
+	HITerrainPerlinGenerator PlainGenerator;
 };

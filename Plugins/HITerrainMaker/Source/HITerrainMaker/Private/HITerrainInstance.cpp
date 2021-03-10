@@ -16,6 +16,13 @@ void AHITerrainInstance::Init(const FTerrainInformation& InTerrainInformation)
 	Data = NewObject<UHITerrainDataSample>(this);
 	Data->SetSeed(TerrainInformation.Seed);
 	Data->SetChunkNums(10);
+	Data->SetChunkSampleNums(TerrainInformation.ChunkSize / 100);
+	/*Data->SetHeight(TerrainInformation.Height);*/
+	Data->SetMountainHeight(TerrainInformation.MountainHeight);
+	Data->SetMountainScale(TerrainInformation.MountainScale);
+	Data->SetPlainHeight(TerrainInformation.PlainHeight);
+	Data->SetPlainScale(TerrainInformation.PlainScale);
+	Data->SetPlainThreshold(TerrainInformation.PlainThreshold);
 	Data->OnDataGenerated.BindUObject(this, &AHITerrainInstance::OnDataGenerated);
 	FRunnableThread::Create(Data, TEXT("HITerrainData"));
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHITerrainInstance::ProcessQueue, ProcessQueueInterval, true, 0.0f);
@@ -53,8 +60,8 @@ bool AHITerrainInstance::CreateThunk(TPair<int32, int32> Index)
 		Provider->SetSize(ChunkSize);
 		Provider->SetStep(25);
 		TerrainActor->Initialize(Provider);*/
-		TerrainActor->Size = ChunkSize / 25;
-		TerrainActor->Step = 25;
+		TerrainActor->Size = ChunkSize / 100;
+		TerrainActor->Step = 100;
 		TerrainActor->Material = Material;
 		TerrainActor->Initialize(Data, Index);
 		UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
