@@ -2,8 +2,6 @@
 
 
 #include "TerrainAlgorithms/MountainAlgorithm.h"
-
-
 #include "TerrainDatas/HITerrainData.h"
 
 void UMountainAlgorithm::SetMountainData(int32 InSeed, float InMountainHeight, float InMountainScale)

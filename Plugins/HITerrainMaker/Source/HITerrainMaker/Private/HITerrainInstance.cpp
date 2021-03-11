@@ -4,6 +4,7 @@
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
 #include "TerrainAlgorithms/MountainAlgorithm.h"
+#include "TerrainAlgorithms/PlainAlgorithm.h"
 
 AHITerrainInstance::AHITerrainInstance() 
 {
@@ -81,6 +82,9 @@ void AHITerrainInstance::InitAlgorithms()
 		UMountainAlgorithm* MountainAlgorithm = NewObject<UMountainAlgorithm>(this);
 		MountainAlgorithm->SetMountainData(TerrainInformation.Seed, TerrainInformation.MountainHeight, TerrainInformation.MountainScale);
 		Algorithms.Add(MountainAlgorithm);
+		UPlainAlgorithm* PlainAlgorithm = NewObject<UPlainAlgorithm>(this);
+		PlainAlgorithm->SetPlainData(TerrainInformation.Seed, TerrainInformation.PlainHeight, TerrainInformation.PlainScale, TerrainInformation.PlainThreshold);
+		Algorithms.Add(PlainAlgorithm);
 	}
 }
 
