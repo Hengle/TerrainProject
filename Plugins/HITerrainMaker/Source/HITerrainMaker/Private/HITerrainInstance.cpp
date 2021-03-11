@@ -64,7 +64,7 @@ bool AHITerrainInstance::CreateThunk(TPair<int32, int32> Index)
 		TerrainActor->Step = 100;
 		TerrainActor->Material = Material;
 		TerrainActor->Initialize(Data, Index);
-		UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
+		UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
 		return true;
 	}
 	else 
@@ -101,11 +101,11 @@ void AHITerrainInstance::TickChunks()
 			}
 			if (Chunks.Contains(Index)) 
 			{
-				// ¿¼ÂÇÒ»ÏÂLOD¸üÐÂÂß¼­ÔÚÕâÀïÐ´£¿
+				// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½LODï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½
 			}
 			else 
 			{
-				UE_LOG(LOGHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
+				UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
 				AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation.Position));
 				Chunks.Add(Index, TerrainActor);
 				CreateChunkQueue.Enqueue(Index);

@@ -4,12 +4,12 @@ FChunkInformationPtr UHITerrainDataBase::GetChunkData(const TPair<int32, int32>&
 {
 	if (Index.Key < 0 || Index.Key >= ChunkNums || Index.Value < 0 || Index.Value >= ChunkNums) 
 	{
-		UE_LOG(LOGHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Out Of Range! [%d, %d]"), Index.Key, Index.Value);
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Out Of Range! [%d, %d]"), Index.Key, Index.Value);
 		return nullptr;
 	}
 	else if(!bIsGenerated)
 	{
-		UE_LOG(LOGHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Not Generated!"));
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Not Generated!"));
 		return nullptr;
 	}
 	else 
@@ -38,12 +38,12 @@ float UHITerrainDataBase::GetSample(int32 X, int32 Y)
 	int32 ChunkTotalSize = ChunkNums * (ChunkSampleNums + 1);
 	if (X < 0 || X >= ChunkTotalSize || Y < 0 || Y >= ChunkTotalSize)
 	{
-		UE_LOG(LOGHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Out Of Range! [%d, %d]"), X, Y);
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Out Of Range! [%d, %d]"), X, Y);
 		return 0.0f;
 	}
 	else if (!bIsGenerated)
 	{
-		UE_LOG(LOGHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
 		return 0.0f;
 	}
 	else
@@ -58,11 +58,11 @@ void UHITerrainDataBase::SetSample(int32 X, int32 Y, float Value)
 	int32 ChunkTotalSize = ChunkNums * (ChunkSampleNums + 1);
 	if (X < 0 || X >= ChunkTotalSize || Y < 0 || Y >= ChunkTotalSize)
 	{
-		UE_LOG(LOGHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Out Of Range! [%d, %d]"), X, Y);
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Out Of Range! [%d, %d]"), X, Y);
 	}
 	else if (!bIsGenerated)
 	{
-		UE_LOG(LOGHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Not Generated!"));
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Not Generated!"));
 	}
 	else
 	{

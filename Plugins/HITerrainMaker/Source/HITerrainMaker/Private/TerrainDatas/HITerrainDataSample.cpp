@@ -15,7 +15,7 @@ uint32 UHITerrainDataSample::Run()
 		for(int32 j = 0; j < ChunkNums; j++)
 		{
 			GenerateChunkData(i, j);
-			UE_LOG(LOGHITerrain, Log, TEXT("ChunkData[%d, %d] Generated!"), i, j)
+			UE_LOG(LogHITerrain, Log, TEXT("ChunkData[%d, %d] Generated!"), i, j)
 		}
 	}
 	bIsGenerated = true;
@@ -31,7 +31,7 @@ void UHITerrainDataSample::GenerateChunkData(int32 X, int32 Y)
 	{
 		for (int32 j = 0; j <= Data->SampleNums; j++)
 		{
-			// TODO£ºÉú³ÉValue
+			// TODOï¼šç”ŸæˆValue
 			//float Value = 0.0f;
 			float LocationX = X + (float)i / Data->SampleNums;
 			float LocationY = Y + (float)j / Data->SampleNums;

@@ -15,9 +15,7 @@ void AHITerrainActor::Initialize(UHITerrainDataBase* Data, const TPair<int32, in
 	URuntimeMeshProviderStatic* StaticProvider = NewObject<URuntimeMeshProviderStatic>(this, TEXT("RuntimeMeshProvider-Static"));
 	if (StaticProvider)
 	{
-		// The static provider should initialize before we use it
 		GetRuntimeMeshComponent()->Initialize(StaticProvider);
-
 		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
 
 		TArray<FVector> Positions;
@@ -26,6 +24,7 @@ void AHITerrainActor::Initialize(UHITerrainDataBase* Data, const TPair<int32, in
 		TArray<FVector> Normals;
 		TArray<FVector2D> TexCoords;
 		TArray<FRuntimeMeshTangent> Tangents;
+
 		GeneratePositions(Positions);
 		GenerateTriangles(Triangles);
 		GenerateNormals(Normals);
@@ -34,21 +33,6 @@ void AHITerrainActor::Initialize(UHITerrainDataBase* Data, const TPair<int32, in
 		GenerateColors(Colors);
 		StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Infrequent, true);
 	}
-	//FChunkInformationPtr ChunkData = Data->GetChunkData(Index);
-	//Index = InIndex;
-	//TArray<FVector> Positions;
-	//TArray<FColor> Colors;
-	//TArray<int32> Triangles;
-	//TArray<FVector> Normals;
-	//TArray<FVector2D> TexCoords;
-	//TArray<FProcMeshTangent> Tangents;
-	//GeneratePositions(Positions);
-	//GenerateTriangles(Triangles);
-	//GenerateNormals(Normals);
-	//GenerateTexCoords(TexCoords);
-	//GenerateTangents(Tangents);
-	//GenerateColors(Colors);
-	//ProceduralMesh->CreateMeshSection(0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, true);
 }
 
 

@@ -3,6 +3,7 @@
 #include "HITerrainCommons.h"
 #include "HITerrainInstance.generated.h"
 
+
 UCLASS()
 class HITERRAINMAKER_API AHITerrainInstance :public AActor
 {

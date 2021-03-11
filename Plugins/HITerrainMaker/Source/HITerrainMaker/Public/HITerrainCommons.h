@@ -3,7 +3,7 @@
 #include "RuntimeMeshCore.h"
 #include "HITerrainCommons.generated.h"
 
-DECLARE_LOG_CATEGORY_CLASS(LOGHITerrain, Log, All)
+DECLARE_LOG_CATEGORY_CLASS(LogHITerrain, Log, All)
 
 const float FLAT_CHUNK_INTERVAL = 0.3;
 const float FLAT_RENDER_DISTANCE = 50001;
@@ -107,7 +107,7 @@ struct FChunkInformation
 	{
 		if (X < 0 || X > SampleNums || Y < 0 || Y > SampleNums)
 		{
-			UE_LOG(LOGHITerrain, Error, TEXT("FChunkInformation::SetSample Out Of Index! [%d, %d]"), X, Y)
+			UE_LOG(LogHITerrain, Error, TEXT("FChunkInformation::SetSample Out Of Index! [%d, %d]"), X, Y)
 		}
 		else
 		{
