@@ -80,43 +80,6 @@ struct HITERRAINMAKER_API FTerrainInformation
 	float LODLowQuality = 100;	// LOD低质量
 };
 
-/**
- * 一个Chunk的基本信息，即各采样点的高度。
- */
-struct FChunkInformation
-{
-	// 采样点个数
-	int32 SampleNums;
-	// 采样点数据
-	//TArray<float> Samples;
-	TMap<TPair<int32, int32>, float> Samples;
-	
-	float GetSample(int32 X, int32 Y) 
-	{
-		if (X < 0 || X > SampleNums || Y < 0 || Y > SampleNums)
-		{
-			return 0.0f;
-		}
-		else 
-		{
-			return Samples[TPair<int32, int32>(X, Y)];
-		}
-	}
-
-	void SetSample(int32 X, int32 Y, float Value) 
-	{
-		if (X < 0 || X > SampleNums || Y < 0 || Y > SampleNums)
-		{
-			UE_LOG(LogHITerrain, Error, TEXT("FChunkInformation::SetSample Out Of Index! [%d, %d]"), X, Y)
-		}
-		else
-		{
-			Samples.Add(TPair<int32, int32>(X, Y), Value);
-		}	
-	}
-};
-typedef TSharedPtr<FChunkInformation, ESPMode::ThreadSafe> FChunkInformationPtr;
-
 UCLASS()
 class UHITerrainCommon: public UObject
 {

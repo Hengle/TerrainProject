@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 #include "RuntimeMeshProvider.h"
-#include "TerrainDatas/HITerrainDataBase.h"
+#include "TerrainDatas/HITerrainData.h"
 #include "HITerrainProviderBase.generated.h"
 
 UCLASS()
@@ -11,7 +11,7 @@ class UHITerrainProviderBase : public URuntimeMeshProvider
 	GENERATED_BODY()
 
 public:
-	void SetData(UHITerrainDataBase* InData);
+	void SetData(UHITerrainData* InData);
 
 	void SetSize(int32 InSize);
 	int32 GetSize();
@@ -25,6 +25,6 @@ public:
 protected:
 	int32 Size;
 	float Step;
-	UHITerrainDataBase* Data;
+	UHITerrainData* Data;
 	UMaterialInterface* Material;
 };

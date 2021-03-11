@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
-#include "TerrainDatas/HITerrainDataBase.h"
 #include "UObject/Object.h"
 #include "HITerrainAlgorithm.generated.h"
 
@@ -17,8 +16,9 @@ class HITERRAINMAKER_API UHITerrainAlgorithm : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual void Apply(UHITerrainDataBase* Data);
+	virtual void Apply(class UHITerrainData* Data);
 
-private:
+protected:
+	int32 Seed;
 	bool bIsInited = false;
 };

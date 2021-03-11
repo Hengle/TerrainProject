@@ -23,7 +23,7 @@ void UHITerrainProviderBase::Initialize()
 
 
 
-void UHITerrainProviderBase::SetData(UHITerrainDataBase* InData)
+void UHITerrainProviderBase::SetData(UHITerrainData* InData)
 {
 	Data = InData;
 	MarkAllLODsDirty();

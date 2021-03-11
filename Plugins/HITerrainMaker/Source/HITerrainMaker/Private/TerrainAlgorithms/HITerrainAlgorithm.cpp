@@ -1,6 +1,10 @@
-﻿#include "HITerrainAlgorithm.h"
+﻿#include "TerrainAlgorithms/HITerrainAlgorithm.h"
+#include "TerrainDatas/HITerrainData.h"
 
-void UHITerrainAlgorithm::Apply(UHITerrainDataBase* Data)
+void UHITerrainAlgorithm::Apply(UHITerrainData* Data)
 {
-	UE_LOG(LogHITerrain, Error, TEXT("UHITerrainAlgorithm::Apply"))
+	if(!bIsInited)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainAlgorithm::Apply Not Inited!"))
+	}
 }

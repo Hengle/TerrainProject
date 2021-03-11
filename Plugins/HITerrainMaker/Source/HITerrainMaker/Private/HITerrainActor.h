@@ -2,8 +2,7 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 #include "RuntimeMeshActor.h"
-#include "Providers/HITerrainProviderBase.h"
-#include "ProceduralMeshComponent.h"
+#include "TerrainDatas/HITerrainData.h"
 #include "HITerrainActor.generated.h"
 
 UCLASS()
@@ -12,7 +11,7 @@ class AHITerrainActor: public ARuntimeMeshActor
 	GENERATED_BODY()
 
 public:
-	void Initialize(UHITerrainDataBase* Data, const TPair<int32, int32>& Index);
+	void Initialize(UHITerrainData* Data, const TPair<int32, int32>& Index);
 
 	void GeneratePositions(TArray<FVector>& Positions);
 
@@ -28,8 +27,6 @@ public:
 
 
 public:
-	AHITerrainActor(const FObjectInitializer& ObjectInitializer);
-
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
 
@@ -38,7 +35,6 @@ public:
 	TPair<int32, int32> Index;
 
 private:
-	UProceduralMeshComponent* ProceduralMesh;
-	FChunkInformationPtr ChunkData;
+	FChunkDataPtr ChunkData;
 
 };

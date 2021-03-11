@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
+#include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "HITerrainInstance.generated.h"
 
 
@@ -16,10 +17,13 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY()
 	UMaterialInterface* Material;
 
 
 private:
+	void InitAlgorithms();
+	
 	void TickChunks();
 	void OnDataGenerated();
 	void ProcessQueue();
@@ -28,7 +32,11 @@ private:
 private:
 	FTerrainInformation TerrainInformation;
 
-	class UHITerrainDataBase* Data;
+	UPROPERTY()
+	TArray<UHITerrainAlgorithm*> Algorithms;
+
+	UPROPERTY()
+	class UHITerrainData* Data;
 
 	TMap<TPair<int32, int32>, class AHITerrainActor*> Chunks;
 

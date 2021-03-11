@@ -1,14 +1,8 @@
 #include "HITerrainActor.h"
 #include "Providers/RuntimeMeshProviderStatic.h"
+#include "TerrainDatas/HITerrainChunkData.h"
 
-AHITerrainActor::AHITerrainActor(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMesh"));
-	RootComponent = ProceduralMesh;
-}
-
-void AHITerrainActor::Initialize(UHITerrainDataBase* Data, const TPair<int32, int32>& InIndex)
+void AHITerrainActor::Initialize(UHITerrainData* Data, const TPair<int32, int32>& InIndex)
 {
 	Index = InIndex;
 	ChunkData = Data->GetChunkData(Index);

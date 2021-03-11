@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 #include "Providers/RuntimeMeshProviderStatic.h"
-#include "TerrainDatas/HITerrainDataBase.h"
+#include "TerrainDatas/HITerrainData.h"
 #include "HITerrainProviderStatic.generated.h"
 
 UCLASS()

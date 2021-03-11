@@ -1,8 +1,9 @@
 #include "HITerrainInstance.h"
-#include "TerrainDatas/HITerrainDataSample.h"
 #include "Providers/SampleTerrainProvider.h"
 #include "HITerrainActor.h"
+#include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
+#include "TerrainAlgorithms/MountainAlgorithm.h"
 
 AHITerrainInstance::AHITerrainInstance() 
 {
@@ -13,16 +14,11 @@ AHITerrainInstance::AHITerrainInstance()
 void AHITerrainInstance::Init(const FTerrainInformation& InTerrainInformation) 
 {
 	TerrainInformation = InTerrainInformation;
-	Data = NewObject<UHITerrainDataSample>(this);
-	Data->SetSeed(TerrainInformation.Seed);
+	InitAlgorithms();
+	Data = NewObject<UHITerrainData>(this);
 	Data->SetChunkNums(10);
-	Data->SetChunkSampleNums(TerrainInformation.ChunkSize / 100);
-	/*Data->SetHeight(TerrainInformation.Height);*/
-	Data->SetMountainHeight(TerrainInformation.MountainHeight);
-	Data->SetMountainScale(TerrainInformation.MountainScale);
-	Data->SetPlainHeight(TerrainInformation.PlainHeight);
-	Data->SetPlainScale(TerrainInformation.PlainScale);
-	Data->SetPlainThreshold(TerrainInformation.PlainThreshold);
+	Data->SetChunkSize(TerrainInformation.ChunkSize / 100);
+	Data->SetAlgorithms(Algorithms);
 	Data->OnDataGenerated.BindUObject(this, &AHITerrainInstance::OnDataGenerated);
 	FRunnableThread::Create(Data, TEXT("HITerrainData"));
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHITerrainInstance::ProcessQueue, ProcessQueueInterval, true, 0.0f);
@@ -54,12 +50,6 @@ bool AHITerrainInstance::CreateThunk(TPair<int32, int32> Index)
 	if (Chunks.Contains(Index)) 
 	{
 		AHITerrainActor* TerrainActor = Chunks[Index];
-		/*USampleTerrainProvider* Provider = NewObject<USampleTerrainProvider>(this);
-		Provider->SetData(Data);
-		Provider->SetIndex(Index);
-		Provider->SetSize(ChunkSize);
-		Provider->SetStep(25);
-		TerrainActor->Initialize(Provider);*/
 		TerrainActor->Size = ChunkSize / 100;
 		TerrainActor->Step = 100;
 		TerrainActor->Material = Material;
@@ -84,6 +74,16 @@ void AHITerrainInstance::Tick(float DeltaTime)
 	TickChunks();
 }
 
+void AHITerrainInstance::InitAlgorithms()
+{
+	if(TerrainInformation.TerrainType == ETerrainType::SAMPLE)
+	{
+		UMountainAlgorithm* MountainAlgorithm = NewObject<UMountainAlgorithm>(this);
+		MountainAlgorithm->SetMountainData(TerrainInformation.Seed, TerrainInformation.MountainHeight, TerrainInformation.MountainScale);
+		Algorithms.Add(MountainAlgorithm);
+	}
+}
+
 void AHITerrainInstance::TickChunks()
 {
 	FVector PlayerLocation = UHITerrainManager::Get()->GetPlayerLocation(GetWorld());
@@ -101,7 +101,7 @@ void AHITerrainInstance::TickChunks()
 			}
 			if (Chunks.Contains(Index)) 
 			{
-				// ����һ��LOD�����߼�������д��
+				
 			}
 			else 
 			{
@@ -112,13 +112,4 @@ void AHITerrainInstance::TickChunks()
 			}
 		}
 	}
-	//for (TPair<TPair<int32, int32>, UProceduralMeshComponent*>& Element : Chunks) 
-	//{
-	//	TPair<int32, int32> Index = Element.Key;
-	//	if (Index.Key < xStart || Index.Key >= xEnd || Index.Value < yStart || Index.Value >= yEnd) {
-	//		Element.Value->UnregisterComponent();
-	//		Element.Value->DestroyComponent();
-	//		Chunks.Remove(Element.Key);
-	//	}
-	//}
 }
