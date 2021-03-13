@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "HITerrainAlgorithm.h"
-#include "TerrainDatas/HITerrainPerlinGenerator.h"
+#include "TerrainMaths/HITerrainPerlinGenerator.h"
 #include "PlainAlgorithm.generated.h"
 
 UCLASS()

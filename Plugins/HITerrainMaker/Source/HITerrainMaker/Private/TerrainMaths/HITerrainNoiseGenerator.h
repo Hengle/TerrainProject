@@ -4,7 +4,7 @@
 #include "noiselib/noise.h"
 
 /**
- * 噪声生成器基类
+ * 
  */
 class HITERRAINMAKER_API HITerrainNoiseGenerator
 {

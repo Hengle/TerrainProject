@@ -1,10 +1,10 @@
 #include "HITerrainInstance.h"
-#include "Providers/SampleTerrainProvider.h"
 #include "HITerrainActor.h"
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
 #include "TerrainAlgorithms/MountainAlgorithm.h"
 #include "TerrainAlgorithms/PlainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithm.h"
 
 AHITerrainInstance::AHITerrainInstance() 
 {
@@ -79,12 +79,15 @@ void AHITerrainInstance::InitAlgorithms()
 {
 	if(TerrainInformation.TerrainType == ETerrainType::SAMPLE)
 	{
-		UMountainAlgorithm* MountainAlgorithm = NewObject<UMountainAlgorithm>(this);
-		MountainAlgorithm->SetMountainData(TerrainInformation.Seed, TerrainInformation.MountainHeight, TerrainInformation.MountainScale);
-		Algorithms.Add(MountainAlgorithm);
-		UPlainAlgorithm* PlainAlgorithm = NewObject<UPlainAlgorithm>(this);
-		PlainAlgorithm->SetPlainData(TerrainInformation.Seed, TerrainInformation.PlainHeight, TerrainInformation.PlainScale, TerrainInformation.PlainThreshold);
-		Algorithms.Add(PlainAlgorithm);
+		// UMountainAlgorithm* MountainAlgorithm = NewObject<UMountainAlgorithm>(this);
+		// MountainAlgorithm->SetMountainData(TerrainInformation.Seed, TerrainInformation.MountainHeight, TerrainInformation.MountainScale);
+		// Algorithms.Add(MountainAlgorithm);
+		// UPlainAlgorithm* PlainAlgorithm = NewObject<UPlainAlgorithm>(this);
+		// PlainAlgorithm->SetPlainData(TerrainInformation.Seed, TerrainInformation.PlainHeight, TerrainInformation.PlainScale, TerrainInformation.PlainThreshold);
+		// Algorithms.Add(PlainAlgorithm);
+		USampleAlgorithm* SampleAlgorithm = NewObject<USampleAlgorithm>(this);
+		SampleAlgorithm->SetSampleData(TerrainInformation.Seed, 1.0f, 2.2f, 0.0f);
+		Algorithms.Add(SampleAlgorithm);
 	}
 }
 

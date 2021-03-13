@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "HITerrainAlgorithm.h"
-#include "TerrainDatas/HITerrainPerlinGenerator.h"
+#include "TerrainMaths/HITerrainPerlinGenerator.h"
 #include "UObject/Object.h"
 #include "MountainAlgorithm.generated.h"
 
