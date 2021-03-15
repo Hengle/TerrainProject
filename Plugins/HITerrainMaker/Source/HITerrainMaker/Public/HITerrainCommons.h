@@ -24,6 +24,7 @@ enum class ETerrainType
  * 用于生成特定地形的信息。
  * 目标是通过这个地形信息，可以唯一地确定一个地形，不需要通过其他参数来调整地形。
  */
+
 USTRUCT(BlueprintType)
 struct HITERRAINMAKER_API FTerrainInformation
 {
@@ -31,54 +32,102 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/************************************************************************/
 	/* 基础信息                                                               */
 	/************************************************************************/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	ETerrainType TerrainType = ETerrainType::SAMPLE;	//地形种类
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	FVector Position = FVector(0.0, 0.0, 0.0);	// 地形位置（左下角点）
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 ChunkNum = 10;		// 地形长宽（区块个数）
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 10086;			// 地形随机数种子
 
-	/************************************************************************/
-	/* 山峰、平原生成信息                                                       */
-	/************************************************************************/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
-	float MountainHeight = 2000;		// 山峰高度系数
+	/*
+	 * 样例生成信息
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float ContinentFrequency = 1.0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float ContinentLacunarity = 2.208984375;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
-	float MountainScale = 0.1;		// 山峰位置系数
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float SeaLevel = 0.0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
-	float PlainHeight = 100;		// 平原高度系数
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float TerrainOffset = 1.0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
-	float PlainScale = 1;		// 山峰位置系数
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float ShelfLevel = -0.375;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mountain/Plain Information")
-	float PlainThreshold = 10;		// 平原阈值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float MountainLacunarity = 2.142578125;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float MountainsTwist = 1.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float MountainGlaciation = 1.375;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float HillsLacunarity = 2.162109375;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float HillsTwist = 1.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float PlainsLacunarity = 2.314453125;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float BadLandsLacunarity = 2.212890625;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float BadLandsTwist = 1.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float ContinentHeightScale = 0.25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float HillsAmount = 0.75;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float MountainsAmount = 0.5;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float BadlandsAmount = 0.03125;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float RiverDepth = 0.0234375;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float MaxElev = 8192.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float MinElev = -8192.0;
+
 
 	/************************************************************************/
 	/* 区块信息                                                               */
 	/************************************************************************/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Chunk Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk Information")
 	float ChunkSize = 5000;	// 区块大小
 
 	/************************************************************************/
 	/* LOD信息                                                               */
 	/************************************************************************/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODHighQuality = 25;	// LOD高质量
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODMediumQuality = 50;	// LOD中质量
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODLowQuality = 100;	// LOD低质量
 };
+
+typedef TSharedPtr<FTerrainInformation> FTerrainInformationPtr; 
 
 UCLASS()
 class UHITerrainCommon: public UObject

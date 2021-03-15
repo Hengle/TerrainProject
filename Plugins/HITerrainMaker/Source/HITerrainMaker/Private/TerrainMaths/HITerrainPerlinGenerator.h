@@ -1,7 +1,8 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "noiselib/noise.h"
+#include "TerrainMaths/noiselib/noise.h"
 #include "HITerrainNoiseGenerator.h"
+#include "TerrainMaths/noiselib/module/perlin.h"
 
 class HITerrainPerlinGenerator: public HITerrainNoiseGenerator 
 {

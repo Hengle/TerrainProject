@@ -3,11 +3,11 @@
 
 UHITerrainManager* UHITerrainManager::Instance = nullptr;
 
-AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UObject* WorldContextObject, const FTerrainInformation& TerrainInformation)
+AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UObject* WorldContextObject, FTerrainInformationPtr TerrainInformation)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull)) 
 	{
-		AHITerrainInstance* TerrainInstance = Cast<AHITerrainInstance>(World->SpawnActor(AHITerrainInstance::StaticClass(), &TerrainInformation.Position));
+		AHITerrainInstance* TerrainInstance = Cast<AHITerrainInstance>(World->SpawnActor(AHITerrainInstance::StaticClass(), &TerrainInformation->Position));
 		TerrainInstance->Init(TerrainInformation);
 		return TerrainInstance;
 	}

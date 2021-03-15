@@ -2,9 +2,10 @@
 #include "HITerrainActor.h"
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
-#include "TerrainAlgorithms/MountainAlgorithm.h"
-#include "TerrainAlgorithms/PlainAlgorithm.h"
+#include "TerrainAlgorithms/ContinentDefinitionAlgorithm.h"
+#include "TerrainAlgorithms/FinalPlanetAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithm.h"
+#include "TerrainAlgorithms/ScaledMountainousTerrainAlgorithm.h"
 
 AHITerrainInstance::AHITerrainInstance() 
 {
@@ -12,13 +13,13 @@ AHITerrainInstance::AHITerrainInstance()
 	PrimaryActorTick.bStartWithTickEnabled = false;
 }
 
-void AHITerrainInstance::Init(const FTerrainInformation& InTerrainInformation) 
+void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation) 
 {
 	TerrainInformation = InTerrainInformation;
 	InitAlgorithms();
 	Data = NewObject<UHITerrainData>(this);
 	Data->SetChunkNums(10);
-	Data->SetChunkSize(TerrainInformation.ChunkSize / 100);
+	Data->SetChunkSize(TerrainInformation->ChunkSize / 100);
 	Data->SetAlgorithms(Algorithms);
 	Data->OnDataGenerated.BindUObject(this, &AHITerrainInstance::OnDataGenerated);
 	FRunnableThread::Create(Data, TEXT("HITerrainData"));
@@ -77,7 +78,7 @@ void AHITerrainInstance::Tick(float DeltaTime)
 
 void AHITerrainInstance::InitAlgorithms()
 {
-	if(TerrainInformation.TerrainType == ETerrainType::SAMPLE)
+	if(TerrainInformation->TerrainType == ETerrainType::SAMPLE)
 	{
 		// UMountainAlgorithm* MountainAlgorithm = NewObject<UMountainAlgorithm>(this);
 		// MountainAlgorithm->SetMountainData(TerrainInformation.Seed, TerrainInformation.MountainHeight, TerrainInformation.MountainScale);
@@ -85,9 +86,13 @@ void AHITerrainInstance::InitAlgorithms()
 		// UPlainAlgorithm* PlainAlgorithm = NewObject<UPlainAlgorithm>(this);
 		// PlainAlgorithm->SetPlainData(TerrainInformation.Seed, TerrainInformation.PlainHeight, TerrainInformation.PlainScale, TerrainInformation.PlainThreshold);
 		// Algorithms.Add(PlainAlgorithm);
-		USampleAlgorithm* SampleAlgorithm = NewObject<USampleAlgorithm>(this);
-		SampleAlgorithm->SetSampleData(TerrainInformation.Seed, 1.0f, 2.2f, 0.0f);
-		Algorithms.Add(SampleAlgorithm);
+		// USampleAlgorithm* SampleAlgorithm = NewObject<USampleAlgorithm>(this);
+		// SampleAlgorithm->SetSampleData(TerrainInformation.Seed, 1.0f, 2.2f, 0.0f);
+		// UContinentDefinitionAlgorithm* Algorithm = NewObject<UContinentDefinitionAlgorithm>(this);
+		// Algorithm->Init(TerrainInformation);
+		UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
+		Algorithm->Init(TerrainInformation);
+		Algorithms.Add(Algorithm);
 	}
 }
 
@@ -102,7 +107,7 @@ void AHITerrainInstance::TickChunks()
 	for (int32 x = xStart; x < xEnd; x++) {
 		for (int32 y = yStart; y < yEnd; y++) {
 			TPair<int32, int32> Index(x, y);
-			if (x < 0 || x >= TerrainInformation.ChunkNum || y < 0 || y >= TerrainInformation.ChunkNum)
+			if (x < 0 || x >= TerrainInformation->ChunkNum || y < 0 || y >= TerrainInformation->ChunkNum)
 			{
 				continue;
 			}
@@ -113,7 +118,7 @@ void AHITerrainInstance::TickChunks()
 			else 
 			{
 				UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
-				AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation.Position));
+				AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation->Position));
 				Chunks.Add(Index, TerrainActor);
 				CreateChunkQueue.Enqueue(Index);
 			}

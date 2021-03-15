@@ -5,8 +5,26 @@
 
 #include "TerrainDatas/HITerrainData.h"
 #include "TerrainMaths/SampleModule.h"
+#include "TerrainMaths/noiselib/module/add.h"
+#include "TerrainMaths/noiselib/module/billow.h"
+#include "TerrainMaths/noiselib/module/blend.h"
+#include "TerrainMaths/noiselib/module/cache.h"
+#include "TerrainMaths/noiselib/module/clamp.h"
+#include "TerrainMaths/noiselib/module/const.h"
+#include "TerrainMaths/noiselib/module/curve.h"
+#include "TerrainMaths/noiselib/module/exponent.h"
+#include "TerrainMaths/noiselib/module/max.h"
+#include "TerrainMaths/noiselib/module/min.h"
+#include "TerrainMaths/noiselib/module/multiply.h"
+#include "TerrainMaths/noiselib/module/perlin.h"
+#include "TerrainMaths/noiselib/module/ridgedmulti.h"
+#include "TerrainMaths/noiselib/module/scalebias.h"
+#include "TerrainMaths/noiselib/module/select.h"
+#include "TerrainMaths/noiselib/module/terrace.h"
+#include "TerrainMaths/noiselib/module/turbulence.h"
+#include "TerrainMaths/noiselib/module/voronoi.h"
 
-  // Southernmost coordinate of elevation grid.
+// Southernmost coordinate of elevation grid.
   const double SOUTH_COORD = -90;
 
   // Northernmost coordinate of elevation grid.
@@ -134,6 +152,22 @@ void USampleAlgorithm::SetSampleData(int32 InSeed, float InFrequency, float InLa
 
 void USampleAlgorithm::Apply(UHITerrainData* Data)
 {
+	////////////////////////////////////////////////////////////////////////////
+	// Module group: continent definition
+	////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////
+	// Module subgroup: base continent definition (7 noise modules)
+	//
+	// This subgroup roughly defines the positions and base elevations of the
+	// planet's continents.
+	//
+	// The "base elevation" is the elevation of the terrain before any terrain
+	// features (mountains, hills, etc.) are placed on that terrain.
+	//
+	// -1.0 represents the lowest elevations and +1.0 represents the highest
+	// elevations.
+	//
 	Super::Apply(Data);
 	noise::module::Perlin baseContinentDef_pe0;
     baseContinentDef_pe0.SetSeed (CUR_SEED + 0);
@@ -203,7 +237,7 @@ void USampleAlgorithm::Apply(UHITerrainData* Data)
 
     // 7: [Base-continent-definition subgroup]: Caches the output value from the
     //    clamped-continent module.
-    noise::module::Cache baseContinentDef;
+	noise::module::Cache baseContinentDef;
     baseContinentDef.SetSourceModule (0, baseContinentDef_cl);
 
 

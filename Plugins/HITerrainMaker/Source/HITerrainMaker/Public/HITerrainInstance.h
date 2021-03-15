@@ -13,7 +13,7 @@ class HITERRAINMAKER_API AHITerrainInstance :public AActor
 public:
 	AHITerrainInstance();
 
-	void Init(const FTerrainInformation& InTerrainInformation);
+	void Init(FTerrainInformationPtr InTerrainInformation);
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -30,7 +30,7 @@ private:
 	bool CreateThunk(TPair<int32, int32> Index);
 
 private:
-	FTerrainInformation TerrainInformation;
+	FTerrainInformationPtr TerrainInformation;
 
 	UPROPERTY()
 	TArray<UHITerrainAlgorithm*> Algorithms;

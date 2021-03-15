@@ -11,6 +11,6 @@ void AMyGameModeBase::BeginPlay()
 void AMyGameModeBase::CreateTerrain() 
 {
 	UHITerrainManager* TerrainManager = UHITerrainManager::Get();
-	TerrainInstance = TerrainManager->CreateTerrainInstance(this, TerrainInformation);
+	TerrainInstance = TerrainManager->CreateTerrainInstance(this, MakeShared<FTerrainInformation>());
 	TerrainInstance->Material = Material;
 }

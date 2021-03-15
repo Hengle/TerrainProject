@@ -16,9 +16,15 @@ class HITERRAINMAKER_API UHITerrainAlgorithm : public UObject
 	GENERATED_BODY()
 
 public:
+	virtual void Init(FTerrainInformationPtr InInformation);
+
 	virtual void Apply(class UHITerrainData* Data);
 
 protected:
-	int32 Seed;
+	FTerrainInformationPtr Information;
+
+	UPROPERTY()
+	TArray<UHITerrainAlgorithm*> SubAlgorithms;
+	
 	bool bIsInited = false;
 };

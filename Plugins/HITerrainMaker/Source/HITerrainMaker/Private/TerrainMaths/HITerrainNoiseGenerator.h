@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
-#include "noiselib/noise.h"
+#include "TerrainMaths/noiselib/noise.h"
 
 /**
  * 
