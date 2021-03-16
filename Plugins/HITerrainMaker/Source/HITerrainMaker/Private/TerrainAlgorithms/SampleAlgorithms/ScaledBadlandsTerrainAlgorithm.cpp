@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/ScaledBadlandsTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ScaledBadlandsTerrainAlgorithm.h"
 
-#include "TerrainAlgorithms/BadLandsTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/BadLandsTerrainAlgorithm.h"
 
 void UScaledBadlandsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 {

@@ -22,3 +22,15 @@ void UHITerrainAlgorithm::Apply(UHITerrainData* Data)
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainAlgorithm::Apply No TerrainInformation!"))
 	}
 }
+
+void UHITerrainAlgorithm::DebugApply(UHITerrainData* Data)
+{
+	if(!bIsInited)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainAlgorithm::DebugApply Not Inited!"))
+	}
+	if(Information == nullptr)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainAlgorithm::DebugApply No TerrainInformation!"))
+	}
+}

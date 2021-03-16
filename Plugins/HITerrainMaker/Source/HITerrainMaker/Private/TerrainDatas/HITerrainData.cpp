@@ -13,7 +13,14 @@ uint32 UHITerrainData::Run()
 	bIsGenerated = true;
 	for(UHITerrainAlgorithm* Algorithm: Algorithms)
 	{
-		Algorithm->Apply(this);
+		if(Information->bEnableDebugAlgorithm)
+		{
+			Algorithm->DebugApply(this);
+		}
+		else
+		{
+			Algorithm->Apply(this);
+		}
 	}
 	OnDataGenerated.ExecuteIfBound();
 	return 0;
@@ -100,6 +107,11 @@ void UHITerrainData::SetSample(int32 X, int32 Y, float Value)
 void UHITerrainData::SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms)
 {
 	Algorithms = InAlgorithms;
+}
+
+void UHITerrainData::SetInformation(FTerrainInformationPtr InInformation)
+{
+	Information = InInformation;
 }
 
 int32 UHITerrainData::Size()

@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/ContinentDefinitionAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ContinentDefinitionAlgorithm.h"
 #include "TerrainDatas/HITerrainData.h"
 
 void UContinentDefinitionAlgorithm::Init(FTerrainInformationPtr InInformation)

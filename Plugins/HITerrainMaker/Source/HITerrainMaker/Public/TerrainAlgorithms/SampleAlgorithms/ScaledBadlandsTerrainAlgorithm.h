@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "HITerrainAlgorithm.h"
+#include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/noiselib/noise.h"
 #include "ScaledBadlandsTerrainAlgorithm.generated.h"
 

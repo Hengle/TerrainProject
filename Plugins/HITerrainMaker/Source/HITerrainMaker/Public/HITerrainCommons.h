@@ -42,7 +42,13 @@ struct HITERRAINMAKER_API FTerrainInformation
 	int32 ChunkNum = 10;		// 地形长宽（区块个数）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	float ChunkSize = 5000;	// 区块大小
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 10086;			// 地形随机数种子
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	bool bGenerateEndlessTerrain = true;			// 地形随机数种子
 
 	/*
 	 * 样例生成信息
@@ -107,12 +113,10 @@ struct HITERRAINMAKER_API FTerrainInformation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
 	float MinElev = -8192.0;
 
-
 	/************************************************************************/
 	/* 区块信息                                                               */
 	/************************************************************************/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk Information")
-	float ChunkSize = 5000;	// 区块大小
+	
 
 	/************************************************************************/
 	/* LOD信息                                                               */
@@ -125,6 +129,15 @@ struct HITERRAINMAKER_API FTerrainInformation
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
 	float LODLowQuality = 100;	// LOD低质量
+
+	/*
+	 * 测试信息
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
+	bool bEnableDebugAlgorithm = true;
+	 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
+	float TEST_VORONOI_FREQUENCY = 1.0;
 };
 
 typedef TSharedPtr<FTerrainInformation> FTerrainInformationPtr; 

@@ -4,11 +4,24 @@
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "HITerrainInstance.generated.h"
 
-
+/*
+ * 地形实例
+ */
 UCLASS()
 class HITERRAINMAKER_API AHITerrainInstance :public AActor
 {
 	GENERATED_BODY()
+
+public:
+	FTerrainInformationPtr GetTerrainInformation() const;
+
+	bool ContainsChunk(TPair<int32, int32> Index) const;
+
+	void AddChunk(TPair<int32, int32> Index);
+
+	bool GenerateChunkTerrain(TPair<int32, int32> Index);
+
+	
 
 public:
 	AHITerrainInstance();
@@ -24,12 +37,12 @@ public:
 private:
 	void InitAlgorithms();
 	
-	void TickChunks();
 	void OnDataGenerated();
-	void ProcessQueue();
-	bool CreateThunk(TPair<int32, int32> Index);
 
 private:
+	UPROPERTY()
+	class UHITerrainChunkTicker* ChunkTicker;
+	
 	FTerrainInformationPtr TerrainInformation;
 
 	UPROPERTY()
@@ -39,11 +52,4 @@ private:
 	class UHITerrainData* Data;
 
 	TMap<TPair<int32, int32>, class AHITerrainActor*> Chunks;
-
-	TQueue<TPair<int32, int32>> CreateChunkQueue;
-
-	float ProcessQueueInterval = FLAT_CHUNK_INTERVAL;
-	float ChunkSize = FLAT_CHUNK_SIZE;
-	float RenderDistance = FLAT_RENDER_DISTANCE;
-	FTimerHandle TimerHandle;
 };

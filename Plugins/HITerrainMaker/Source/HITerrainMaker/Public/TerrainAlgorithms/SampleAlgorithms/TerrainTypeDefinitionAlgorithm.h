@@ -6,7 +6,7 @@
 
 
 #include "ContinentDefinitionAlgorithm.h"
-#include "HITerrainAlgorithm.h"
+#include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/noiselib/noise.h"
 #include "TerrainTypeDefinitionAlgorithm.generated.h"
 

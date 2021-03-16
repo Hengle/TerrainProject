@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/HillyTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/HillyTerrainAlgorithm.h"
 
 void UHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 {

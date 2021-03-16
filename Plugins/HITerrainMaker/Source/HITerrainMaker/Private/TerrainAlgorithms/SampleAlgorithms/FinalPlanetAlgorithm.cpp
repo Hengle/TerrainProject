@@ -1,16 +1,16 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/FinalPlanetAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/FinalPlanetAlgorithm.h"
 
 
 
-#include "TerrainAlgorithms/RiverPositionsAlgorithm.h"
-#include "TerrainAlgorithms/ScaledBadlandsTerrainAlgorithm.h"
-#include "TerrainAlgorithms/ScaledHillyTerrainAlgorithm.h"
-#include "TerrainAlgorithms/ScaledMountainousTerrainAlgorithm.h"
-#include "TerrainAlgorithms/ScaledPlainsTerrainAlgorithm.h"
-#include "TerrainAlgorithms/TerrainTypeDefinitionAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/RiverPositionsAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ScaledBadlandsTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ScaledHillyTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ScaledMountainousTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ScaledPlainsTerrainAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/TerrainTypeDefinitionAlgorithm.h"
 #include "TerrainDatas/HITerrainData.h"
 
 void UFinalPlanetAlgorithm::Init(FTerrainInformationPtr InInformation)

@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/SampleAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/SampleAlgorithm.h"
 
 #include "TerrainDatas/HITerrainData.h"
 #include "TerrainMaths/SampleModule.h"

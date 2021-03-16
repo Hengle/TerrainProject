@@ -92,27 +92,43 @@ void AHITerrainActor::GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents)
 
 void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords)
 {
-	bool bEvenX = false, bEvenY = false;
+	// 1个chunk一个uv的实现
+	float UVStep = 1.0 / (1 + Size);
 	float RecentX = 0, RecentY = 0;
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
-			if(bEvenX && bEvenY){
-				TexCoords.Add(FVector2D(1, 1));
-			}
-			if (bEvenX && !bEvenY) {
-				TexCoords.Add(FVector2D(1, 0));
-			}
-			if (!bEvenX && bEvenY) {
-				TexCoords.Add(FVector2D(0, 1));
-			}
-			if (!bEvenX && !bEvenY) {
-				TexCoords.Add(FVector2D(0, 0));
-			}
-			bEvenX = !bEvenX;
+	for (int32 i = 0; i <= Size; i++)
+	{
+		for (int32 j = 0; j <= Size; j++)
+		{
+			TexCoords.Add(FVector2D(RecentX, RecentY));
+			RecentY += UVStep;
 		}
-		bEvenY = !bEvenY;
-		bEvenX = false;
+		RecentX += UVStep;
+		RecentY = 0.0;
 	}
+	
+	
+	// 1个格子一个uv的实现
+	// bool bEvenX = false, bEvenY = false;
+	// float RecentX = 0, RecentY = 0;
+	// for (int32 i = 0; i <= Size; i++) {
+	// 	for (int32 j = 0; j <= Size; j++) {
+	// 		if(bEvenX && bEvenY){
+	// 			TexCoords.Add(FVector2D(1, 1));
+	// 		}
+	// 		if (bEvenX && !bEvenY) {
+	// 			TexCoords.Add(FVector2D(1, 0));
+	// 		}
+	// 		if (!bEvenX && bEvenY) {
+	// 			TexCoords.Add(FVector2D(0, 1));
+	// 		}
+	// 		if (!bEvenX && !bEvenY) {
+	// 			TexCoords.Add(FVector2D(0, 0));
+	// 		}
+	// 		bEvenX = !bEvenX;
+	// 	}
+	// 	bEvenY = !bEvenY;
+	// 	bEvenX = false;
+	// }
 }
 
 void AHITerrainActor::GenerateColors(TArray<FColor>& Colors)

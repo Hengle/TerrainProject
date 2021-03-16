@@ -21,6 +21,7 @@ public:
 	float GetSample(int32 X, int32 Y);
 	void SetSample(int32 X, int32 Y, float Value);
 	void SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms);
+	void SetInformation(FTerrainInformationPtr InInformation);
 	int32 Size();
 
 public:
@@ -45,4 +46,6 @@ protected:
 
 	UPROPERTY()
 	TArray<UHITerrainAlgorithm*> Algorithms;
+
+	FTerrainInformationPtr Information;
 };

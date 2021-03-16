@@ -20,6 +20,8 @@ public:
 
 	virtual void Apply(class UHITerrainData* Data);
 
+	virtual void DebugApply(class UHITerrainData* Data);
+
 protected:
 	FTerrainInformationPtr Information;
 

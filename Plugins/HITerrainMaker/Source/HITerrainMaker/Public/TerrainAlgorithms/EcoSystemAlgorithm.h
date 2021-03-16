@@ -6,24 +6,21 @@
 
 #include "HITerrainAlgorithm.h"
 #include "TerrainMaths/noiselib/noise.h"
-#include "ScaledPlainsTerrainAlgorithm.generated.h"
+#include "EcoSystemAlgorithm.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HITERRAINMAKER_API UScaledPlainsTerrainAlgorithm : public UHITerrainAlgorithm
+class HITERRAINMAKER_API UEcoSystemAlgorithm : public UHITerrainAlgorithm
 {
 	GENERATED_BODY()
 
 public:
 	virtual void Init(FTerrainInformationPtr InInformation) override;
 	virtual void Apply(UHITerrainData* Data) override;
+	virtual void DebugApply(UHITerrainData* Data) override;
 
-public:
-	const noise::module::Cache& GetScaledPlainsTerrain();
-	
 private:
-	noise::module::ScaleBias scaledPlainsTerrain_sb;
-	noise::module::Cache scaledPlainsTerrain;
+	noise::module::Voronoi Voronoi;
 };

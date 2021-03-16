@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/TerrainTypeDefinitionAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/TerrainTypeDefinitionAlgorithm.h"
 
-#include "TerrainAlgorithms/ContinentDefinitionAlgorithm.h"
+#include "TerrainAlgorithms/SampleAlgorithms/ContinentDefinitionAlgorithm.h"
 
 void UTerrainTypeDefinitionAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
