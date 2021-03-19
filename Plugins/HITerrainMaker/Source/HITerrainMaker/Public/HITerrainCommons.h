@@ -14,10 +14,19 @@ const float FLAT_VERTICE_SIZE_MEDIUM = 50;
 const float FLAT_VERTICE_SIZE_LOW = 100;
 
 UENUM()
-enum class ETerrainType 
+enum class ETerrainType: uint8
 {
 	NONE = 0,
 	SAMPLE,
+};
+
+UENUM()
+enum class ELODLevel: uint8
+{
+	NONE = 0,
+	LOD_LOW,
+	LOD_MEDIUM,
+	LOD_HIGH,
 };
 
 /**
@@ -39,16 +48,13 @@ struct HITERRAINMAKER_API FTerrainInformation
 	FVector Position = FVector(0.0, 0.0, 0.0);	// 地形位置（左下角点）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 ChunkNum = 10;		// 地形长宽（区块个数）
+	int32 ChunkNum = 100;		// 地形长宽（区块个数）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	float ChunkSize = 5000;	// 区块大小
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 Seed = 10086;			// 地形随机数种子
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	bool bGenerateEndlessTerrain = true;			// 地形随机数种子
+	int32 Seed = 11111;			// 地形随机数种子
 
 	/*
 	 * 样例生成信息
@@ -119,15 +125,18 @@ struct HITERRAINMAKER_API FTerrainInformation
 	
 
 	/************************************************************************/
-	/* LOD信息                                                               */
+	/* 渲染信息                                                               */
 	/************************************************************************/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
+	int32 RenderDistance = 10;	// 渲染区块范围
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODHighQuality = 25;	// LOD高质量
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODMediumQuality = 50;	// LOD中质量
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LOD Information")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODLowQuality = 100;	// LOD低质量
 
 	/*
@@ -135,6 +144,9 @@ struct HITERRAINMAKER_API FTerrainInformation
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
 	bool bEnableDebugAlgorithm = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
+	bool bEnableLOD = true;
 	 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
 	float TEST_VORONOI_FREQUENCY = 1.0;

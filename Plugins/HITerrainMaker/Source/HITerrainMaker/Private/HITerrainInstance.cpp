@@ -19,12 +19,38 @@ bool AHITerrainInstance::ContainsChunk(TPair<int32, int32> Index) const
 	return Chunks.Contains(Index);
 }
 
+bool AHITerrainInstance::IsChunkGenerated(TPair<int32, int32> Index)
+{
+	if(ContainsChunk(Index))
+	{
+		return Chunks[Index]->IsGenerated();
+	}
+	return false;
+}
+
 void AHITerrainInstance::AddChunk(TPair<int32, int32> Index)
 {
 	if(!Chunks.Contains(Index))
 	{
 		AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation->Position));
         Chunks.Add(Index, TerrainActor);
+	}
+}
+
+void AHITerrainInstance::DeleteChunkNotInSet(const TSet<TPair<int32, int32>>& UpdateSet)
+{
+	TSet<TPair<int32, int32>> DeleteSet;
+	for(TPair<TPair<int32, int32>, AHITerrainActor*> Pair: Chunks)
+	{
+		TPair<int32, int32> Index = Pair.Key;
+		if(!UpdateSet.Contains(Index))
+		{
+			DeleteSet.Add(Index);
+		}
+	}
+	for(TPair<int32, int32> Index: DeleteSet)
+	{
+		Chunks[Index]->DeleteChunk();
 	}
 }
 
@@ -36,11 +62,24 @@ bool AHITerrainInstance::GenerateChunkTerrain(TPair<int32, int32> Index)
 		TerrainActor->Size = TerrainInformation->ChunkSize / 100;
 		TerrainActor->Step = 100;
 		TerrainActor->Material = Material;
-		TerrainActor->Initialize(Data, Index);
+		TerrainActor->Initialize(Data, TerrainInformation, Index);
+		TerrainActor->GenerateChunk();
 		UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
 		return true;
 	}
 	return false;
+}
+
+bool AHITerrainInstance::UpdateChunk(TPair<int32, int32> Index)
+{
+	return false;
+}
+
+TPair<int32, int32> AHITerrainInstance::GetPlayerPositionIndex()
+{
+	FVector PlayerLocation = UHITerrainManager::Get()->GetPlayerLocation(GetWorld());
+	FVector PlayerOffset = PlayerLocation - GetActorLocation();
+	return TPair<int32, int32>(PlayerOffset.X / TerrainInformation->ChunkSize, PlayerOffset.Y / TerrainInformation->ChunkSize);
 }
 
 AHITerrainInstance::AHITerrainInstance() 
@@ -65,12 +104,29 @@ void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation)
 	{
 		ChunkTicker->RegisterComponent();
 	}
+	for(int32 i = 0; i < TerrainInformation->ChunkNum; i++)
+	{
+		for(int32 j = 0; j < TerrainInformation->ChunkNum; j++)
+		{
+			AddChunk(TPair<int32, int32>(i, j));
+		}
+	}
 }
 
-
+void AHITerrainInstance::InitAlgorithms()
+{
+	if(TerrainInformation->TerrainType == ETerrainType::SAMPLE)
+	{
+		//UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
+		UEcoSystemAlgorithm* Algorithm = NewObject<UEcoSystemAlgorithm>(this);
+		Algorithm->Init(TerrainInformation);
+		Algorithms.Add(Algorithm);
+	}
+}
 
 void AHITerrainInstance::OnDataGenerated() 
 {
+	UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::OnDataGenerated"));
 	PrimaryActorTick.SetTickFunctionEnable(true);
 }
 
@@ -80,14 +136,5 @@ void AHITerrainInstance::Tick(float DeltaTime)
 	ChunkTicker->TickChunks();
 }
 
-void AHITerrainInstance::InitAlgorithms()
-{
-	if(TerrainInformation->TerrainType == ETerrainType::SAMPLE)
-	{
-		// UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
-		UEcoSystemAlgorithm* Algorithm = NewObject<UEcoSystemAlgorithm>(this);
-		Algorithm->Init(TerrainInformation);
-		Algorithms.Add(Algorithm);
-	}
-}
+
 

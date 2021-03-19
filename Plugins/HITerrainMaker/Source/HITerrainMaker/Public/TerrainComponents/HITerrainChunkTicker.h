@@ -8,8 +8,10 @@
 
 #include "HITerrainChunkTicker.generated.h"
 
-/**
- * 
+/*
+ * 地形Chunk更新类 （TerrainInstance Component）
+ * 负责每逻辑帧更新每个Chunk是否需要创建、更新、销毁，
+ * 并且维护队列以定时创建Chunk，防止卡顿。
  */
 UCLASS()
 class HITERRAINMAKER_API UHITerrainChunkTicker : public UActorComponent
@@ -20,19 +22,21 @@ public:
 	virtual void BeginPlay() override;
 
 public:
-	void TickChunks();
+	virtual void TickChunks();
 	
-protected:
+private:
 	void ProcessQueue();
 	
-	
-protected:
+private:
 	UPROPERTY()
 	AHITerrainInstance* TerrainInstance;
 	
 	FTerrainInformationPtr TerrainInformation;
 	
 	TQueue<TPair<int32, int32>> CreateChunkQueue;
+
+	// TQueue<TPair<int32, int32>> UpdateChunkQueue;
+	
 	float ChunkSize = FLAT_CHUNK_SIZE;
 	float RenderDistance = FLAT_RENDER_DISTANCE;
 	float ProcessQueueInterval = FLAT_CHUNK_INTERVAL;

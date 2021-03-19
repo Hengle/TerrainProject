@@ -11,7 +11,13 @@ class AHITerrainActor: public ARuntimeMeshActor
 	GENERATED_BODY()
 
 public:
-	void Initialize(UHITerrainData* Data, const TPair<int32, int32>& Index);
+	void Initialize(UHITerrainData* Data, FTerrainInformationPtr InTerrainInformation, const TPair<int32, int32>& Index);
+
+	void DeleteChunk();
+	
+	void GenerateChunk();
+
+	bool IsGenerated();
 
 	void GeneratePositions(TArray<FVector>& Positions);
 
@@ -35,6 +41,12 @@ public:
 	TPair<int32, int32> Index;
 
 private:
+	bool bGenerated = false;
+	
+	URuntimeMeshProviderStatic* StaticProvider;
+	
 	FChunkDataPtr ChunkData;
+
+	FTerrainInformationPtr TerrainInformation;
 
 };

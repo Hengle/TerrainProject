@@ -2,11 +2,26 @@
 #include "Providers/RuntimeMeshProviderStatic.h"
 #include "TerrainDatas/HITerrainChunkData.h"
 
-void AHITerrainActor::Initialize(UHITerrainData* Data, const TPair<int32, int32>& InIndex)
+void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr InTerrainInformation, const TPair<int32, int32>& InIndex)
 {
 	Index = InIndex;
 	ChunkData = Data->GetChunkData(Index);
-	URuntimeMeshProviderStatic* StaticProvider = NewObject<URuntimeMeshProviderStatic>(this, TEXT("RuntimeMeshProvider-Static"));
+	TerrainInformation = InTerrainInformation;
+	StaticProvider = NewObject<URuntimeMeshProviderStatic>(this, TEXT("RuntimeMeshProvider-Static"));
+	
+}
+
+void AHITerrainActor::DeleteChunk()
+{
+	if(StaticProvider)
+	{
+		StaticProvider->ClearSection(0, 0);
+		bGenerated = false;
+	}
+}
+
+void AHITerrainActor::GenerateChunk()
+{
 	if (StaticProvider)
 	{
 		GetRuntimeMeshComponent()->Initialize(StaticProvider);
@@ -26,7 +41,14 @@ void AHITerrainActor::Initialize(UHITerrainData* Data, const TPair<int32, int32>
 		GenerateTangents(Tangents);
 		GenerateColors(Colors);
 		StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Infrequent, true);
+
+		bGenerated = true;
 	}
+}
+
+bool AHITerrainActor::IsGenerated()
+{
+	return bGenerated;
 }
 
 
@@ -93,7 +115,7 @@ void AHITerrainActor::GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents)
 void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords)
 {
 	// 1个chunk一个uv的实现
-	float UVStep = 1.0 / (1 + Size);
+	float UVStep = 1.0 / Size;
 	float RecentX = 0, RecentY = 0;
 	for (int32 i = 0; i <= Size; i++)
 	{
