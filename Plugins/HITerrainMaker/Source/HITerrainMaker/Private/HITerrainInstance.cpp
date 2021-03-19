@@ -34,6 +34,10 @@ void AHITerrainInstance::AddChunk(TPair<int32, int32> Index)
 	{
 		AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation->Position));
         Chunks.Add(Index, TerrainActor);
+		TerrainActor->Size = TerrainInformation->ChunkSize / 100;
+		TerrainActor->Step = 100;
+		
+		TerrainActor->Initialize(Data, TerrainInformation, Index);
 	}
 }
 
@@ -43,7 +47,7 @@ void AHITerrainInstance::DeleteChunkNotInSet(const TSet<TPair<int32, int32>>& Up
 	for(TPair<TPair<int32, int32>, AHITerrainActor*> Pair: Chunks)
 	{
 		TPair<int32, int32> Index = Pair.Key;
-		if(!UpdateSet.Contains(Index))
+		if(!UpdateSet.Contains(Index) && Chunks[Index]->IsGenerated())
 		{
 			DeleteSet.Add(Index);
 		}
@@ -51,6 +55,7 @@ void AHITerrainInstance::DeleteChunkNotInSet(const TSet<TPair<int32, int32>>& Up
 	for(TPair<int32, int32> Index: DeleteSet)
 	{
 		Chunks[Index]->DeleteChunk();
+		UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::DeleteChunkNotInSet [%d, %d]"), Index.Key, Index.Value)
 	}
 }
 
@@ -59,13 +64,20 @@ bool AHITerrainInstance::GenerateChunkTerrain(TPair<int32, int32> Index)
 	if(Chunks.Contains(Index))
 	{
 		AHITerrainActor* TerrainActor = Chunks[Index];
-		TerrainActor->Size = TerrainInformation->ChunkSize / 100;
-		TerrainActor->Step = 100;
-		TerrainActor->Material = Material;
-		TerrainActor->Initialize(Data, TerrainInformation, Index);
-		TerrainActor->GenerateChunk();
-		UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Create Chunk[%d, %d]"), Index.Key, Index.Value)
-		return true;
+		TPair<int32, int32> PlayerIndex = GetPlayerPositionIndex();
+		int32 OffSetX = FMath::Abs(PlayerIndex.Key - Index.Key);
+		int32 OffSetY = FMath::Abs(PlayerIndex.Value - Index.Value);
+		if(OffSetX > TerrainInformation->RenderDistance || OffSetY > TerrainInformation->RenderDistance)
+		{
+			return false;
+		}
+		else if(!TerrainActor->IsGenerated())
+		{
+			TerrainActor->Material = Material;
+			TerrainActor->GenerateChunk();
+			UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::GenerateChunkTerrain [%d, %d]"), Index.Key, Index.Value)
+			return true;
+		}
 	}
 	return false;
 }
@@ -93,7 +105,7 @@ void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation)
 	TerrainInformation = InTerrainInformation;
 	InitAlgorithms();
 	Data = NewObject<UHITerrainData>(this);
-	Data->SetChunkNums(10);
+	Data->SetChunkNums(TerrainInformation->ChunkNum);
 	Data->SetChunkSize(TerrainInformation->ChunkSize / 100);
 	Data->SetAlgorithms(Algorithms);
 	Data->SetInformation(TerrainInformation);

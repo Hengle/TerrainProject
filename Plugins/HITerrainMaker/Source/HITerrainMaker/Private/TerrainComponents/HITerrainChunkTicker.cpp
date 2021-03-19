@@ -15,15 +15,21 @@ void UHITerrainChunkTicker::BeginPlay()
 
 void UHITerrainChunkTicker::TickChunks()
 {
-	FVector PlayerLocation = UHITerrainManager::Get()->GetPlayerLocation(GetWorld());
-	FVector PlayerOffset = PlayerLocation - TerrainInstance->GetActorLocation();
-	int32 xStart = FMath::Floor((PlayerOffset.X - RenderDistance) / ChunkSize);
-	int32 xEnd = FMath::Floor((PlayerOffset.X + RenderDistance) / ChunkSize);
-	int32 yStart = FMath::Floor((PlayerOffset.Y - RenderDistance) / ChunkSize);
-	int32 yEnd = FMath::Floor((PlayerOffset.Y + RenderDistance) / ChunkSize);
+	// FVector PlayerLocation = UHITerrainManager::Get()->GetPlayerLocation(GetWorld());
+	// FVector PlayerOffset = PlayerLocation - TerrainInstance->GetActorLocation();
+	// int32 xStart = FMath::Floor((PlayerOffset.X - RenderDistance) / ChunkSize);
+	// int32 xEnd = FMath::Floor((PlayerOffset.X + RenderDistance) / ChunkSize);
+	// int32 yStart = FMath::Floor((PlayerOffset.Y - RenderDistance) / ChunkSize);
+	// int32 yEnd = FMath::Floor((PlayerOffset.Y + RenderDistance) / ChunkSize);
+	TPair<int32, int32> PlayerIndex = TerrainInstance->GetPlayerPositionIndex();
+	int32 xStart = PlayerIndex.Key - TerrainInformation->RenderDistance;
+	int32 xEnd = PlayerIndex.Key + TerrainInformation->RenderDistance;
+	int32 yStart = PlayerIndex.Value - TerrainInformation->RenderDistance;
+	int32 yEnd = PlayerIndex.Value + TerrainInformation->RenderDistance;
 	TSet<TPair<int32, int32>> UpdateSet;
-	for (int32 x = xStart; x < xEnd; x++) {
-		for (int32 y = yStart; y < yEnd; y++) {
+	// UE_LOG(LogHITerrain, Log, TEXT("UHITerrainChunkTicker::TickChunks: x0:%d x1:%d y0:%d y1:%d"), xStart, xEnd, yStart, yEnd);
+	for (int32 x = xStart; x <= xEnd; x++) {
+		for (int32 y = yStart; y <= yEnd; y++) {
 			TPair<int32, int32> Index(x, y);
 			UpdateSet.Add(Index);
 			if (x < 0 || x >= TerrainInformation->ChunkNum || y < 0 || y >= TerrainInformation->ChunkNum)

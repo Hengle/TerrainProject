@@ -8,7 +8,11 @@ void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr In
 	ChunkData = Data->GetChunkData(Index);
 	TerrainInformation = InTerrainInformation;
 	StaticProvider = NewObject<URuntimeMeshProviderStatic>(this, TEXT("RuntimeMeshProvider-Static"));
-	
+	if (StaticProvider)
+	{
+		GetRuntimeMeshComponent()->Initialize(StaticProvider);
+		
+	}
 }
 
 void AHITerrainActor::DeleteChunk()
@@ -22,11 +26,8 @@ void AHITerrainActor::DeleteChunk()
 
 void AHITerrainActor::GenerateChunk()
 {
-	if (StaticProvider)
-	{
-		GetRuntimeMeshComponent()->Initialize(StaticProvider);
+	if (StaticProvider){
 		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
-
 		TArray<FVector> Positions;
 		TArray<FColor> Colors;
 		TArray<int32> Triangles;

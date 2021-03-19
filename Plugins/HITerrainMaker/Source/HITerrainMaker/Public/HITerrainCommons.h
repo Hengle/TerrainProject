@@ -5,7 +5,7 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LogHITerrain, Log, All)
 
-const float FLAT_CHUNK_INTERVAL = 0.3;
+const float FLAT_CHUNK_INTERVAL = 0.1;
 const float FLAT_RENDER_DISTANCE = 50001;
 const int32 FLAT_RENDER_CHUNKNUM = 10;
 const float FLAT_CHUNK_SIZE = 5000;
@@ -48,7 +48,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	FVector Position = FVector(0.0, 0.0, 0.0);	// 地形位置（左下角点）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 ChunkNum = 100;		// 地形长宽（区块个数）
+	int32 ChunkNum = 20;		// 地形长宽（区块个数）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	float ChunkSize = 5000;	// 区块大小
@@ -128,7 +128,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/* 渲染信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	int32 RenderDistance = 10;	// 渲染区块范围
+	int32 RenderDistance = 21;	// 渲染区块范围
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODHighQuality = 25;	// LOD高质量

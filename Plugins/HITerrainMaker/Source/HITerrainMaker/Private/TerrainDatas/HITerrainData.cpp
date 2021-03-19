@@ -3,6 +3,7 @@
 uint32 UHITerrainData::Run()
 {
 	int32 TotalSize = Size();
+	TerrainData.Reserve(TotalSize * TotalSize);
 	for(int i = 0; i < TotalSize; i++)
 	{
 		for(int j = 0; j < TotalSize; j++)
@@ -33,11 +34,11 @@ FChunkDataPtr UHITerrainData::GetChunkData(const TPair<int32, int32>& Index)
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Out Of Range! [%d, %d]"), Index.Key, Index.Value);
 		return nullptr;
 	}
-	else if(!bIsGenerated)
-	{
-		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Not Generated!"));
-		return nullptr;
-	}
+	// else if(!bIsGenerated)
+	// {
+	// 	UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetChunkData Not Generated!"));
+	// 	return nullptr;
+	// }
 	else 
 	{
 		FChunkDataPtr Data = MakeShared<FHITerrainChunkData, ESPMode::ThreadSafe>();
