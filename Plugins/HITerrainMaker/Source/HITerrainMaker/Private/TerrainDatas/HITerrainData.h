@@ -8,6 +8,14 @@
 
 DECLARE_DELEGATE(OnDataGeneratedEvent)
 
+struct FTerrainSample
+{
+public:
+	FTerrainSample():Value(0.0f){}
+	
+	float Value;
+};
+
 UCLASS()
 class UHITerrainData: public UObject, public FRunnable
 {
@@ -18,8 +26,8 @@ public:
 	virtual uint32 Run();
 	
 	virtual FChunkDataPtr GetChunkData(const TPair<int32, int32>& Index);
-	float GetSample(int32 X, int32 Y);
-	void SetSample(int32 X, int32 Y, float Value);
+	float GetSampleValue(int32 X, int32 Y);
+	void SetSampleValue(int32 X, int32 Y, float Value);
 	void SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms);
 	void SetInformation(FTerrainInformationPtr InInformation);
 	int32 Size();
@@ -42,7 +50,7 @@ protected:
 	bool bIsGenerated = false;
 	int32 ChunkNums;
 	int32 ChunkSize;
-	TArray<float> TerrainData;
+	TArray<FTerrainSample> TerrainData;
 
 	UPROPERTY()
 	TArray<UHITerrainAlgorithm*> Algorithms;

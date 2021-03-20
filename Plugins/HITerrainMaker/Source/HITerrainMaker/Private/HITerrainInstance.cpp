@@ -2,7 +2,7 @@
 #include "HITerrainActor.h"
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
-#include "TerrainAlgorithms/EcoSystemAlgorithm.h"
+#include "TerrainAlgorithms/IslandAlgorithm/EcoSystemAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/ContinentDefinitionAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/FinalPlanetAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/SampleAlgorithm.h"

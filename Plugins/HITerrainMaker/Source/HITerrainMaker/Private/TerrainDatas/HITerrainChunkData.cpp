@@ -10,6 +10,6 @@ float FHITerrainChunkData::GetSample(int32 X, int32 Y)
 	}
 	else 
 	{
-		return Data->GetSample(Index.Key * ChunkSize + X, Index.Value * ChunkSize + Y);
+		return Data->GetSampleValue(Index.Key * ChunkSize + X, Index.Value * ChunkSize + Y);
 	}
 }

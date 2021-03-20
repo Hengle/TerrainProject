@@ -189,7 +189,7 @@ void UFinalPlanetAlgorithm::Apply(UHITerrainData* Data)
 		for(int32 j = 0; j < Size; j++)
 		{
 			float Value = finalPlanet.GetValue(i * 0.00001f, j * 0.00001f, 0);
-			Data->SetSample(i, j, Value);
+			Data->SetSampleValue(i, j, Value);
 		}
 	}
 }

@@ -29,6 +29,16 @@ enum class ELODLevel: uint8
 	LOD_HIGH,
 };
 
+UENUM()
+enum class ESampleType: uint8
+{
+	NONE = 0,
+	GRASS,
+	MOUNTAIN,
+	RIVER,
+	SEA,
+};
+
 /**
  * 用于生成特定地形的信息。
  * 目标是通过这个地形信息，可以唯一地确定一个地形，不需要通过其他参数来调整地形。

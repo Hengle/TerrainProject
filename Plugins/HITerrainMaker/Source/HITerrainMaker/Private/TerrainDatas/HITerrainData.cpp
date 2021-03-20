@@ -8,9 +8,10 @@ uint32 UHITerrainData::Run()
 	{
 		for(int j = 0; j < TotalSize; j++)
 		{
-			TerrainData.Add(0.0f);
+			TerrainData.Add(FTerrainSample());
 		}
 	}
+	UE_LOG(LogHITerrain, Warning, TEXT("%d"), sizeof(TerrainData));
 	bIsGenerated = true;
 	for(UHITerrainAlgorithm* Algorithm: Algorithms)
 	{
@@ -69,7 +70,7 @@ void UHITerrainData::ApplyAlgorithm(UHITerrainAlgorithm* Algorithm)
 	// TODO
 }
 
-float UHITerrainData::GetSample(int32 X, int32 Y)
+float UHITerrainData::GetSampleValue(int32 X, int32 Y)
 {
 	int32 TotalSize = Size();
 	if (X < 0 || X >= TotalSize || Y < 0 || Y >= TotalSize)
@@ -84,11 +85,11 @@ float UHITerrainData::GetSample(int32 X, int32 Y)
 	}
 	else
 	{
-		return TerrainData[GetIndex(X, Y, TotalSize)];
+		return TerrainData[GetIndex(X, Y, TotalSize)].Value;
 	}
 }
 
-void UHITerrainData::SetSample(int32 X, int32 Y, float Value)
+void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
 {
 	int32 TotalSize = Size();
 	if (X < 0 || X >= TotalSize || Y < 0 || Y >= TotalSize)
@@ -101,7 +102,7 @@ void UHITerrainData::SetSample(int32 X, int32 Y, float Value)
 	}
 	else
 	{
-		TerrainData[GetIndex(X, Y, TotalSize)] = Value;
+		TerrainData[GetIndex(X, Y, TotalSize)].Value = Value;
 	}
 }
 
