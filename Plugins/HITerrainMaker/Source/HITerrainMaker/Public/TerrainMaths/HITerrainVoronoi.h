@@ -8,6 +8,7 @@
 
 struct FVoronoiSample
 {
+	FVoronoiSample():Value(0.0f), IndexPoint(FVector2D()){};
 	float Value;
 	FVector2D IndexPoint;
 };
@@ -19,6 +20,8 @@ class HITERRAINMAKER_API FHITerrainVoronoi
 {
 public:
 	void Init(int32 InSeed, float InFrequency, float InDisplacement, int32 InSize, float InScale);
+
+	const FVoronoiSample& GetSample(int X, int Y);
 
 private:
 	void GenerateSample(int32 X, int32 Y);

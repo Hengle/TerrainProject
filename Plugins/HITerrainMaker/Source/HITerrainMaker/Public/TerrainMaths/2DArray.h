@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 
+/*
+ * 2D数组结构
+ */
 template<typename InElementType>
 struct T2DArray
 {
@@ -19,28 +22,22 @@ struct T2DArray
 		}
 	}
 
-	void GetValue(int32 X, int32 Y, InElementType& Value)
+	const InElementType& GetValue(int32 X, int32 Y)
 	{
 		if(X < 0 || X >= SizeX || Y < 0 || Y > SizeY)
 		{
-			UE_LOG(LogHITerrain, Error, TEXT("T2DArray::GetValue Out Of Range! Index[%d, %d], Range[%d, %d]"), X, Y, SizeX, SizeY)
+			UE_LOG(LogHITerrain, Fatal, TEXT("T2DArray::GetValue Out Of Range! Index[%d, %d], Range[%d, %d]"), X, Y, SizeX, SizeY)
 		}
-		else
-		{
-			Value = RawArray[X * SizeX + Y];
-		}
+		return RawArray[X * SizeX + Y];
 	}
 	
-	void SetValue(int32 X, int32 Y, InElementType Value)
+	void SetValue(int32 X, int32 Y, const InElementType& Value)
 	{
 		if(X < 0 || X >= SizeX || Y < 0 || Y > SizeY)
 		{
-			UE_LOG(LogHITerrain, Error, TEXT("T2DArray::SetValue Out Of Range! Index[%d, %d], Range[%d, %d]"), X, Y, SizeX, SizeY)
+			UE_LOG(LogHITerrain, Fatal, TEXT("T2DArray::SetValue Out Of Range! Index[%d, %d], Range[%d, %d]"), X, Y, SizeX, SizeY)
 		}
-		else
-		{
-			RawArray[X * SizeX + Y] = Value;
-		}
+		RawArray[X * SizeX + Y] = Value;
 	}
 
 	TArray<InElementType> RawArray;

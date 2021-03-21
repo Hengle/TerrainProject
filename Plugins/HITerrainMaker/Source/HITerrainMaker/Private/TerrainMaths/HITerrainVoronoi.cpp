@@ -14,9 +14,14 @@ void FHITerrainVoronoi::Init(int32 InSeed, float InFrequency, float InDisplaceme
 	{
 		for(int32 j = 0; j < Size; j++)
 		{
-			
+			Samples = T2DArray<FVoronoiSample>(Size, Size, FVoronoiSample());
 		}
 	}
+}
+
+const FVoronoiSample& FHITerrainVoronoi::GetSample(int X, int Y)
+{
+	return Samples.GetValue(X, Y);
 }
 
 /*
