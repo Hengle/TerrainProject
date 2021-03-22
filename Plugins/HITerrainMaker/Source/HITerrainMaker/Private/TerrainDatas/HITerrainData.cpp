@@ -106,6 +106,23 @@ void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
 	}
 }
 
+void UHITerrainData::SetSampleType(int32 X, int32 Y, ESampleType Type)
+{
+	int32 TotalSize = Size();
+	if (X < 0 || X >= TotalSize || Y < 0 || Y >= TotalSize)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Out Of Range! [%d, %d]"), X, Y);
+	}
+	else if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Not Generated!"));
+	}
+	else
+	{
+		TerrainData[GetIndex(X, Y, TotalSize)].Type = Type;
+	}
+}
+
 void UHITerrainData::SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms)
 {
 	Algorithms = InAlgorithms;
@@ -119,6 +136,11 @@ void UHITerrainData::SetInformation(FTerrainInformationPtr InInformation)
 int32 UHITerrainData::Size()
 {
 	return ChunkNums * ChunkSize + 1;
+}
+
+FVector2D UHITerrainData::GetCenterPoint()
+{
+	return FVector2D(Size() / 2, Size() / 2);
 }
 
 int32 UHITerrainData::GetChunkNums()

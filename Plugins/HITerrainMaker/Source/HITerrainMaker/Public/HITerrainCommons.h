@@ -37,6 +37,7 @@ enum class ESampleType: uint8
 	MOUNTAIN,
 	RIVER,
 	SEA,
+	BEACH,
 };
 
 /**

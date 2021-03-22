@@ -11,9 +11,10 @@ DECLARE_DELEGATE(OnDataGeneratedEvent)
 struct FTerrainSample
 {
 public:
-	FTerrainSample():Value(0.0f){}
+	FTerrainSample():Value(0.0f), Type(ESampleType::NONE){}
 	
 	float Value;
+	ESampleType Type;
 };
 
 UCLASS()
@@ -28,9 +29,11 @@ public:
 	virtual FChunkDataPtr GetChunkData(const TPair<int32, int32>& Index);
 	float GetSampleValue(int32 X, int32 Y);
 	void SetSampleValue(int32 X, int32 Y, float Value);
+	void SetSampleType(int32 X, int32 Y, ESampleType Type);
 	void SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms);
 	void SetInformation(FTerrainInformationPtr InInformation);
 	int32 Size();
+	FVector2D GetCenterPoint();
 
 public:
 	int32 GetChunkNums();

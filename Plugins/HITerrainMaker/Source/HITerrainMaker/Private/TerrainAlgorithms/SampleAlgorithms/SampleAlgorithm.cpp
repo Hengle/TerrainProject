@@ -4,7 +4,6 @@
 #include "TerrainAlgorithms/SampleAlgorithms/SampleAlgorithm.h"
 
 #include "TerrainDatas/HITerrainData.h"
-#include "TerrainMaths/SampleModule.h"
 #include "TerrainMaths/noiselib/module/add.h"
 #include "TerrainMaths/noiselib/module/billow.h"
 #include "TerrainMaths/noiselib/module/blend.h"
@@ -142,11 +141,6 @@
 
 void USampleAlgorithm::SetSampleData(int32 InSeed, float InFrequency, float InLacunarity, float InSeaLevel)
 {
-	Module.SetSeed(InSeed);
-	Module.SetFrequency(InFrequency);
-	Module.SetLacunarity(InLacunarity);
-	Module.SetSeaLevel(InSeaLevel);
-	Module.Init();
 	bIsInited = true;
 }
 

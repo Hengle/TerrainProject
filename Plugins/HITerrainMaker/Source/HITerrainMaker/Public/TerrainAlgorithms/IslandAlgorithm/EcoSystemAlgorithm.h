@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
+#include "TerrainMaths/HITerrainVoronoi.h"
 #include "TerrainMaths/noiselib/noise.h"
 #include "EcoSystemAlgorithm.generated.h"
 
@@ -22,5 +23,9 @@ public:
 	virtual void DebugApply(UHITerrainData* Data) override;
 
 private:
-	noise::module::Voronoi Voronoi;
+	FHITerrainVoronoi Voronoi;
+	noise::module::Perlin Beach;
+	noise::module::Perlin Perlin;
+	noise::module::Perlin SmallIsland;
+	// noise::module::Voronoi Voronoi;
 };

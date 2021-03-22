@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TerrainMaths/SampleModule.h"
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "UObject/Object.h"
 #include "SampleAlgorithm.generated.h"
@@ -21,5 +20,4 @@ public:
 	virtual void Apply(UHITerrainData* Data) override;
 
 private:
-	FSampleModule Module;
 };

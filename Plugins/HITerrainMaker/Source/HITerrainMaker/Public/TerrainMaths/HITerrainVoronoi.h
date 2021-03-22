@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TerrainMaths/noiselib/module/voronoi.h"
+#include "Runtime/Experimental/Voronoi/Public/Voronoi/Voronoi.h"
 #include "TerrainMaths/2DArray.h"
 
 struct FVoronoiSample
@@ -19,9 +20,13 @@ struct FVoronoiSample
 class HITERRAINMAKER_API FHITerrainVoronoi
 {
 public:
-	void Init(int32 InSeed, float InFrequency, float InDisplacement, int32 InSize, float InScale);
+	void Init(int32 InSeed, float InFrequency, float InDisplacement, float InScale);
+
+	void GenerateSamples(int32 InSize);
 
 	const FVoronoiSample& GetSample(int X, int Y);
+	
+	const TSet<FVector2D>& GetIndexPoints();
 
 private:
 	void GenerateSample(int32 X, int32 Y);

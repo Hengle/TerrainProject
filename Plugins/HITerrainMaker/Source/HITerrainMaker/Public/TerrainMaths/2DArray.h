@@ -11,6 +11,8 @@
 template<typename InElementType>
 struct T2DArray
 {
+	T2DArray(){};
+	
 	T2DArray(int32 InSizeX, int32 InSizeY, InElementType DefaultValue)
 	{
 		SizeX = InSizeX;
