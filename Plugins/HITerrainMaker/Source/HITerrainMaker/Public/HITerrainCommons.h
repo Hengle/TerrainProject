@@ -33,11 +33,12 @@ UENUM()
 enum class ESampleType: uint8
 {
 	NONE = 0,
+	GROUND,
+	WATER,
+	BEACH,
 	GRASS,
 	MOUNTAIN,
-	RIVER,
-	SEA,
-	BEACH,
+	OCEAN,
 };
 
 /**

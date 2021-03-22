@@ -3,42 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TerrainMaths/noiselib/module/voronoi.h"
 #include "Runtime/Experimental/Voronoi/Public/Voronoi/Voronoi.h"
 #include "TerrainMaths/2DArray.h"
 
-struct FVoronoiSample
-{
-	FVoronoiSample():Value(0.0f), IndexPoint(FVector2D()){};
-	float Value;
-	FVector2D IndexPoint;
-};
-
-/**
- * 
- */
 class HITERRAINMAKER_API FHITerrainVoronoi
 {
 public:
-	void Init(int32 InSeed, float InFrequency, float InDisplacement, float InScale);
+	void Init(int32 InSeed, float InSizeX, float InSizeY, int32 InNumSites);
+	 
+	float GetCellValue(float X, float Y);
 
-	void GenerateSamples(int32 InSize);
+	const TArray<FVoronoiCellInfo>& GetAllCells();
 
-	const FVoronoiSample& GetSample(int X, int Y);
-	
-	const TSet<FVector2D>& GetIndexPoints();
+	int32 Position2Cell(float X, float Y);
 
-private:
-	void GenerateSample(int32 X, int32 Y);
+	int32 Position2Cell(FVector Position);
+
+	const TArray<FVector>& GetSites();
+
+	 ~FHITerrainVoronoi();
 	
 private:
 	int32 Seed;
-	float Frequency;
-	float Displacement;
-	int32 Size;
-	float Scale;
-	T2DArray<FVoronoiSample> Samples;
-	TSet<FVector2D> IndexPoints;
-	
-	noise::module::Voronoi Voronoi;
+	float SizeX;
+	float SizeY;
+	float NumSites;
+	FBox Bounds;
+	TArray<FVector> Sites;
+	TArray<FVoronoiCellInfo> AllCells;
+	FVoronoiDiagram* VoronoiDiagram = nullptr;
 };

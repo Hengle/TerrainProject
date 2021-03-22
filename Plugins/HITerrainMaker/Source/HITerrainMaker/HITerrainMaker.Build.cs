@@ -27,6 +27,7 @@ public class HITerrainMaker : ModuleRules
 			new string[]
 			{
 				"Core",
+				"Voronoi"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

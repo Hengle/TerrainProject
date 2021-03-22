@@ -5,15 +5,16 @@
 #include "CoreMinimal.h"
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
+#include "TerrainMaths/HITerrainCurvedPerlin.h"
 #include "TerrainMaths/HITerrainVoronoi.h"
 #include "TerrainMaths/noiselib/noise.h"
-#include "EcoSystemAlgorithm.generated.h"
+#include "SmallIslandAlgorithm.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HITERRAINMAKER_API UEcoSystemAlgorithm : public UHITerrainAlgorithm
+class HITERRAINMAKER_API USmallIslandAlgorithm : public UHITerrainAlgorithm
 {
 	GENERATED_BODY()
 
@@ -23,9 +24,15 @@ public:
 	virtual void DebugApply(UHITerrainData* Data) override;
 
 private:
+	void GenerateOcean();
+
+	void GenerateMainIsland();
+
+private:
 	FHITerrainVoronoi Voronoi;
-	noise::module::Perlin Beach;
-	noise::module::Perlin Perlin;
-	noise::module::Perlin SmallIsland;
-	// noise::module::Voronoi Voronoi;
+	FHITerrainCurvedPerlin Perlin;
+
+private:
+	TArray<FVoronoiCellInfo> AllCells;
+	TMap<int32, ESampleType> CellTypes;
 };

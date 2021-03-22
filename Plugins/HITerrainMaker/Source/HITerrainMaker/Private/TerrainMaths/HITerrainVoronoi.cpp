@@ -3,98 +3,73 @@
 
 #include "TerrainMaths/HITerrainVoronoi.h"
 
-void FHITerrainVoronoi::Init(int32 InSeed, float InFrequency, float InDisplacement, float InScale)
+
+void FHITerrainVoronoi::Init(int32 InSeed, float InSizeX, float InSizeY, int32 InNumSites)
 {
 	Seed = InSeed;
-	Frequency = InFrequency;
-	Displacement = InDisplacement;
-	Scale = InScale;
-}
-
-void FHITerrainVoronoi::GenerateSamples(int32 InSize)
-{
-	Size = InSize;
-	Samples = T2DArray<FVoronoiSample>(Size, Size, FVoronoiSample());
-	for(int32 i = 0; i < Size; i++)
+	SizeX = InSizeX;
+	SizeY = InSizeY;
+	NumSites = InNumSites;
+	Bounds = FBox(FVector(0.0f, 0.0f, 0.0f), FVector(SizeX, SizeY, 0.0f));
+	FRandomStream RandomStream(Seed);
+	for(int i = 0; i < NumSites; i++)
 	{
-		for(int32 j = 0; j < Size; j++)
+		Sites.Add(FVector(RandomStream.FRandRange(0.0f, SizeX), RandomStream.FRandRange(0.0f, SizeY), 0.0f));
+	}
+	VoronoiDiagram = new FVoronoiDiagram(Sites, Bounds, 0.0f);
+	VoronoiDiagram->ComputeAllCells(AllCells);
+	Sites.Empty();
+	/*
+	 * 因为前面的Sites是随机生成的，这里算一下各Cell的中心点，然后再更新一次Sites，生成效果会更好一点
+	 * 算中心点的方法不是很好，以后看看是不是要改进。
+	 */
+	for(int32 i = 0; i < NumSites; i++)
+	{
+		FVector Site(0.0f, 0.0f, 0.0f);
+		for(int j = 0; j < AllCells[i].Vertices.Num(); j++)
 		{
-			GenerateSample(i, j);
+			Site.X += AllCells[i].Vertices[j].X;
+			Site.Y += AllCells[i].Vertices[j].Y;
 		}
+		Site /= AllCells[i].Vertices.Num();
+		Sites.Add(Site);
+	}
+	delete VoronoiDiagram;
+	VoronoiDiagram = new FVoronoiDiagram(Sites, Bounds, 0.0f);
+	VoronoiDiagram->ComputeAllCells(AllCells);
+}
+
+float FHITerrainVoronoi::GetCellValue(float X, float Y)
+{
+	int32 ValueSeed = Position2Cell(X, Y);
+	FRandomStream RandomStream(ValueSeed);
+	return RandomStream.FRand();
+}
+
+const TArray<FVoronoiCellInfo>& FHITerrainVoronoi::GetAllCells()
+{
+	return AllCells;
+}
+
+int32 FHITerrainVoronoi::Position2Cell(float X, float Y)
+{
+	return VoronoiDiagram->FindCell(FVector(X, Y, 0.0f));
+}
+
+int32 FHITerrainVoronoi::Position2Cell(FVector Position)
+{
+	return VoronoiDiagram->FindCell(FVector(Position.X, Position.Y, 0.0f));
+}
+
+const TArray<FVector>& FHITerrainVoronoi::GetSites()
+{
+	return Sites;
+}
+
+FHITerrainVoronoi::~FHITerrainVoronoi()
+{
+	if(VoronoiDiagram)
+	{
+		delete VoronoiDiagram;
 	}
 }
-
-
-const FVoronoiSample& FHITerrainVoronoi::GetSample(int X, int Y)
-{
-	return Samples.GetValue(X, Y);
-}
-
-const TSet<FVector2D>& FHITerrainVoronoi::GetIndexPoints()
-{
-	return IndexPoints;
-}
-
-/*
- * 改了NoiseLib的Voronoi算法
- */
-void FHITerrainVoronoi::GenerateSample(int32 X, int32 Y)
-{
-	// This method could be more efficient by caching the seed values.  Fix
-	// later.
-
-	double Xf = (double)X * Frequency * Scale;
-	double Yf = (double)Y * Frequency * Scale;
-	double Zf = 0.0f;
-
-	int XInt = (Xf > 0.0? (int)Xf: (int)Xf - 1);
-	int YInt = (Yf > 0.0? (int)Yf: (int)Yf - 1);
-	int ZInt = (Zf > 0.0? (int)Zf: (int)Zf - 1);
-
-	double MinDist = 2147483647.0;
-	double XCandidate = 0;
-	double YCandidate = 0;
-	double ZCandidate = 0;
-
-	// Inside each unit cube, there is a seed point at a random position.  Go
-	// through each of the nearby cubes until we find a cube with a seed point
-	// that is closest to the specified position.
-	for (int ZCur = ZInt - 2; ZCur <= ZInt + 2; ZCur++) {
-		for (int YCur = YInt - 2; YCur <= YInt + 2; YCur++) {
-			for (int XCur = XInt - 2; XCur <= XInt + 2; XCur++) {
-
-				// Calculate the position and distance to the seed point inside of
-				// this unit cube.
-				double XPos = XCur + noise::ValueNoise3D (XCur, YCur, ZCur, Seed    );
-				double YPos = YCur + noise::ValueNoise3D (XCur, YCur, ZCur, Seed + 1);
-				double ZPos = ZCur + noise::ValueNoise3D (XCur, YCur, ZCur, Seed + 2);
-				double XDist = XPos - Xf;
-				double YDist = YPos - Yf;
-				double ZDist = ZPos - Zf;
-				double Dist = XDist * XDist + YDist * YDist + ZDist * ZDist;
-
-				if (Dist < MinDist) {
-					// This seed point is closer to any others found so far, so record
-					// this seed point.
-					MinDist = Dist;
-					XCandidate = XPos;
-					YCandidate = YPos;
-					ZCandidate = ZPos;
-				}
-			}
-		}
-	}
-
-	double Value = (Displacement * (double)noise::ValueNoise3D (
-	    (int)(floor (XCandidate)),
-	    (int)(floor (YCandidate)),
-	    (int)(floor (ZCandidate))));
-	
-	FVoronoiSample Sample;
-	Sample.Value = Value;
-	Sample.IndexPoint = FVector2D(XCandidate, YCandidate);
-	IndexPoints.Add(Sample.IndexPoint);
-	Samples.SetValue(X, Y, Sample);
-}
-
-
