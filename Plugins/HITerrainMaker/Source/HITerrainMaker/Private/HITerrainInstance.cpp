@@ -2,6 +2,7 @@
 #include "HITerrainActor.h"
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
+#include "TerrainAlgorithms/BasicAlgorithms/BasicAlgorithm.h"
 #include "TerrainAlgorithms/IslandAlgorithm/SmallIslandAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/ContinentDefinitionAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/FinalPlanetAlgorithm.h"
@@ -130,7 +131,8 @@ void AHITerrainInstance::InitAlgorithms()
 	if(TerrainInformation->TerrainType == ETerrainType::SAMPLE)
 	{
 		//UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
-		USmallIslandAlgorithm* Algorithm = NewObject<USmallIslandAlgorithm>(this);
+		// USmallIslandAlgorithm* Algorithm = NewObject<USmallIslandAlgorithm>(this);
+		UBasicAlgorithm* Algorithm = NewObject<UBasicAlgorithm>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
 	}

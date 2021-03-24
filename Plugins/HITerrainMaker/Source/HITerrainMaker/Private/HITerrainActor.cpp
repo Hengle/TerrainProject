@@ -60,7 +60,7 @@ void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions)
 		for (int32 j = 0; j <= Size; j++) {
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
-			float LocationZ = ChunkData->GetSample(i, j);
+			float LocationZ = ChunkData->GetSampleValue(i, j);
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}

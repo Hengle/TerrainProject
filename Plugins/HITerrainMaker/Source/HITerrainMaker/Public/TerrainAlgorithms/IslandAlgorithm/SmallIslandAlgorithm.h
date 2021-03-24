@@ -26,6 +26,8 @@ public:
 private:
 	void GenerateOcean();
 
+	void FloodOcean(int32 Root, TSet<int32>& OceanSet);
+
 	void GenerateMainIsland();
 
 private:

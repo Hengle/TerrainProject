@@ -33,12 +33,15 @@ UENUM()
 enum class ESampleType: uint8
 {
 	NONE = 0,
-	GROUND,
-	WATER,
+	MARK_GROUND,
+	MARK_WATER,
+	MARK_NEARWATER,
 	BEACH,
 	GRASS,
 	MOUNTAIN,
 	OCEAN,
+	LAKE,
+	SNOWY,
 };
 
 /**
@@ -131,16 +134,65 @@ struct HITERRAINMAKER_API FTerrainInformation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
 	float MinElev = -8192.0;
 
-	/************************************************************************/
-	/* 区块信息                                                               */
-	/************************************************************************/
+	/*
+	 * 基本生成算法信息
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_SeaLevel = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_SandLevel = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_GrassLevel = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_MountainLevel = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_LandscapeFrequency = 0.2f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_LandscapeLacunariy = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	int32 BG_LandscapeOctaveCount = 14;
+	
+	
+
+	/*
+	 * 岛屿生成算法信息
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	float IG_SeaLevel = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	int32 IG_VoronoiCount = 400;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	int32 IG_OceanWrapperCount = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	float IG_OceanThreshold = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	float IG_MainlandFrequency = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	float IG_MainlandLacunarity = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
+	int32 IG_MainlandOctave = 14;
+
+	
+
 	
 
 	/************************************************************************/
 	/* 渲染信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	int32 RenderDistance = 21;	// 渲染区块范围
+	int32 RenderDistance = 11;	// 渲染区块范围
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODHighQuality = 25;	// LOD高质量

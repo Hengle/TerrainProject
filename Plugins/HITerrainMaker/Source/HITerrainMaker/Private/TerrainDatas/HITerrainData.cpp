@@ -89,6 +89,25 @@ float UHITerrainData::GetSampleValue(int32 X, int32 Y)
 	}
 }
 
+ESampleType UHITerrainData::GetSampleType(int32 X, int32 Y)
+{
+	int32 TotalSize = Size();
+	if (X < 0 || X >= TotalSize || Y < 0 || Y >= TotalSize)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Out Of Range! [%d, %d]"), X, Y);
+		return ESampleType::NONE;
+	}
+	else if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return ESampleType::NONE;
+	}
+	else
+	{
+		return TerrainData[GetIndex(X, Y, TotalSize)].Type;
+	}
+}
+
 void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
 {
 	int32 TotalSize = Size();
