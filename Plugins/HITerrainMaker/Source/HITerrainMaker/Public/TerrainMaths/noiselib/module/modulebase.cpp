@@ -40,7 +40,7 @@ noise::module::Module::Module (int sourceModuleCount)
   }
 }
 
-Module::~Module ()
+noise::module::Module::~Module ()
 {
   delete[] m_pSourceModule;
 }
