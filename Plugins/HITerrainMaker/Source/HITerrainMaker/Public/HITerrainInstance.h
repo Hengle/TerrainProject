@@ -13,29 +13,57 @@ class HITERRAINMAKER_API AHITerrainInstance :public AActor
 	GENERATED_BODY()
 
 public:
-	void Init(FTerrainInformationPtr InTerrainInformation);
-	
+	/*
+	 * 获取TerrainInformation
+	 */
 	FTerrainInformationPtr GetTerrainInformation() const;
 
+	/*
+	 * 是否有特定索引的区块
+	 */
 	bool ContainsChunk(TPair<int32, int32> Index) const;
 
+	/*
+	 * 特定索引的区块是否已经被生成
+	 */
 	bool IsChunkGenerated(TPair<int32, int32> Index);
 
+	/*
+	 * 添加区块
+	 */
 	void AddChunk(TPair<int32, int32> Index);
 
+	/*
+	 * 删除集合外的区块
+	 */
 	void DeleteChunkNotInSet(const TSet<TPair<int32, int32>>& DeleteSet);
 
+	/*
+	 * 生成区块的地形
+	 */
 	bool GenerateChunkTerrain(TPair<int32, int32> Index);
 
+	/*
+	 * 更新区块
+	 */
 	bool UpdateChunk(TPair<int32, int32> Index);
 
+	/*
+	 * 获取角色的区块位置
+	 */
 	TPair<int32, int32> GetPlayerPositionIndex();
 
 public:
 	AHITerrainInstance();
+
+	/*
+	* 初始化TerrainInstance
+	*/
+	void Init(FTerrainInformationPtr InTerrainInformation);
 	
 	virtual void Tick(float DeltaTime) override;
 
+public:
 	UPROPERTY()
 	UMaterialInterface* Material;
 

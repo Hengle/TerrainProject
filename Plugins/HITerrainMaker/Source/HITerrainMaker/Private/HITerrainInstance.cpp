@@ -29,12 +29,16 @@ bool AHITerrainInstance::IsChunkGenerated(TPair<int32, int32> Index)
 	return false;
 }
 
+/*
+ * 生成TerrainActor
+ */
 void AHITerrainInstance::AddChunk(TPair<int32, int32> Index)
 {
 	if(!Chunks.Contains(Index))
 	{
 		AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation->Position));
         Chunks.Add(Index, TerrainActor);
+		// TODO 采样点大小
 		TerrainActor->Size = TerrainInformation->ChunkSize / 100;
 		TerrainActor->Step = 100;
 		
@@ -104,7 +108,9 @@ AHITerrainInstance::AHITerrainInstance()
 void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation) 
 {
 	TerrainInformation = InTerrainInformation;
+	// 先初始化地形
 	InitAlgorithms();
+	// 生成TerrainData
 	Data = NewObject<UHITerrainData>(this);
 	Data->SetChunkNums(TerrainInformation->ChunkNum);
 	Data->SetChunkSize(TerrainInformation->ChunkSize / 100);
@@ -112,11 +118,13 @@ void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation)
 	Data->SetInformation(TerrainInformation);
 	Data->OnDataGenerated.BindUObject(this, &AHITerrainInstance::OnDataGenerated);
 	FRunnableThread::Create(Data, TEXT("HITerrainData"));
+	// 生成ChunkTicker
 	ChunkTicker = NewObject<UHITerrainChunkTicker>(this);
 	if(ChunkTicker)
 	{
 		ChunkTicker->RegisterComponent();
 	}
+	// 最后生成TerrainActor
 	for(int32 i = 0; i < TerrainInformation->ChunkNum; i++)
 	{
 		for(int32 j = 0; j < TerrainInformation->ChunkNum; j++)
@@ -128,6 +136,7 @@ void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation)
 
 void AHITerrainInstance::InitAlgorithms()
 {
+	// 根据类型，初始化地形生成算法
 	if(TerrainInformation->TerrainType == ETerrainType::SAMPLE)
 	{
 		//UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
@@ -140,6 +149,7 @@ void AHITerrainInstance::InitAlgorithms()
 
 void AHITerrainInstance::OnDataGenerated() 
 {
+	// TerrainData生成完地形数据，这边就可以开始Tick了。
 	UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::OnDataGenerated"));
 	PrimaryActorTick.SetTickFunctionEnable(true);
 }

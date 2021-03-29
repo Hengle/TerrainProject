@@ -7,8 +7,8 @@
 #include "UObject/Object.h"
 #include "HITerrainAlgorithm.generated.h"
 
-/**
- * 
+/*
+ * 地形算法类
  */
 UCLASS()
 class HITERRAINMAKER_API UHITerrainAlgorithm : public UObject
