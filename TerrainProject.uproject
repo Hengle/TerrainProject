@@ -14,5 +14,11 @@
 				"RuntimeMeshComponent"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "Water",
+			"Enabled": true
+		}
 	]
 }
