@@ -10,32 +10,33 @@ void UHITerrainChunkTicker::BeginPlay()
 	Super::BeginPlay();
 	TerrainInstance = Cast<AHITerrainInstance>(GetOwner());
 	TerrainInformation = TerrainInstance->GetTerrainInformation();
+	ProcessQueueInterval = TerrainInformation->ChunkGenerateInterval;
+	RenderDistance = TerrainInformation->RenderDistance;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UHITerrainChunkTicker::ProcessQueue, ProcessQueueInterval, true, 0.0f);
 }
 
 void UHITerrainChunkTicker::TickChunks()
 {
-	// FVector PlayerLocation = UHITerrainManager::Get()->GetPlayerLocation(GetWorld());
-	// FVector PlayerOffset = PlayerLocation - TerrainInstance->GetActorLocation();
-	// int32 xStart = FMath::Floor((PlayerOffset.X - RenderDistance) / ChunkSize);
-	// int32 xEnd = FMath::Floor((PlayerOffset.X + RenderDistance) / ChunkSize);
-	// int32 yStart = FMath::Floor((PlayerOffset.Y - RenderDistance) / ChunkSize);
-	// int32 yEnd = FMath::Floor((PlayerOffset.Y + RenderDistance) / ChunkSize);
 	TPair<int32, int32> PlayerIndex = TerrainInstance->GetPlayerPositionIndex();
-	int32 xStart = PlayerIndex.Key - TerrainInformation->RenderDistance;
-	int32 xEnd = PlayerIndex.Key + TerrainInformation->RenderDistance;
-	int32 yStart = PlayerIndex.Value - TerrainInformation->RenderDistance;
-	int32 yEnd = PlayerIndex.Value + TerrainInformation->RenderDistance;
+	int32 xStart = PlayerIndex.Key - RenderDistance;
+	int32 xEnd = PlayerIndex.Key + RenderDistance;
+	int32 yStart = PlayerIndex.Value - RenderDistance;
+	int32 yEnd = PlayerIndex.Value + RenderDistance;
 	TSet<TPair<int32, int32>> UpdateSet;
 	// UE_LOG(LogHITerrain, Log, TEXT("UHITerrainChunkTicker::TickChunks: x0:%d x1:%d y0:%d y1:%d"), xStart, xEnd, yStart, yEnd);
-	for (int32 x = xStart; x <= xEnd; x++) {
-		for (int32 y = yStart; y <= yEnd; y++) {
+	// 对视野范围内的Chunk进行遍历
+	for (int32 x = xStart; x <= xEnd; x++)
+	{
+		for (int32 y = yStart; y <= yEnd; y++)
+		{
 			TPair<int32, int32> Index(x, y);
 			UpdateSet.Add(Index);
+			// Chunk在合法区域外，不管他
 			if (x < 0 || x >= TerrainInformation->ChunkNum || y < 0 || y >= TerrainInformation->ChunkNum)
 			{
 				continue;
 			}
+			// Chunk在合法区域内，且已经生成
 			if (TerrainInstance->IsChunkGenerated(Index)) 
 			{
 				// 更新逻辑需要放这里写还是放队列里我暂且蒙古
@@ -43,6 +44,7 @@ void UHITerrainChunkTicker::TickChunks()
 				// UpdateChunkQueue.Enqueue(Index);
 				
 			}
+			// Chunk在合法区域内，且未生成
 			else 
 			{
 				// UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
@@ -50,6 +52,7 @@ void UHITerrainChunkTicker::TickChunks()
 			}
 		}
 	}
+	// 删除不在视野范围内的Chunk
 	TerrainInstance->DeleteChunkNotInSet(UpdateSet);
 }
 

@@ -191,6 +191,9 @@ struct HITERRAINMAKER_API FTerrainInformation
 	int32 RenderDistance = 11; // 渲染区块范围
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
+	float ChunkGenerateInterval = 0.1; // 区块生成间隔
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODHighQuality = 25; // LOD高质量
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")

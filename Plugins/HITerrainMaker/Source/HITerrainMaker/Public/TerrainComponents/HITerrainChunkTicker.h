@@ -22,23 +22,25 @@ public:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void TickChunks();
+	void TickChunks();
 	
 private:
 	void ProcessQueue();
 	
 private:
+	// 所属的AHITerrainInstance
 	UPROPERTY()
 	AHITerrainInstance* TerrainInstance;
-	
+
+	// 地形信息
 	FTerrainInformationPtr TerrainInformation;
-	
+
+	// 区块生成队列
 	TQueue<TPair<int32, int32>> CreateChunkQueue;
 
 	// TQueue<TPair<int32, int32>> UpdateChunkQueue;
 	
-	float ChunkSize = FLAT_CHUNK_SIZE;
-	float RenderDistance = FLAT_RENDER_DISTANCE;
-	float ProcessQueueInterval = FLAT_CHUNK_INTERVAL;
+	float RenderDistance;
+	float ProcessQueueInterval;
 	FTimerHandle TimerHandle;
 };
