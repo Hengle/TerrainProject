@@ -9,7 +9,7 @@ void URiverPositionsAlgorithm::Init(FTerrainInformationPtr InInformation)
 	
     riverPositions_rm0.SetSeed (Information->Seed + 100);
     riverPositions_rm0.SetFrequency (18.75);
-    riverPositions_rm0.SetLacunarity (Information->ContinentLacunarity);
+    riverPositions_rm0.SetLacunarity (Information->SG_ContinentLacunarity);
     riverPositions_rm0.SetOctaveCount (1);
     riverPositions_rm0.SetNoiseQuality (noise::QUALITY_BEST);
 
@@ -25,7 +25,7 @@ void URiverPositionsAlgorithm::Init(FTerrainInformationPtr InInformation)
     
     riverPositions_rm1.SetSeed (Information->Seed + 101);
     riverPositions_rm1.SetFrequency (43.25);
-    riverPositions_rm1.SetLacunarity (Information->ContinentLacunarity);
+    riverPositions_rm1.SetLacunarity (Information->SG_ContinentLacunarity);
     riverPositions_rm1.SetOctaveCount (1);
     riverPositions_rm1.SetNoiseQuality (noise::QUALITY_BEST);
 

@@ -9,7 +9,7 @@ void UBadLandsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	
     badlandsSand_rm.SetSeed (Information->Seed + 80);
     badlandsSand_rm.SetFrequency (6163.5);
-    badlandsSand_rm.SetLacunarity (Information->BadLandsLacunarity);
+    badlandsSand_rm.SetLacunarity (Information->SG_BadLandsLacunarity);
     badlandsSand_rm.SetNoiseQuality (noise::QUALITY_BEST);
     badlandsSand_rm.SetOctaveCount (1);
 
@@ -38,9 +38,9 @@ void UBadLandsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 
     
     badlandsCliffs_pe.SetSeed (Information->Seed + 90);
-    badlandsCliffs_pe.SetFrequency (Information->ContinentFrequency * 839.0);
+    badlandsCliffs_pe.SetFrequency (Information->SG_ContinentFrequency * 839.0);
     badlandsCliffs_pe.SetPersistence (0.5);
-    badlandsCliffs_pe.SetLacunarity (Information->BadLandsLacunarity);
+    badlandsCliffs_pe.SetLacunarity (Information->SG_BadLandsLacunarity);
     badlandsCliffs_pe.SetOctaveCount (6);
     badlandsCliffs_pe.SetNoiseQuality (noise::QUALITY_STD);
 
@@ -71,14 +71,14 @@ void UBadLandsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     badlandsCliffs_tu0.SetSeed (Information->Seed + 91);
     badlandsCliffs_tu0.SetSourceModule (0, badlandsCliffs_te);
     badlandsCliffs_tu0.SetFrequency (16111.0);
-    badlandsCliffs_tu0.SetPower (1.0 / 141539.0 * Information->BadLandsTwist);
+    badlandsCliffs_tu0.SetPower (1.0 / 141539.0 * Information->SG_BadLandsTwist);
     badlandsCliffs_tu0.SetRoughness (3);
 
     
     badlandsCliffs_tu1.SetSeed (Information->Seed + 92);
     badlandsCliffs_tu1.SetSourceModule (0, badlandsCliffs_tu0);
     badlandsCliffs_tu1.SetFrequency (36107.0);
-    badlandsCliffs_tu1.SetPower (1.0 / 211543.0 * Information->BadLandsTwist);
+    badlandsCliffs_tu1.SetPower (1.0 / 211543.0 * Information->SG_BadLandsTwist);
     badlandsCliffs_tu1.SetRoughness (3);
 
     

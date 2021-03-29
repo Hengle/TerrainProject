@@ -10,7 +10,7 @@ void UHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     hillyTerrain_bi.SetSeed (Information->Seed + 60);
     hillyTerrain_bi.SetFrequency (1663.0);
     hillyTerrain_bi.SetPersistence (0.5);
-    hillyTerrain_bi.SetLacunarity (Information->HillsLacunarity);
+    hillyTerrain_bi.SetLacunarity (Information->SG_HillsLacunarity);
     hillyTerrain_bi.SetOctaveCount (6);
     hillyTerrain_bi.SetNoiseQuality (noise::QUALITY_BEST);
 
@@ -22,7 +22,7 @@ void UHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     
     hillyTerrain_rm.SetSeed (Information->Seed + 61);
     hillyTerrain_rm.SetFrequency (367.5);
-    hillyTerrain_rm.SetLacunarity (Information->HillsLacunarity);
+    hillyTerrain_rm.SetLacunarity (Information->SG_HillsLacunarity);
     hillyTerrain_rm.SetNoiseQuality (noise::QUALITY_BEST);
     hillyTerrain_rm.SetOctaveCount (1);
 	
@@ -52,14 +52,14 @@ void UHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     hillyTerrain_tu0.SetSourceModule (0, hillyTerrain_ex);
     hillyTerrain_tu0.SetSeed (Information->Seed + 62);
     hillyTerrain_tu0.SetFrequency (1531.0);
-    hillyTerrain_tu0.SetPower (1.0 / 16921.0 * Information->HillsTwist);
+    hillyTerrain_tu0.SetPower (1.0 / 16921.0 * Information->SG_HillsTwist);
     hillyTerrain_tu0.SetRoughness (4);
 
 
     hillyTerrain_tu1.SetSourceModule (0, hillyTerrain_tu0);
     hillyTerrain_tu1.SetSeed (Information->Seed + 63);
     hillyTerrain_tu1.SetFrequency (21617.0);
-    hillyTerrain_tu1.SetPower (1.0 / 117529.0 * Information->HillsTwist);
+    hillyTerrain_tu1.SetPower (1.0 / 117529.0 * Information->SG_HillsTwist);
     hillyTerrain_tu1.SetRoughness (6);
 
 

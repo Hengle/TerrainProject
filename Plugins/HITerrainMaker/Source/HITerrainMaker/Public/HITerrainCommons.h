@@ -57,108 +57,107 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/* 基础信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	ETerrainType TerrainType = ETerrainType::SAMPLE;	//地形种类
+	ETerrainType TerrainType = ETerrainType::SAMPLE; //地形种类
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	FVector Position = FVector(0.0, 0.0, 0.0);	// 地形位置（左下角点）
+	FVector Position = FVector(0.0, 0.0, 0.0); // 地形位置（左下角点）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 ChunkNum = 20;		// 地形长宽（区块个数）
+	int32 ChunkNum = 20; // 地形长宽（区块个数）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	float ChunkSize = 5000;	// 区块大小
+	float ChunkSize = 5000; // 区块大小
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 Seed = 11111;			// 地形随机数种子
+	int32 Seed = 11111; // 地形随机数种子
+
+	/*
+	* 基本生成算法信息
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_SeaLevel = 0.0f; // 海平面位置
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_SandLevel = 100.0f; // 沙子材质位置
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_GrassLevel = 200.0f; // 草材质位置
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_MountainLevel = 500.0f; // 山峰材质位置
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_LandscapeFrequency = 0.2f; // 地形噪声频率
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	float BG_LandscapeLacunarity = 2.0f; // 地形噪声间隔系数
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
+	int32 BG_LandscapeOctaveCount = 14; // 地形噪声间隔次数
+
 
 	/*
 	 * 样例生成信息
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float ContinentFrequency = 1.0;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float ContinentLacunarity = 2.208984375;
+	float SG_ContinentFrequency = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SeaLevel = 0.0;
+	float SG_ContinentLacunarity = 2.208984375;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float TerrainOffset = 1.0;
+	float SG_SeaLevel = 0.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float ShelfLevel = -0.375;
+	float SG_TerrainOffset = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float MountainLacunarity = 2.142578125;
+	float SG_ShelfLevel = -0.375;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float MountainsTwist = 1.0;
+	float SG_MountainLacunarity = 2.142578125;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float MountainGlaciation = 1.375;
+	float SG_MountainsTwist = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float HillsLacunarity = 2.162109375;
+	float SG_MountainGlaciation = 1.375;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float HillsTwist = 1.0;
+	float SG_HillsLacunarity = 2.162109375;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float PlainsLacunarity = 2.314453125;
+	float SG_HillsTwist = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float BadLandsLacunarity = 2.212890625;
+	float SG_PlainsLacunarity = 2.314453125;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float BadLandsTwist = 1.0;
+	float SG_BadLandsLacunarity = 2.212890625;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float ContinentHeightScale = 0.25;
+	float SG_BadLandsTwist = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float HillsAmount = 0.75;
+	float SG_ContinentHeightScale = 0.25;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float MountainsAmount = 0.5;
+	float SG_HillsAmount = 0.75;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float BadlandsAmount = 0.03125;
+	float SG_MountainsAmount = 0.5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float RiverDepth = 0.0234375;
+	float SG_BadlandsAmount = 0.03125;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float MaxElev = 8192.0;
+	float SG_RiverDepth = 0.0234375;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float MinElev = -8192.0;
+	float SG_MaxElev = 8192.0;
 
-	/*
-	 * 基本生成算法信息
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_SeaLevel = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_SandLevel = 100.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_GrassLevel = 200.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_MountainLevel = 500.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_LandscapeFrequency = 0.2f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_LandscapeLacunariy = 2.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	int32 BG_LandscapeOctaveCount = 14;
-	
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
+	float SG_MinElev = -8192.0;
 
 	/*
 	 * 岛屿生成算法信息
@@ -184,59 +183,56 @@ struct HITERRAINMAKER_API FTerrainInformation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
 	int32 IG_MainlandOctave = 14;
 
-	
-
-	
 
 	/************************************************************************/
 	/* 渲染信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	int32 RenderDistance = 11;	// 渲染区块范围
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODHighQuality = 25;	// LOD高质量
+	int32 RenderDistance = 11; // 渲染区块范围
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODMediumQuality = 50;	// LOD中质量
+	float LODHighQuality = 25; // LOD高质量
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODLowQuality = 100;	// LOD低质量
+	float LODMediumQuality = 50; // LOD中质量
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
+	float LODLowQuality = 100; // LOD低质量
 
 	/*
 	 * 测试信息
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
-	bool bEnableDebugAlgorithm = true;
+	bool bEnableDebugAlgorithm = true; // 算法使用Debug版本
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
-	bool bEnableLOD = true;
-	 
+	bool bEnableLOD = true; // 使用LOD
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
 	float TEST_VORONOI_FREQUENCY = 1.0;
 };
 
-typedef TSharedPtr<FTerrainInformation> FTerrainInformationPtr; 
+typedef TSharedPtr<FTerrainInformation> FTerrainInformationPtr;
 
 UCLASS()
-class UHITerrainCommon: public UObject
+class UHITerrainCommon : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	static float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA) 
+	static float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
 	{
 		float L1 = Lerp(LL, LH, LA);
 		float L2 = Lerp(HL, HH, LA);
 		return Lerp(L1, L2, HA);
 	}
 
-	static float Lerp(float Low, float High, float Alpha) 
+	static float Lerp(float Low, float High, float Alpha)
 	{
 		return Low * (1 - SmoothStep(Alpha)) + High * SmoothStep(Alpha);
 	}
 
-	static float SmoothStep(float Alpha) 
+	static float SmoothStep(float Alpha)
 	{
 		return Alpha * Alpha * (3 - 2 * Alpha);
 	}

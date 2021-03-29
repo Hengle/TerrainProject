@@ -11,7 +11,7 @@ void UBasicAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	Landscape.Init(Information->Seed, Information->BG_LandscapeFrequency,
-		Information->BG_LandscapeLacunariy, Information->BG_LandscapeOctaveCount);
+		Information->BG_LandscapeLacunarity, Information->BG_LandscapeOctaveCount);
 	Landscape.AddControlPoint(-1.0f, -1.0f);
 	Landscape.AddControlPoint(-0.5f, -0.8f);
 	Landscape.AddControlPoint(-0.25f, 0.0f);

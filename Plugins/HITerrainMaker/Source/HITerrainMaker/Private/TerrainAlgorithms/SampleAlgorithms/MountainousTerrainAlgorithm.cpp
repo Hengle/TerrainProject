@@ -9,7 +9,7 @@ void UMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	   
     mountainBaseDef_rm0.SetSeed (Information->Seed + 30);
     mountainBaseDef_rm0.SetFrequency (1723.0);
-    mountainBaseDef_rm0.SetLacunarity (Information->MountainLacunarity);
+    mountainBaseDef_rm0.SetLacunarity (Information->SG_MountainLacunarity);
     mountainBaseDef_rm0.SetOctaveCount (4);
     mountainBaseDef_rm0.SetNoiseQuality (noise::QUALITY_STD);
     
@@ -19,7 +19,7 @@ void UMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	   
     mountainBaseDef_rm1.SetSeed (Information->Seed + 31);
     mountainBaseDef_rm1.SetFrequency (367.0);
-    mountainBaseDef_rm1.SetLacunarity (Information->MountainLacunarity);
+    mountainBaseDef_rm1.SetLacunarity (Information->SG_MountainLacunarity);
     mountainBaseDef_rm1.SetOctaveCount (1);
     mountainBaseDef_rm1.SetNoiseQuality (noise::QUALITY_BEST);
     
@@ -36,26 +36,26 @@ void UMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     mountainBaseDef_tu0.SetSourceModule (0, mountainBaseDef_bl);
     mountainBaseDef_tu0.SetSeed (Information->Seed + 32);
     mountainBaseDef_tu0.SetFrequency (1337.0);
-    mountainBaseDef_tu0.SetPower (1.0 / 6730.0 * Information->MountainsTwist);
+    mountainBaseDef_tu0.SetPower (1.0 / 6730.0 * Information->SG_MountainsTwist);
     mountainBaseDef_tu0.SetRoughness (4);
 
     mountainBaseDef_tu1.SetSourceModule (0, mountainBaseDef_tu0);
     mountainBaseDef_tu1.SetSeed (Information->Seed + 33);
     mountainBaseDef_tu1.SetFrequency (21221.0);
-    mountainBaseDef_tu1.SetPower (1.0 / 120157.0 * Information->MountainsTwist);
+    mountainBaseDef_tu1.SetPower (1.0 / 120157.0 * Information->SG_MountainsTwist);
     mountainBaseDef_tu1.SetRoughness (6);
  
     mountainBaseDef.SetSourceModule (0, mountainBaseDef_tu1);
  
     mountainousHigh_rm0.SetSeed (Information->Seed + 40);
     mountainousHigh_rm0.SetFrequency (2371.0);
-    mountainousHigh_rm0.SetLacunarity (Information->MountainLacunarity);
+    mountainousHigh_rm0.SetLacunarity (Information->SG_MountainLacunarity);
     mountainousHigh_rm0.SetOctaveCount (3);
     mountainousHigh_rm0.SetNoiseQuality (noise::QUALITY_BEST);
 
     mountainousHigh_rm1.SetSeed (Information->Seed + 41);
     mountainousHigh_rm1.SetFrequency (2341.0);
-    mountainousHigh_rm1.SetLacunarity (Information->MountainLacunarity);
+    mountainousHigh_rm1.SetLacunarity (Information->SG_MountainLacunarity);
     mountainousHigh_rm1.SetOctaveCount (3);
     mountainousHigh_rm1.SetNoiseQuality (noise::QUALITY_BEST);
 
@@ -65,20 +65,20 @@ void UMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     mountainousHigh_tu.SetSourceModule (0, mountainousHigh_ma);
     mountainousHigh_tu.SetSeed (Information->Seed + 42);
     mountainousHigh_tu.SetFrequency (31511.0);
-    mountainousHigh_tu.SetPower (1.0 / 180371.0 * Information->MountainsTwist);
+    mountainousHigh_tu.SetPower (1.0 / 180371.0 * Information->SG_MountainsTwist);
     mountainousHigh_tu.SetRoughness (4);
 
     mountainousHigh.SetSourceModule (0, mountainousHigh_tu);
 
     mountainousLow_rm0.SetSeed (Information->Seed + 50);
     mountainousLow_rm0.SetFrequency (1381.0);
-    mountainousLow_rm0.SetLacunarity (Information->MountainLacunarity);
+    mountainousLow_rm0.SetLacunarity (Information->SG_MountainLacunarity);
     mountainousLow_rm0.SetOctaveCount (8);
     mountainousLow_rm0.SetNoiseQuality (noise::QUALITY_BEST);
 
     mountainousLow_rm1.SetSeed (Information->Seed + 51);
     mountainousLow_rm1.SetFrequency (1427.0);
-    mountainousLow_rm1.SetLacunarity (Information->MountainLacunarity);
+    mountainousLow_rm1.SetLacunarity (Information->SG_MountainLacunarity);
     mountainousLow_rm1.SetOctaveCount (8);
     mountainousLow_rm1.SetNoiseQuality (noise::QUALITY_BEST);
 
@@ -109,7 +109,7 @@ void UMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     mountainousTerrain_sb2.SetBias (0.0);
 
     mountainousTerrain_ex.SetSourceModule (0, mountainousTerrain_sb2);
-    mountainousTerrain_ex.SetExponent (Information->MountainGlaciation);
+    mountainousTerrain_ex.SetExponent (Information->SG_MountainGlaciation);
  
     mountainousTerrain.SetSourceModule (0, mountainousTerrain_ex);
 	   

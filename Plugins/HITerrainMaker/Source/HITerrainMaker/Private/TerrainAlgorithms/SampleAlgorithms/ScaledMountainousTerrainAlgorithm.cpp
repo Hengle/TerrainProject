@@ -20,7 +20,7 @@ void UScaledMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformati
     scaledMountainousTerrain_pe.SetSeed (Information->Seed + 110);
     scaledMountainousTerrain_pe.SetFrequency (14.5);
     scaledMountainousTerrain_pe.SetPersistence (0.5);
-    scaledMountainousTerrain_pe.SetLacunarity (Information->MountainLacunarity);
+    scaledMountainousTerrain_pe.SetLacunarity (Information->SG_MountainLacunarity);
     scaledMountainousTerrain_pe.SetOctaveCount (6);
     scaledMountainousTerrain_pe.SetNoiseQuality (noise::QUALITY_STD);
 

@@ -11,7 +11,7 @@ void UPlainsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     plainsTerrain_bi0.SetSeed (Information->Seed + 70);
     plainsTerrain_bi0.SetFrequency (1097.5);
     plainsTerrain_bi0.SetPersistence (0.5);
-    plainsTerrain_bi0.SetLacunarity (Information->PlainsLacunarity);
+    plainsTerrain_bi0.SetLacunarity (Information->SG_PlainsLacunarity);
     plainsTerrain_bi0.SetOctaveCount (8);
     plainsTerrain_bi0.SetNoiseQuality (noise::QUALITY_BEST);
 
@@ -24,7 +24,7 @@ void UPlainsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     plainsTerrain_bi1.SetSeed (Information->Seed + 71);
     plainsTerrain_bi1.SetFrequency (1319.5);
     plainsTerrain_bi1.SetPersistence (0.5);
-    plainsTerrain_bi1.SetLacunarity (Information->PlainsLacunarity);
+    plainsTerrain_bi1.SetLacunarity (Information->SG_PlainsLacunarity);
     plainsTerrain_bi1.SetOctaveCount (8);
     plainsTerrain_bi1.SetNoiseQuality (noise::QUALITY_BEST);
 

@@ -19,7 +19,7 @@ void UScaledHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     scaledHillyTerrain_pe.SetSeed (Information->Seed + 120);
     scaledHillyTerrain_pe.SetFrequency (13.5);
     scaledHillyTerrain_pe.SetPersistence (0.5);
-    scaledHillyTerrain_pe.SetLacunarity (Information->HillsLacunarity);
+    scaledHillyTerrain_pe.SetLacunarity (Information->SG_HillsLacunarity);
     scaledHillyTerrain_pe.SetOctaveCount (6);
     scaledHillyTerrain_pe.SetNoiseQuality (noise::QUALITY_STD);
 

@@ -8,28 +8,28 @@ void UContinentDefinitionAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	baseContinentDef_pe0.SetSeed (Information->Seed + 0);
-	baseContinentDef_pe0.SetFrequency (Information->ContinentFrequency);
+	baseContinentDef_pe0.SetFrequency (Information->SG_ContinentFrequency);
 	baseContinentDef_pe0.SetPersistence (0.5);
-	baseContinentDef_pe0.SetLacunarity (Information->ContinentLacunarity);
+	baseContinentDef_pe0.SetLacunarity (Information->SG_ContinentLacunarity);
 	baseContinentDef_pe0.SetOctaveCount (14);
 	baseContinentDef_pe0.SetNoiseQuality (noise::QUALITY_STD);
 
 	baseContinentDef_cu.SetSourceModule (0, baseContinentDef_pe0);
-	baseContinentDef_cu.AddControlPoint (-2.0000 + Information->SeaLevel,-1.625 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint (-1.0000 + Information->SeaLevel,-1.375 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 0.0000 + Information->SeaLevel,-0.375 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 0.0625 + Information->SeaLevel, 0.125 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 0.1250 + Information->SeaLevel, 0.250 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 0.2500 + Information->SeaLevel, 1.000 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 0.5000 + Information->SeaLevel, 0.250 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 0.7500 + Information->SeaLevel, 0.250 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 1.0000 + Information->SeaLevel, 0.500 + Information->SeaLevel);
-	baseContinentDef_cu.AddControlPoint ( 2.0000 + Information->SeaLevel, 0.500 + Information->SeaLevel);
+	baseContinentDef_cu.AddControlPoint (-2.0000 + Information->SG_SeaLevel,-1.625 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint (-1.0000 + Information->SG_SeaLevel,-1.375 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 0.0000 + Information->SG_SeaLevel,-0.375 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 0.0625 + Information->SG_SeaLevel, 0.125 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 0.1250 + Information->SG_SeaLevel, 0.250 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 0.2500 + Information->SG_SeaLevel, 1.000 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 0.5000 + Information->SG_SeaLevel, 0.250 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 0.7500 + Information->SG_SeaLevel, 0.250 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 1.0000 + Information->SG_SeaLevel, 0.500 + Information->SG_SeaLevel);
+	baseContinentDef_cu.AddControlPoint ( 2.0000 + Information->SG_SeaLevel, 0.500 + Information->SG_SeaLevel);
 
 	baseContinentDef_pe1.SetSeed (Information->Seed + 1);
-	baseContinentDef_pe1.SetFrequency (Information->ContinentFrequency * 4.34375);
+	baseContinentDef_pe1.SetFrequency (Information->SG_ContinentFrequency * 4.34375);
 	baseContinentDef_pe1.SetPersistence (0.5);
-	baseContinentDef_pe1.SetLacunarity (Information->ContinentLacunarity);
+	baseContinentDef_pe1.SetLacunarity (Information->SG_ContinentLacunarity);
 	baseContinentDef_pe1.SetOctaveCount (11);
 	baseContinentDef_pe1.SetNoiseQuality (noise::QUALITY_STD);
 
@@ -47,27 +47,27 @@ void UContinentDefinitionAlgorithm::Init(FTerrainInformationPtr InInformation)
 
     continentDef_tu0.SetSourceModule (0, baseContinentDef);
     continentDef_tu0.SetSeed (Information->Seed + 10);
-    continentDef_tu0.SetFrequency (Information->ContinentFrequency * 15.25);
-    continentDef_tu0.SetPower (Information->ContinentFrequency / 113.75);
+    continentDef_tu0.SetFrequency (Information->SG_ContinentFrequency * 15.25);
+    continentDef_tu0.SetPower (Information->SG_ContinentFrequency / 113.75);
     continentDef_tu0.SetRoughness (13);
 
     
     continentDef_tu1.SetSourceModule (0, continentDef_tu0);
     continentDef_tu1.SetSeed (Information->Seed + 11);
-    continentDef_tu1.SetFrequency (Information->ContinentFrequency * 47.25);
-    continentDef_tu1.SetPower (Information->ContinentFrequency / 433.75);
+    continentDef_tu1.SetFrequency (Information->SG_ContinentFrequency * 47.25);
+    continentDef_tu1.SetPower (Information->SG_ContinentFrequency / 433.75);
     continentDef_tu1.SetRoughness (12);
 
     continentDef_tu2.SetSourceModule (0, continentDef_tu1);
     continentDef_tu2.SetSeed (Information->Seed + 12);
-    continentDef_tu2.SetFrequency (Information->ContinentFrequency * 95.25);
-    continentDef_tu2.SetPower (Information->ContinentFrequency / 1019.75);
+    continentDef_tu2.SetFrequency (Information->SG_ContinentFrequency * 95.25);
+    continentDef_tu2.SetPower (Information->SG_ContinentFrequency / 1019.75);
     continentDef_tu2.SetRoughness (11);
     
     continentDef_se.SetSourceModule (0, baseContinentDef);
     continentDef_se.SetSourceModule (1, continentDef_tu2);
     continentDef_se.SetControlModule (baseContinentDef);
-    continentDef_se.SetBounds (Information->SeaLevel - 0.0375, Information->SeaLevel + 1000.0375);
+    continentDef_se.SetBounds (Information->SG_SeaLevel - 0.0375, Information->SG_SeaLevel + 1000.0375);
     continentDef_se.SetEdgeFalloff (0.0625);
     
     continentDef.SetSourceModule (0, continentDef_se);
