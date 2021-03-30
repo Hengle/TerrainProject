@@ -12,14 +12,14 @@ void UBasicAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Super::Init(InInformation);
 	Landscape.Init(Information->Seed, Information->BG_LandscapeFrequency,
 		Information->BG_LandscapeLacunarity, Information->BG_LandscapeOctaveCount);
-	Landscape.AddControlPoint(-1.0f, -1.0f);
-	Landscape.AddControlPoint(-0.5f, -0.8f);
-	Landscape.AddControlPoint(-0.25f, 0.0f);
-	Landscape.AddControlPoint(0.6f, 0.25f);
-	Landscape.AddControlPoint(0.7f, 0.5f);
-	Landscape.AddControlPoint(0.8f, 0.75f);
-	Landscape.AddControlPoint(0.9f, 1.25f);
-	Landscape.AddControlPoint(1.0f, 2.25f);
+	// Landscape.AddControlPoint(-1.0f, -1.0f);
+	// Landscape.AddControlPoint(-0.5f, -0.8f);
+	// Landscape.AddControlPoint(-0.25f, 0.0f);
+	// Landscape.AddControlPoint(0.6f, 0.25f);
+	// Landscape.AddControlPoint(0.7f, 0.5f);
+	// Landscape.AddControlPoint(0.8f, 0.75f);
+	// Landscape.AddControlPoint(0.9f, 1.25f);
+	// Landscape.AddControlPoint(1.0f, 2.25f);
 }
 
 void UBasicAlgorithm::Apply(UHITerrainData* Data)

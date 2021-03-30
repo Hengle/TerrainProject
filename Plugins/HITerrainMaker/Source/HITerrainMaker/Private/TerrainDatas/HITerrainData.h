@@ -3,6 +3,8 @@
 #include "HITerrainCommons.h"
 #include "HITerrainChunkData.h"
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
+#include "TerrainMaths/2DArray.h"
+
 
 #include "HITerrainData.generated.h"
 
@@ -54,8 +56,9 @@ protected:
 	bool bIsGenerated = false;
 	int32 ChunkNums;
 	int32 ChunkSize;
-	TArray<FTerrainSample> TerrainData;
-
+	// TArray<FTerrainSample> TerrainData;
+	TFixed2DArray<FTerrainSample> TerrainData;
+	
 	UPROPERTY()
 	TArray<UHITerrainAlgorithm*> Algorithms;
 

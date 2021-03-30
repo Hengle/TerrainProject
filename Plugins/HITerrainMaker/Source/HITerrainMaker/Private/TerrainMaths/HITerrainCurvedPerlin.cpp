@@ -17,11 +17,19 @@ void FHITerrainCurvedPerlin::Init(int32 InSeed/* = 10086*/, float InFrequency/* 
 void FHITerrainCurvedPerlin::AddControlPoint(float InputValue, float OutputValue)
 {
 	Curve.AddControlPoint(InputValue, OutputValue);
+	bUseControlPoint = true;
 }
 
 float FHITerrainCurvedPerlin::GetValue(float X, float Y)
 {
-	return Curve.GetValue(X, Y, 0.0f);
+	if(bUseControlPoint)
+	{
+		return Curve.GetValue(X, Y, 0.0f);
+	}
+	else
+	{
+		return Perlin.GetValue(X, Y, 0.0f);
+	}
 }
 
 
