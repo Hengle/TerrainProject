@@ -53,9 +53,9 @@ void URiverPositionsAlgorithm::Init(FTerrainInformationPtr InInformation)
     riverPositions.SetSourceModule (0, riverPositions_tu);
 }
 
-void URiverPositionsAlgorithm::Apply(UHITerrainData* Data)
+void URiverPositionsAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& URiverPositionsAlgorithm::GetRiverPositions()

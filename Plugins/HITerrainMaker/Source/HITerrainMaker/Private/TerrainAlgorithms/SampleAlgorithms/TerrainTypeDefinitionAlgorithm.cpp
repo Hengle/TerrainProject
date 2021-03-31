@@ -25,9 +25,9 @@ void UTerrainTypeDefinitionAlgorithm::Init(FTerrainInformationPtr InInformation)
 	terrainTypeDef.SetSourceModule (0, terrainTypeDef_te);
 }
 
-void UTerrainTypeDefinitionAlgorithm::Apply(UHITerrainData* Data)
+void UTerrainTypeDefinitionAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UTerrainTypeDefinitionAlgorithm::GetTerrainTypeDef()

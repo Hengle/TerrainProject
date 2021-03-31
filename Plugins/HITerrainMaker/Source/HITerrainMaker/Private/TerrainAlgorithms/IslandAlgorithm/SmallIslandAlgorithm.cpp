@@ -20,9 +20,9 @@ void USmallIslandAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Perlin.AddControlPoint(1.0f, 12.625f);
 }
 
-void USmallIslandAlgorithm::Apply(UHITerrainData* Data)
+void USmallIslandAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 	int32 Size = Data->Size();
 	GenerateOcean();
 	for(int32 i = 0; i < Size; i++)
@@ -56,9 +56,9 @@ void USmallIslandAlgorithm::Apply(UHITerrainData* Data)
 	}
 }
 
-void USmallIslandAlgorithm::DebugApply(UHITerrainData* Data)
+void USmallIslandAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
-	Super::DebugApply(Data);
+	Super::DebugAlgorithm(Data);
 	int32 Size = Data->Size();
 	GenerateOcean();
 	for(int32 i = 0; i < Size; i++)

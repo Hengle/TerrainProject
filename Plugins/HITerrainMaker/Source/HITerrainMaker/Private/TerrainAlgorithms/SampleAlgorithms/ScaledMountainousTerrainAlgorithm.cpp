@@ -44,9 +44,9 @@ void UScaledMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformati
     scaledMountainousTerrain.SetSourceModule (0, scaledMountainousTerrain_mu);
 }
 
-void UScaledMountainousTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UScaledMountainousTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 	int32 Size = Data->Size();
 	for(int32 i = 0; i < Size; i++)
 	{

@@ -20,8 +20,8 @@ class HITERRAINMAKER_API USmallIslandAlgorithm : public UHITerrainAlgorithm
 
 public:
 	virtual void Init(FTerrainInformationPtr InInformation) override;
-	virtual void Apply(UHITerrainData* Data) override;
-	virtual void DebugApply(UHITerrainData* Data) override;
+	virtual void ApplyAlgorithm(UHITerrainData* Data) override;
+	virtual void DebugAlgorithm(UHITerrainData* Data) override;
 
 private:
 	void GenerateOcean();

@@ -40,9 +40,9 @@ void UScaledHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     scaledHillyTerrain.SetSourceModule (0, scaledHillyTerrain_mu);
 }
 
-void UScaledHillyTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UScaledHillyTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UScaledHillyTerrainAlgorithm::GetScaledHillyTerrain()

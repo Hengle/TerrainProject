@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "HITerrainAlgorithmConfig.h"
 #include "HITerrainCommons.h"
 #include "UObject/Object.h"
 #include "HITerrainAlgorithm.generated.h"
@@ -18,9 +20,11 @@ class HITERRAINMAKER_API UHITerrainAlgorithm : public UObject
 public:
 	virtual void Init(FTerrainInformationPtr InInformation);
 
-	virtual void Apply(class UHITerrainData* Data);
+	virtual void ApplyAlgorithm(class UHITerrainData* Data);
 
-	virtual void DebugApply(class UHITerrainData* Data);
+	virtual void DebugAlgorithm(class UHITerrainData* Data);
+
+	UHITerrainAlgorithmConfig* GetConfig();
 
 protected:
 	FTerrainInformationPtr Information;
@@ -29,4 +33,7 @@ protected:
 	TArray<UHITerrainAlgorithm*> SubAlgorithms;
 	
 	bool bIsInited = false;
+
+	UPROPERTY()
+	UHITerrainAlgorithmConfig* Config;
 };

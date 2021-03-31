@@ -17,7 +17,7 @@ class HITERRAINMAKER_API USampleAlgorithm : public UHITerrainAlgorithm
 
 public:
 	void SetSampleData(int32 Seed, float Frequency, float Lacunarity, float SeaLevel);
-	virtual void Apply(UHITerrainData* Data) override;
+	virtual void ApplyAlgorithm(UHITerrainData* Data) override;
 
 private:
 };

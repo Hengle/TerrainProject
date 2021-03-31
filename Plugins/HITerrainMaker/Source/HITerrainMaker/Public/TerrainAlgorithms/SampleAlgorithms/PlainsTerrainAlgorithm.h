@@ -18,7 +18,7 @@ class HITERRAINMAKER_API UPlainsTerrainAlgorithm : public UHITerrainAlgorithm
 
 public:
 	virtual void Init(FTerrainInformationPtr InInformation) override;
-	virtual void Apply(UHITerrainData* Data) override;
+	virtual void ApplyAlgorithm(UHITerrainData* Data) override;
 
 public:
 	const noise::module::Cache& GetPlainsTerrain();

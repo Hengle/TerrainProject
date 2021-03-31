@@ -19,9 +19,9 @@ void UScaledBadlandsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	scaledBadlandsTerrain.SetSourceModule (0, scaledBadlandsTerrain_sb);
 }
 
-void UScaledBadlandsTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UScaledBadlandsTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UScaledBadlandsTerrainAlgorithm::GetScaledBadlandsTerrain()

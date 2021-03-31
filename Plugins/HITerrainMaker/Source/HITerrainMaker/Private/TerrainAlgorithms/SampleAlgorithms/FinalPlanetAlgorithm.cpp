@@ -180,9 +180,9 @@ void UFinalPlanetAlgorithm::Init(FTerrainInformationPtr InInformation)
     finalPlanet.SetSourceModule (0, finalPlanet_sb);
 }
 
-void UFinalPlanetAlgorithm::Apply(UHITerrainData* Data)
+void UFinalPlanetAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 	int32 Size = Data->Size();
 	for(int32 i = 0; i < Size; i++)
 	{

@@ -18,9 +18,9 @@ void UScaledPlainsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	scaledPlainsTerrain.SetSourceModule (0, scaledPlainsTerrain_sb);
 }
 
-void UScaledPlainsTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UScaledPlainsTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UScaledPlainsTerrainAlgorithm::GetScaledPlainsTerrain()

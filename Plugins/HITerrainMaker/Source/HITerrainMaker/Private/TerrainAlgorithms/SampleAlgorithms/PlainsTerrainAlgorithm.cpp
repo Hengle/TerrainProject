@@ -46,9 +46,9 @@ void UPlainsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     plainsTerrain.SetSourceModule (0, plainsTerrain_sb2);
 }
 
-void UPlainsTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UPlainsTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UPlainsTerrainAlgorithm::GetPlainsTerrain()

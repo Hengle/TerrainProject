@@ -18,7 +18,7 @@ class HITERRAINMAKER_API UFinalPlanetAlgorithm : public UHITerrainAlgorithm
 
 public:
 	virtual void Init(FTerrainInformationPtr InInformation) override;
-	virtual void Apply(UHITerrainData* Data) override;
+	virtual void ApplyAlgorithm(UHITerrainData* Data) override;
 
 private:
 	noise::module::Terrace continentalShelf_te;

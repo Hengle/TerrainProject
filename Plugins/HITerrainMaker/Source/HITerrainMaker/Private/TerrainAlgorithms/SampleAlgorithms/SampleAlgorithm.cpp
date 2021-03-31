@@ -144,7 +144,7 @@ void USampleAlgorithm::SetSampleData(int32 InSeed, float InFrequency, float InLa
 	bIsInited = true;
 }
 
-void USampleAlgorithm::Apply(UHITerrainData* Data)
+void USampleAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
 	////////////////////////////////////////////////////////////////////////////
 	// Module group: continent definition
@@ -162,7 +162,7 @@ void USampleAlgorithm::Apply(UHITerrainData* Data)
 	// -1.0 represents the lowest elevations and +1.0 represents the highest
 	// elevations.
 	//
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 	noise::module::Perlin baseContinentDef_pe0;
     baseContinentDef_pe0.SetSeed (CUR_SEED + 0);
     baseContinentDef_pe0.SetFrequency (CONTINENT_FREQUENCY);

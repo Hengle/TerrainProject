@@ -73,7 +73,7 @@ void UContinentDefinitionAlgorithm::Init(FTerrainInformationPtr InInformation)
     continentDef.SetSourceModule (0, continentDef_se);
 }
 
-void UContinentDefinitionAlgorithm::Apply(UHITerrainData* Data)
+void UContinentDefinitionAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {	
 	int32 Size = Data->Size();
 	for(int32 i = 0; i < Size; i++)

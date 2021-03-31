@@ -115,9 +115,9 @@ void UMountainousTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	   
 }
 
-void UMountainousTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UMountainousTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UMountainousTerrainAlgorithm::GetMountainousTerrain()

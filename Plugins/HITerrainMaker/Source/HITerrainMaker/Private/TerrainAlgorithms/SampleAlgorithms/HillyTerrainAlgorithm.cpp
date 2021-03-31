@@ -66,9 +66,9 @@ void UHillyTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     hillyTerrain.SetSourceModule (0, hillyTerrain_tu1);
 }
 
-void UHillyTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UHillyTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UHillyTerrainAlgorithm::GetHillyTerrain()

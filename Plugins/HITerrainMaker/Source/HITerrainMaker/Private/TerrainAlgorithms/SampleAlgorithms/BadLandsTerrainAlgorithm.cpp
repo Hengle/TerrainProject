@@ -97,9 +97,9 @@ void UBadLandsTerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
     badlandsTerrain.SetSourceModule (0, badlandsTerrain_ma);
 }
 
-void UBadLandsTerrainAlgorithm::Apply(UHITerrainData* Data)
+void UBadLandsTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
 }
 
 const noise::module::Cache& UBadLandsTerrainAlgorithm::GetBadLandsTerrain()

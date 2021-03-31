@@ -22,9 +22,9 @@ void UBasicAlgorithm::Init(FTerrainInformationPtr InInformation)
 	// Landscape.AddControlPoint(1.0f, 2.25f);
 }
 
-void UBasicAlgorithm::Apply(UHITerrainData* Data)
+void UBasicAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Super::Apply(Data);
+	Super::ApplyAlgorithm(Data);
     int32 Size = Data->Size();
     for(int32 i = 0; i < Size; i++)
     {
@@ -57,9 +57,9 @@ void UBasicAlgorithm::Apply(UHITerrainData* Data)
     }
 }
 
-void UBasicAlgorithm::DebugApply(UHITerrainData* Data)
+void UBasicAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
-	Super::DebugApply(Data);
+	Super::DebugAlgorithm(Data);
 	int32 Size = Data->Size();
 	for(int32 i = 0; i < Size; i++)
 	{

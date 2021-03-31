@@ -11,7 +11,7 @@ void UHITerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 	bIsInited = true;
 }
 
-void UHITerrainAlgorithm::Apply(UHITerrainData* Data)
+void UHITerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
 	if(!bIsInited)
 	{
@@ -23,7 +23,7 @@ void UHITerrainAlgorithm::Apply(UHITerrainData* Data)
 	}
 }
 
-void UHITerrainAlgorithm::DebugApply(UHITerrainData* Data)
+void UHITerrainAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
 	if(!bIsInited)
 	{
@@ -33,4 +33,9 @@ void UHITerrainAlgorithm::DebugApply(UHITerrainData* Data)
 	{
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainAlgorithm::DebugApply No TerrainInformation!"))
 	}
+}
+
+UHITerrainAlgorithmConfig* UHITerrainAlgorithm::GetConfig()
+{
+	return Config;
 }

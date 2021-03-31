@@ -9,11 +9,11 @@ uint32 UHITerrainData::Run()
 	{
 		if(Information->bEnableDebugAlgorithm)
 		{
-			Algorithm->DebugApply(this);
+			Algorithm->DebugAlgorithm(this);
 		}
 		else
 		{
-			Algorithm->Apply(this);
+			Algorithm->ApplyAlgorithm(this);
 		}
 	}
 	OnDataGenerated.ExecuteIfBound();
