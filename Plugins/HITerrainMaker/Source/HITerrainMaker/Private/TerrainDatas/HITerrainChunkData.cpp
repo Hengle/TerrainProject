@@ -14,6 +14,18 @@ float FHITerrainChunkData::GetSampleValue(int32 X, int32 Y)
 	}
 }
 
+float FHITerrainChunkData::GetSampleValue(float X, float Y)
+{
+	// TODO: 和TerrainData的那个一起做
+	return 0.0f;
+}
+
+ESampleType FHITerrainChunkData::GetSampleType(float X, float Y)
+{
+	// TODO: 和TerrainData的那个一起做
+	return ESampleType::NONE;
+}
+
 ESampleType FHITerrainChunkData::GetSampleType(int32 X, int32 Y)
 {
 	if (X < 0 || X > ChunkSize || Y < 0 || Y > ChunkSize)

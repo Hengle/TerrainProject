@@ -17,8 +17,13 @@ struct FHITerrainChunkData
 	 * 获取该区块的某个采样点数据
 	 */
 	float GetSampleValue(int32 X, int32 Y);
+	float GetSampleValue(float X, float Y);
 
+	/*
+	 * 获取该区块的某个采样点类型
+	 */
 	ESampleType GetSampleType(int32 X, int32 Y);
+	ESampleType GetSampleType(float X, float Y);
 };
 
 typedef TSharedPtr<FHITerrainChunkData, ESPMode::ThreadSafe> FChunkDataPtr;

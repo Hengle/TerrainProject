@@ -95,6 +95,18 @@ void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
 	}
 }
 
+float UHITerrainData::GetSampleValue(float X, float Y)
+{
+	// TODO: 搞个插值
+	return 0.0f;
+}
+
+ESampleType UHITerrainData::GetSampleType(float X, float Y)
+{
+	// TODO: ESampleType没法插值，看看这里怎么搞，要不就优先级，要不就考虑别的实现
+	return ESampleType::NONE;
+}
+
 void UHITerrainData::SetSampleType(int32 X, int32 Y, ESampleType Type)
 {
 	if (!bIsGenerated)
