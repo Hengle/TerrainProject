@@ -12,14 +12,26 @@ void UBasicAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Super::Init(InInformation);
 	Landscape.Init(Information->Seed, Information->BG_LandscapeFrequency,
 		Information->BG_LandscapeLacunarity, Information->BG_LandscapeOctaveCount);
-	// Landscape.AddControlPoint(-1.0f, -1.0f);
-	// Landscape.AddControlPoint(-0.5f, -0.8f);
-	// Landscape.AddControlPoint(-0.25f, 0.0f);
-	// Landscape.AddControlPoint(0.6f, 0.25f);
-	// Landscape.AddControlPoint(0.7f, 0.5f);
-	// Landscape.AddControlPoint(0.8f, 0.75f);
-	// Landscape.AddControlPoint(0.9f, 1.25f);
-	// Landscape.AddControlPoint(1.0f, 2.25f);
+	Landscape.AddControlPoint(-1.0f, -1.375f);
+	Landscape.AddControlPoint(0.0f, -0.375f);
+	Landscape.AddControlPoint(0.0625f, 0.125f);
+	Landscape.AddControlPoint(0.125f, 0.25f);
+	Landscape.AddControlPoint(0.25f, 1.0f);
+	Landscape.AddControlPoint(0.5f, 0.25f);
+	Landscape.AddControlPoint(0.75f, 0.25f);
+	Landscape.AddControlPoint(1.00f, 0.5f);
+	/*
+	*     baseContinentDef_cu.AddControlPoint (-2.0000 + SEA_LEVEL,-1.625 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint (-1.0000 + SEA_LEVEL,-1.375 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 0.0000 + SEA_LEVEL,-0.375 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 0.0625 + SEA_LEVEL, 0.125 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 0.1250 + SEA_LEVEL, 0.250 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 0.2500 + SEA_LEVEL, 1.000 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 0.5000 + SEA_LEVEL, 0.250 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 0.7500 + SEA_LEVEL, 0.250 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 1.0000 + SEA_LEVEL, 0.500 + SEA_LEVEL);
+	baseContinentDef_cu.AddControlPoint ( 2.0000 + SEA_LEVEL, 0.500 + SEA_LEVEL);
+	 */
 }
 
 void UBasicAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
