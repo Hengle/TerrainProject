@@ -78,6 +78,56 @@ void UBasicAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Landscape_Select.SetEdgeFalloff (0.0625);
 
 	Landscape_Cache.SetSourceModule(0, Landscape_Select);
+
+
+
+
+	
+    RiverPositions_RidgedMulti.SetSeed (Information->Seed + 100);
+    RiverPositions_RidgedMulti.SetFrequency (0.5);
+    RiverPositions_RidgedMulti.SetLacunarity (Information->BG_LandscapeLacunarity);
+    RiverPositions_RidgedMulti.SetOctaveCount (1);
+    RiverPositions_RidgedMulti.SetNoiseQuality (noise::QUALITY_BEST);
+
+    
+    RiverPositions_Curve.SetSourceModule (0, RiverPositions_RidgedMulti);
+    RiverPositions_Curve.AddControlPoint (-2.000,  2.000);
+    RiverPositions_Curve.AddControlPoint (-1.000,  1.000);
+    RiverPositions_Curve.AddControlPoint (-0.125,  0.875);
+    RiverPositions_Curve.AddControlPoint ( 0.000, -1.000);
+    RiverPositions_Curve.AddControlPoint ( 1.000, -1.500);
+    RiverPositions_Curve.AddControlPoint ( 2.000, -2.000);
+
+    
+    RiverPositions_RidgedMulti2.SetSeed (Information->Seed + 101);
+    RiverPositions_RidgedMulti2.SetFrequency (1);
+    RiverPositions_RidgedMulti2.SetLacunarity (Information->BG_LandscapeLacunarity);
+    RiverPositions_RidgedMulti2.SetOctaveCount (1);
+    RiverPositions_RidgedMulti2.SetNoiseQuality (noise::QUALITY_BEST);
+
+    
+    RiverPositions_Curve2.SetSourceModule (0, RiverPositions_RidgedMulti2);
+    RiverPositions_Curve2.AddControlPoint (-2.000,  2.0000);
+    RiverPositions_Curve2.AddControlPoint (-1.000,  1.5000);
+    RiverPositions_Curve2.AddControlPoint (-0.125,  1.4375);
+    RiverPositions_Curve2.AddControlPoint ( 0.000,  0.5000);
+    RiverPositions_Curve2.AddControlPoint ( 1.000,  0.2500);
+    RiverPositions_Curve2.AddControlPoint ( 2.000,  0.0000);
+
+    
+    RiverPositions_Min.SetSourceModule (0, RiverPositions_Curve);
+    RiverPositions_Min.SetSourceModule (1, RiverPositions_Curve2);
+
+	// RiverPositions_Turbulence.SetSourceModule (0, RiverPositions_Min);
+    RiverPositions_Turbulence.SetSourceModule (0, RiverPositions_Curve2);
+    RiverPositions_Turbulence.SetSeed (Information->Seed + 102);
+    RiverPositions_Turbulence.SetFrequency (9.25);
+    RiverPositions_Turbulence.SetPower (1.0 / 57.75);
+    RiverPositions_Turbulence.SetRoughness (6);
+
+    
+    RiverPositions.SetSourceModule (0, RiverPositions_Turbulence);
+
 }
 
 void UBasicAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
@@ -89,7 +139,7 @@ void UBasicAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 		for(int32 j = 0; j < Size; j++)
 		{
 			float Value = 0.0f;
-			Value = Landscape_Select.GetValue(i * 0.01f, j * 0.01f, 0.0f) * 2000;
+			Value = Landscape_Cache.GetValue(i * 0.01f, j * 0.01f, 0.0f) * 2000;
 			Data->SetSampleValue(i, j, Value);
 		}
 	}
@@ -104,7 +154,7 @@ void UBasicAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 		for(int32 j = 0; j < Size; j++)
 		{
 			float Value = 0.0f;
-			Value = Landscape_Select.GetValue(i * 0.01f, j * 0.01f, 0.0f) * 2000;
+			Value = RiverPositions.GetValue(i * 0.01f, j * 0.01f, 0.0f) * 2000;
 			Data->SetSampleValue(i, j, Value);
 		}
 	}

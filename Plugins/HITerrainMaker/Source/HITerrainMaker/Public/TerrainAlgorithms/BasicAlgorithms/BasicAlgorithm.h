@@ -36,4 +36,12 @@ private:
 	noise::module::Turbulence Landscape_Turbulence3;
 	noise::module::Select Landscape_Select;
 	noise::module::Cache Landscape_Cache;
+
+	noise::module::RidgedMulti RiverPositions_RidgedMulti;
+	noise::module::Curve RiverPositions_Curve;
+	noise::module::RidgedMulti RiverPositions_RidgedMulti2;
+	noise::module::Curve RiverPositions_Curve2;
+	noise::module::Min RiverPositions_Min;
+	noise::module::Turbulence RiverPositions_Turbulence;
+	noise::module::Cache RiverPositions;
 };
