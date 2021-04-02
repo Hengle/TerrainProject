@@ -5,14 +5,6 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LogHITerrain, Log, All)
 
-const float FLAT_CHUNK_INTERVAL = 0.1;
-const float FLAT_RENDER_DISTANCE = 50001;
-const int32 FLAT_RENDER_CHUNKNUM = 10;
-const float FLAT_CHUNK_SIZE = 5000;
-const float FLAT_VERTICE_SIZE_HIGH = 25;
-const float FLAT_VERTICE_SIZE_MEDIUM = 50;
-const float FLAT_VERTICE_SIZE_LOW = 100;
-
 UENUM()
 enum class ETerrainType: uint8
 {
@@ -191,7 +183,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	int32 RenderDistance = 11; // 渲染区块范围
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float ChunkGenerateInterval = 0.1; // 区块生成间隔
+	float ChunkGenerateInterval = 0.05; // 区块生成间隔
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float LODHighQuality = 25; // LOD高质量
