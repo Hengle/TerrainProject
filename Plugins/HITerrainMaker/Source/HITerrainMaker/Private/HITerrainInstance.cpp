@@ -8,6 +8,9 @@
 #include "HITerrainManager.h"
 #include "TerrainAlgorithms/BasicAlgorithms/BasicAlgorithm.h"
 #include "TerrainAlgorithms/IslandAlgorithm/SmallIslandAlgorithm.h"
+#include "TerrainAlgorithms/MidtermAlgorithms/PerlinAlgorithm.h"
+#include "TerrainAlgorithms/MidtermAlgorithms/RidgedMultiAlgorithm.h"
+#include "TerrainAlgorithms/MidtermAlgorithms/VoronoiAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/ContinentDefinitionAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/FinalPlanetAlgorithm.h"
 #include "TerrainAlgorithms/SampleAlgorithms/SampleAlgorithm.h"
@@ -141,11 +144,23 @@ void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation)
 void AHITerrainInstance::InitAlgorithms()
 {
 	// 根据类型，初始化地形生成算法
-	if(TerrainInformation->TerrainType == ETerrainType::SAMPLE)
+	if(TerrainInformation->TerrainType == ETerrainType::PERLIN)
 	{
 		//UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
 		// USmallIslandAlgorithm* Algorithm = NewObject<USmallIslandAlgorithm>(this);
-		UBasicAlgorithm* Algorithm = NewObject<UBasicAlgorithm>(this);
+		UPerlinAlgorithm* Algorithm = NewObject<UPerlinAlgorithm>(this);
+		Algorithm->Init(TerrainInformation);
+		Algorithms.Add(Algorithm);
+	}
+	else if (TerrainInformation->TerrainType == ETerrainType::VORONOI)
+	{
+		UVoronoiAlgorithm* Algorithm = NewObject<UVoronoiAlgorithm>(this);
+		Algorithm->Init(TerrainInformation);
+		Algorithms.Add(Algorithm);
+	}
+	else if (TerrainInformation->TerrainType == ETerrainType::RIDGED_MULTI)
+	{
+		URidgedMultiAlgorithm* Algorithm = NewObject<URidgedMultiAlgorithm>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
 	}

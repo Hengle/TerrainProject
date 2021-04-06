@@ -9,7 +9,9 @@ UENUM()
 enum class ETerrainType: uint8
 {
 	NONE = 0,
-	SAMPLE,
+	PERLIN,
+	VORONOI,
+	RIDGED_MULTI,
 };
 
 UENUM()
@@ -49,7 +51,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/* 基础信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	ETerrainType TerrainType = ETerrainType::SAMPLE; //地形种类
+	ETerrainType TerrainType = ETerrainType::PERLIN; //地形种类
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	FVector Position = FVector(0.0, 0.0, 0.0); // 地形位置（左下角点）
@@ -180,7 +182,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/* 渲染信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	int32 RenderDistance = 11; // 渲染区块范围
+	int32 RenderDistance = 21; // 渲染区块范围
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
 	float ChunkGenerateInterval = 0.05; // 区块生成间隔

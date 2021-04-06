@@ -5,15 +5,14 @@
 #include "CoreMinimal.h"
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
-#include "TerrainMaths/HITerrainCurvedPerlin.h"
 #include "TerrainMaths/noiselib/noise.h"
-#include "BasicAlgorithm.generated.h"
+#include "PerlinAlgorithm.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HITERRAINMAKER_API UBasicAlgorithm : public UHITerrainAlgorithm
+class HITERRAINMAKER_API UPerlinAlgorithm : public UHITerrainAlgorithm
 {
 	GENERATED_BODY()
 
@@ -32,18 +31,4 @@ private:
 	noise::module::Cache BaseLandscape_Cache;
 
 	noise::module::Terrace BaseLandscape_Terrace;
-
-	noise::module::Turbulence Landscape_Turbulence1;
-	noise::module::Turbulence Landscape_Turbulence2;
-	noise::module::Turbulence Landscape_Turbulence3;
-	noise::module::Select Landscape_Select;
-	noise::module::Cache Landscape_Cache;
-
-	noise::module::RidgedMulti RiverPositions_RidgedMulti;
-	noise::module::Curve RiverPositions_Curve;
-	noise::module::RidgedMulti RiverPositions_RidgedMulti2;
-	noise::module::Curve RiverPositions_Curve2;
-	noise::module::Min RiverPositions_Min;
-	noise::module::Turbulence RiverPositions_Turbulence;
-	noise::module::Cache RiverPositions;
 };

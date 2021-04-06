@@ -76,22 +76,23 @@ void USmallIslandAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 			// 	Value = -500.0f;
 			// }
 
-			Value = Perlin.GetValue(i * 0.01f, j * 0.01f) * 1000;
-			if(CellTypes.Contains(Cell))
-			{
-				if(CellTypes[Cell] == ESampleType::OCEAN)
-				{
-					Value = -1000.0f;
-				}
-				else if(CellTypes[Cell] == ESampleType::MARK_WATER)
-				{
-					Value = 1000.0f;
-				}
-				else if(CellTypes[Cell] == ESampleType::MARK_NEARWATER)
-				{
-					Value = 2000.0f;
-				}
-			}
+			// Value = Perlin.GetValue(i * 0.01f, j * 0.01f) * 1000;
+			Value = Voronoi.GetCellValue(i * 0.01f, j * 0.01f) * 1000;
+			// if(CellTypes.Contains(Cell))
+			// {
+			// 	if(CellTypes[Cell] == ESampleType::OCEAN)
+			// 	{
+			// 		Value = -1000.0f;
+			// 	}
+			// 	else if(CellTypes[Cell] == ESampleType::MARK_WATER)
+			// 	{
+			// 		Value = 1000.0f;
+			// 	}
+			// 	else if(CellTypes[Cell] == ESampleType::MARK_NEARWATER)
+			// 	{
+			// 		Value = 2000.0f;
+			// 	}
+			// }
 			
 			// else if(Value < 0.0f)
 			// {
