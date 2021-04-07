@@ -209,7 +209,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	float TEST_VORONOI_FREQUENCY = 1.0;
 };
 
-typedef TSharedPtr<FTerrainInformation> FTerrainInformationPtr;
+typedef TSharedPtr<FTerrainInformation, ESPMode::ThreadSafe> FTerrainInformationPtr;
 
 UCLASS()
 class UHITerrainCommon : public UObject
