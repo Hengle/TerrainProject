@@ -81,7 +81,6 @@ public:
  * 内部用public
  */
 public:
-	void InitData(){};
 	virtual uint32 Run();
 
 	OnDataGeneratedEvent OnDataGenerated;

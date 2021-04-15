@@ -4,6 +4,8 @@
 */
 #include "HITerrainData.h"
 
+#include "TerrainMaths/HITerrainMathMisc.h"
+
 uint32 UHITerrainData::Run()
 {
 	int32 TotalSize = Size();
@@ -102,7 +104,30 @@ void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
 float UHITerrainData::GetSampleValue(float X, float Y)
 {
 	// TODO: 搞个插值
-	return 0.0f;
+	if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return 0.0f;
+	}
+	else
+	{
+		float XFloor = FMath::FloorToInt(X / 100);
+		float YFloor = FMath::FloorToInt(Y / 100);
+		float XCeil = FMath::CeilToInt(X / 100);
+		float YCeil = FMath::CeilToInt(Y / 100);
+		float Alpha0 = X / 100 - FMath::FloorToInt(X / 100);
+		float Alpha1 = Y / 100 - FMath::FloorToInt(Y / 100);
+		// if(Alpha0 == 0 && Alpha1 == 0)
+		// {
+		// 	return TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
+		// }
+		float Value00 = TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
+		float Value01 = TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100)).Value;
+		float Value10 = TerrainData.GetValue(FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
+		float Value11 = TerrainData.GetValue(FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100)).Value;
+		float Value = UHITerrainMathMisc::Lerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
+		return Value;
+	}
 }
 
 ESampleType UHITerrainData::GetSampleType(float X, float Y)

@@ -188,13 +188,13 @@ struct HITERRAINMAKER_API FTerrainInformation
 	float ChunkGenerateInterval = 0.05; // 区块生成间隔
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODHighQuality = 25; // LOD高质量
+	float LODHighQuality = 100; // LOD高质量
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODMediumQuality = 50; // LOD中质量
+	float LODMediumQuality = 200; // LOD中质量
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODLowQuality = 100; // LOD低质量
+	float LODLowQuality = 500; // LOD低质量
 
 	/*
 	 * 测试信息
@@ -217,20 +217,5 @@ class UHITerrainCommon : public UObject
 	GENERATED_BODY()
 
 public:
-	static float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
-	{
-		float L1 = Lerp(LL, LH, LA);
-		float L2 = Lerp(HL, HH, LA);
-		return Lerp(L1, L2, HA);
-	}
-
-	static float Lerp(float Low, float High, float Alpha)
-	{
-		return Low * (1 - SmoothStep(Alpha)) + High * SmoothStep(Alpha);
-	}
-
-	static float SmoothStep(float Alpha)
-	{
-		return Alpha * Alpha * (3 - 2 * Alpha);
-	}
+	
 };

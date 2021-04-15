@@ -45,10 +45,6 @@ void AHITerrainInstance::AddChunk(TPair<int32, int32> Index)
 	{
 		AHITerrainActor* TerrainActor = Cast<AHITerrainActor>(GetWorld()->SpawnActor(AHITerrainActor::StaticClass(), &TerrainInformation->Position));
         Chunks.Add(Index, TerrainActor);
-		// TODO 采样点大小
-		TerrainActor->Size = TerrainInformation->ChunkSize / 100;
-		TerrainActor->Step = 100;
-		
 		TerrainActor->Initialize(Data, TerrainInformation, Index);
 	}
 }

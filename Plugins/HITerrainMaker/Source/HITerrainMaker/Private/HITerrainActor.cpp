@@ -15,7 +15,16 @@ void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr In
 	if (StaticProvider)
 	{
 		GetRuntimeMeshComponent()->Initialize(StaticProvider);
-		
+	}
+	if(TerrainInformation->bEnableLOD)
+	{
+		Size = TerrainInformation->ChunkSize / TerrainInformation->LODHighQuality;
+		Step = TerrainInformation->LODHighQuality;
+	}
+	else
+	{
+		Size = TerrainInformation->ChunkSize / TerrainInformation->LODLowQuality;
+		Step = TerrainInformation->LODLowQuality;
 	}
 }
 
@@ -64,7 +73,8 @@ void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions)
 		for (int32 j = 0; j <= Size; j++) {
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
-			float LocationZ = ChunkData->GetSampleValue(i, j);
+			// float LocationZ = ChunkData->GetSampleValue(i, j);
+			float LocationZ = ChunkData->GetSampleValue(LocationX, LocationY);
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}

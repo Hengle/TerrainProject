@@ -20,8 +20,7 @@ float FHITerrainChunkData::GetSampleValue(int32 X, int32 Y)
 
 float FHITerrainChunkData::GetSampleValue(float X, float Y)
 {
-	// TODO: 和TerrainData的那个一起做
-	return 0.0f;
+	return Data->GetSampleValue(X, Y);
 }
 
 ESampleType FHITerrainChunkData::GetSampleType(float X, float Y)
