@@ -130,7 +130,20 @@ float UHITerrainData::GetSampleValue(float X, float Y)
 	}
 }
 
-const TFixed2DArray<FHITerrainDataValue>& UHITerrainData::GetChannel(FString ChannelName)
+void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
+{
+	if(TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::AddChannel Existing ChannelName '%s'"), *ChannelName)
+	}
+	else
+	{
+		int32 TotalSize = Size();
+		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(TotalSize, TotalSize, Type, ChannelName)));
+	}
+}
+
+TSharedPtr<FHITerrainDataChannel> UHITerrainData::GetChannel(FString ChannelName)
 {
 	if(!TerrainDataChannels.Contains(ChannelName))
 	{

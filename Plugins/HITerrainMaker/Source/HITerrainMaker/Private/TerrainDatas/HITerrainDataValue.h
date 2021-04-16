@@ -38,12 +38,19 @@ public:
 	{
 		return Value;
 	}
-	
+
 	virtual bool TryGetNumber(float& OutNumber) override
 	{
 		OutNumber = Value;
 		return true;
 	}
+
+protected:
+	virtual FString GetType() override
+	{
+		return TEXT("Float");
+	}
+
 
 private:
 	float Value;
