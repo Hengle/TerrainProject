@@ -15,7 +15,7 @@ template<typename InElementType>
 struct TFixed2DArray
 {
 	/*
-	 * 默认的构造函数，其实没啥用
+	 * 默认的构造函数，没啥用
 	 */
 	TFixed2DArray(){};
 

@@ -15,21 +15,21 @@ public:
 
 	void DeleteChunk();
 	
-	void GenerateChunk();
+	void GenerateChunk(ELODLevel LODLevel);
 
 	bool IsGenerated();
 
-	void GeneratePositions(TArray<FVector>& Positions);
+	void GeneratePositions(TArray<FVector>& Positions, ELODLevel LODLevel);
 
-	void GenerateTriangles(TArray<int32>& Triangles);
+	void GenerateTriangles(TArray<int32>& Triangles, ELODLevel LODLevel);
 
-	void GenerateNormals(TArray<FVector>& Normals);
+	void GenerateNormals(TArray<FVector>& Normals, ELODLevel LODLevel);
 
-	void GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents);
+	void GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel);
 
-	void GenerateTexCoords(TArray<FVector2D>& TexCoords);
+	void GenerateTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel);
 
-	void GenerateColors(TArray<FColor>& Colors);
+	void GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel);
 
 
 public:

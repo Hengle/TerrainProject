@@ -37,7 +37,7 @@ void AHITerrainActor::DeleteChunk()
 	}
 }
 
-void AHITerrainActor::GenerateChunk()
+void AHITerrainActor::GenerateChunk(ELODLevel LODLevel)
 {
 	if (StaticProvider){
 		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
@@ -48,15 +48,22 @@ void AHITerrainActor::GenerateChunk()
 		TArray<FVector2D> TexCoords;
 		TArray<FRuntimeMeshTangent> Tangents;
 
-		GeneratePositions(Positions);
-		GenerateTriangles(Triangles);
-		GenerateNormals(Normals);
-		GenerateTexCoords(TexCoords);
-		GenerateTangents(Tangents);
-		GenerateColors(Colors);
-		StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Infrequent, true);
-
-		bGenerated = true;
+		GeneratePositions(Positions, LODLevel);
+		GenerateTriangles(Triangles, LODLevel);
+		GenerateNormals(Normals, LODLevel);
+		GenerateTexCoords(TexCoords, LODLevel);
+		GenerateTangents(Tangents, LODLevel);
+		GenerateColors(Colors, LODLevel);
+		if(bGenerated)
+		{
+			StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+		}
+		else
+		{
+			StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, true);
+			bGenerated = true;
+		}
+		
 	}
 }
 
@@ -66,7 +73,7 @@ bool AHITerrainActor::IsGenerated()
 }
 
 
-void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions)
+void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions, ELODLevel LODLevel)
 {
 	float RecentX = 0, RecentY = 0;
 	for (int32 i = 0; i <= Size; i++) {
@@ -83,7 +90,7 @@ void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions)
 	}
 }
 
-void AHITerrainActor::GenerateTriangles(TArray<int32>& Triangles)
+void AHITerrainActor::GenerateTriangles(TArray<int32>& Triangles, ELODLevel LODLevel)
 {
 	int32 Vertice1 = 0;
 	int32 Vertice2 = 1;
@@ -109,7 +116,7 @@ void AHITerrainActor::GenerateTriangles(TArray<int32>& Triangles)
 	}
 }
 
-void AHITerrainActor::GenerateNormals(TArray<FVector>& Normals)
+void AHITerrainActor::GenerateNormals(TArray<FVector>& Normals, ELODLevel LODLevel)
 {
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
@@ -118,7 +125,7 @@ void AHITerrainActor::GenerateNormals(TArray<FVector>& Normals)
 	}
 }
 
-void AHITerrainActor::GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents)
+void AHITerrainActor::GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel)
 {
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
@@ -127,7 +134,7 @@ void AHITerrainActor::GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents)
 	}
 }
 
-void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords)
+void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel)
 {
 	// 1个chunk一个uv的实现
 	float UVStep = 1.0 / Size;
@@ -168,7 +175,7 @@ void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords)
 	// }
 }
 
-void AHITerrainActor::GenerateColors(TArray<FColor>& Colors)
+void AHITerrainActor::GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel)
 {
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {

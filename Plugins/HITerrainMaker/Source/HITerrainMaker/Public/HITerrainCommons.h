@@ -23,6 +23,10 @@ enum class ELODLevel: uint8
 	LOD_HIGH,
 };
 
+const int32 LOD_LOW_DISTANCE = 2;
+const int32 LOD_MEDIUM_DISTANCE = 6;
+const int32 LOD_HIGH_DISTANCE = 10;
+
 UENUM()
 enum class ESampleType: uint8
 {

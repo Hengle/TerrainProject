@@ -1,7 +1,9 @@
 #pragma once
 #include "CoreMinimal.h"
+
 #include "HITerrainCommons.h"
 #include "HITerrainChunkData.h"
+#include "HITerrainDataValue.h"
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/2DArray.h"
 
@@ -59,6 +61,8 @@ public:
 	void SetSampleValue(int32 X, int32 Y, float Value);
 	float GetSampleValue(float X, float Y);
 
+	const TFixed2DArray<FHITerrainDataValue>& GetChannel(FString ChannelName);
+	
 	/*
 	* 获取、修改索引为[X, Y]的采样点类型
 	* 获取位置为[X, Y]的采样点类型
@@ -103,6 +107,8 @@ protected:
 	int32 ChunkNums;
 	int32 ChunkSize;
 	TFixed2DArray<FTerrainSample> TerrainData;
+	
+	TMap<FString, TFixed2DArray<FHITerrainDataValue>> TerrainDataChannels;
 	
 	UPROPERTY()
 	TArray<UHITerrainAlgorithm*> Algorithms;

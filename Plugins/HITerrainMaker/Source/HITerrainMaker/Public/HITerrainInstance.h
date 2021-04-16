@@ -53,6 +53,11 @@ public:
 	 */
 	TPair<int32, int32> GetPlayerPositionIndex();
 
+	/*
+	 * 获取区块的LODLevel
+	 */
+	ELODLevel GetLODLevel(TPair<int32, int32> Index);
+
 public:
 	AHITerrainInstance();
 

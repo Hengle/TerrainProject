@@ -82,7 +82,8 @@ bool AHITerrainInstance::GenerateChunkTerrain(TPair<int32, int32> Index)
 		else if(!TerrainActor->IsGenerated())
 		{
 			TerrainActor->Material = Material;
-			TerrainActor->GenerateChunk();
+			//TODO 初始的LODLevel
+			TerrainActor->GenerateChunk(ELODLevel::LOD_LOW);
 			UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::GenerateChunkTerrain [%d, %d]"), Index.Key, Index.Value)
 			return true;
 		}
@@ -100,6 +101,15 @@ TPair<int32, int32> AHITerrainInstance::GetPlayerPositionIndex()
 	FVector PlayerLocation = UHITerrainManager::Get()->GetPlayerLocation(GetWorld());
 	FVector PlayerOffset = PlayerLocation - GetActorLocation();
 	return TPair<int32, int32>(PlayerOffset.X / TerrainInformation->ChunkSize, PlayerOffset.Y / TerrainInformation->ChunkSize);
+}
+
+ELODLevel AHITerrainInstance::GetLODLevel(TPair<int32, int32> Index)
+{
+	TPair<int32, int32> PlayerIndex = GetPlayerPositionIndex();
+	// 用曼哈顿距离来计算LODLevel
+	int32 Distance = FMath::Abs(Index.Key - PlayerIndex.Key) + FMath::Abs(Index.Value - PlayerIndex.Value);
+	//TODO 计算LODLevel
+	return ELODLevel::NONE;
 }
 
 AHITerrainInstance::AHITerrainInstance() 

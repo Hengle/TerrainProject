@@ -130,6 +130,15 @@ float UHITerrainData::GetSampleValue(float X, float Y)
 	}
 }
 
+const TFixed2DArray<FHITerrainDataValue>& UHITerrainData::GetChannel(FString ChannelName)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannel Error ChannelName '%s'"), *ChannelName)
+	}
+	return TerrainDataChannels[ChannelName];
+}
+
 ESampleType UHITerrainData::GetSampleType(float X, float Y)
 {
 	// TODO: ESampleType没法插值，看看这里怎么搞，要不就优先级，要不就考虑别的实现
