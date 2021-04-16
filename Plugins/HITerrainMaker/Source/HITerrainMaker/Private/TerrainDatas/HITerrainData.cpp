@@ -133,6 +133,18 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 	}
 }
 
+void UHITerrainData::DeleteChannel(FString ChannelName)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::DeleteChannel No ChannelName '%s'"), *ChannelName)
+	}
+	else
+	{
+		TerrainDataChannels.Remove(ChannelName);
+	}
+}
+
 TSharedPtr<FHITerrainDataChannel> UHITerrainData::GetChannel(FString ChannelName)
 {
 	if(!TerrainDataChannels.Contains(ChannelName))
