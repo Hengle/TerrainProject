@@ -55,16 +55,30 @@ public:
 	FVector2D GetCenterPoint();
 
 	/*
-	 * 获取、修改索引为[X, Y]的采样点值
-	 * 获取位置为[X, Y]的采样点值
+	 * 获取、修改索引为[X, Y]的采样点高度值
+	 * 获取位置为[X, Y]的采样点高度值
+	 * 这里的实现相当于获取height通道的float值。
 	 */
 	float GetHeightValue(int32 X, int32 Y);
 	void SetHeightValue(int32 X, int32 Y, float Value);
 	float GetHeightValue(float X, float Y);
 
+	/*
+	 * 添加指定名称、类型的通道。
+	 */
 	void AddChannel(FString ChannelName, ETerrainDataType Type);
+
+	/*
+	 * 获取指定名称的通道
+	 */
 	TSharedPtr<FHITerrainDataChannel> GetChannel(FString ChannelName);
 
+	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, float& Value);
+	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const float& Value);
+
+	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, FVector& Value);
+	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const FVector& Value);
+	
 	/*
 	 * 获取区块数目（长宽）
 	 */

@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 
 UENUM()
-enum class ETerrainDataType
+enum class ETerrainDataType: uint8
 {
 	None = 0,
 	FLOAT,
+	FVECTOR,
 };
 
 class FHITerrainDataValue
@@ -19,6 +20,9 @@ public:
 	virtual float GetNumber();
 	virtual bool TryGetNumber(float& OutNumber);
 
+	virtual FVector GetFVector();
+	virtual bool TryGetFVector(FVector& OutFVector);
+	
 	virtual ~FHITerrainDataValue(){};
 
 protected:
@@ -56,4 +60,33 @@ protected:
 
 private:
 	float Value;
+};
+
+class FHITerrainFVectorValue: public FHITerrainDataValue
+{
+public:
+	FHITerrainFVectorValue(const FVector& InValue):Value(InValue)
+	{
+		Type = ETerrainDataType::FVECTOR;
+	}
+	
+	virtual FVector GetFVector() override
+	{
+		return Value;
+	}
+	
+	virtual bool TryGetFVector(FVector& OutFVector) override
+	{
+		OutFVector = Value;
+		return true;
+	}
+
+protected:
+	virtual FString GetType() override
+	{
+		return TEXT("FVector");
+	}
+
+private:
+	FVector Value;
 };

@@ -5,7 +5,7 @@
 #include "HITerrainChunkData.h"
 #include "HITerrainData.h"
 
-float FHITerrainChunkData::GetSampleValue(int32 X, int32 Y) 
+float FHITerrainChunkData::GetHeightValue(int32 X, int32 Y) 
 {
 	if (X < 0 || X > ChunkSize || Y < 0 || Y > ChunkSize)
 	{
@@ -18,7 +18,7 @@ float FHITerrainChunkData::GetSampleValue(int32 X, int32 Y)
 	}
 }
 
-float FHITerrainChunkData::GetSampleValue(float X, float Y)
+float FHITerrainChunkData::GetHeightValue(float X, float Y)
 {
 	return Data->GetHeightValue(X, Y);
 }

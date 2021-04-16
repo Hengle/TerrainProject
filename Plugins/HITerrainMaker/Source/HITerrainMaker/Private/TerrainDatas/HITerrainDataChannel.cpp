@@ -17,6 +17,16 @@ FHITerrainDataChannel::FHITerrainDataChannel(int32 InSizeX, int32 InSizeY, ETerr
 			}
 		}
 	}
+	else if(Type == ETerrainDataType::FVECTOR)
+	{
+		for(int32 i = 0; i < SizeX; i++)
+		{
+			for(int32 j = 0; j < SizeY; j++)
+			{
+				Data.SetValue(i, j, MakeShared<FHITerrainFVectorValue>(FVector()));
+			}
+		}
+	}
 }
 
 TSharedPtr<FHITerrainDataValue> FHITerrainDataChannel::GetChannelValue(int32 X, int32 Y)
@@ -27,4 +37,9 @@ TSharedPtr<FHITerrainDataValue> FHITerrainDataChannel::GetChannelValue(int32 X, 
 void FHITerrainDataChannel::SetChannelValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value)
 {
 	Data.SetValue(X, Y, Value);
+}
+
+ETerrainDataType FHITerrainDataChannel::GetType()
+{
+	return Type;
 }

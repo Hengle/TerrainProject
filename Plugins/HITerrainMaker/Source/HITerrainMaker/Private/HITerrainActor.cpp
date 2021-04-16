@@ -81,7 +81,7 @@ void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions, ELODLevel LO
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
 			// float LocationZ = ChunkData->GetSampleValue(i, j);
-			float LocationZ = ChunkData->GetSampleValue(LocationX, LocationY);
+			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}

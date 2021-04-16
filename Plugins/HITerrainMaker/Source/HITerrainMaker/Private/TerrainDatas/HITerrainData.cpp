@@ -142,6 +142,88 @@ TSharedPtr<FHITerrainDataChannel> UHITerrainData::GetChannel(FString ChannelName
 	return TerrainDataChannels[ChannelName];
 }
 
+bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, float& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->GetChannelValue(X, Y)->TryGetNumber(Value))
+		{
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, const float& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::SetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FLOAT)
+		{
+			TerrainDataChannels[ChannelName]->SetChannelValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, FVector& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->GetChannelValue(X, Y)->TryGetFVector(Value))
+		{
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, const FVector& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::SetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FVECTOR)
+		{
+			TerrainDataChannels[ChannelName]->SetChannelValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFVectorValue(Value)));
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
 void UHITerrainData::SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms)
 {
 	Algorithms = InAlgorithms;

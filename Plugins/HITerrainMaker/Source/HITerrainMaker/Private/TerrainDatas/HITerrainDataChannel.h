@@ -20,6 +20,8 @@ public:
 
 	void SetChannelValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value);
 
+	ETerrainDataType GetType();
+
 private:
 	TFixed2DArray<TSharedPtr<FHITerrainDataValue>> Data;
 
