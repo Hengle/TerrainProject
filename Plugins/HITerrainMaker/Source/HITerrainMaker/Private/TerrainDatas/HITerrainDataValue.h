@@ -19,9 +19,13 @@ public:
 	
 	virtual float GetNumber();
 	virtual bool TryGetNumber(float& OutNumber);
+	virtual void SetNumber(const float& InNumber);
 
 	virtual FVector GetFVector();
 	virtual bool TryGetFVector(FVector& OutFVector);
+	virtual void SetFVector(const FVector& InFVector);
+	
+	void CopyFromValue(TSharedPtr<FHITerrainDataValue> Value);
 	
 	virtual ~FHITerrainDataValue(){};
 
@@ -49,6 +53,11 @@ public:
 	{
 		OutNumber = Value;
 		return true;
+	}
+
+	virtual void SetNumber(const float& InNumber) override
+	{
+		Value = InNumber;		
 	}
 
 protected:
@@ -79,6 +88,11 @@ public:
 	{
 		OutFVector = Value;
 		return true;
+	}
+
+	virtual void SetFVector(const FVector& InFVector) override
+	{
+		Value = InFVector;		
 	}
 
 protected:

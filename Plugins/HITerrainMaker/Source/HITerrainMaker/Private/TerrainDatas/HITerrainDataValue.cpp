@@ -20,6 +20,26 @@ bool FHITerrainDataValue::TryGetNumber(float& OutNumber)
 	return false;
 }
 
+void FHITerrainDataValue::SetNumber(const float& InNumber)
+{
+}
+
+void FHITerrainDataValue::SetFVector(const FVector& InFVector)
+{
+}
+
+void FHITerrainDataValue::CopyFromValue(TSharedPtr<FHITerrainDataValue> Value)
+{
+	if(Type == ETerrainDataType::FLOAT)
+	{
+		SetNumber(Value->GetNumber());
+	}
+	else if(Type == ETerrainDataType::FVECTOR)
+	{
+		SetFVector(Value->GetFVector());
+	}
+}
+
 FVector FHITerrainDataValue::GetFVector()
 {
 	FVector Vector = FVector();

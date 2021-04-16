@@ -133,6 +133,18 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 	}
 }
 
+void UHITerrainData::AddChannel(FString ChannelName, TSharedPtr<FHITerrainDataChannel> FromChannel)
+{
+	if(TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::AddChannel Existing ChannelName '%s'"), *ChannelName)
+	}
+	else
+	{
+		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(FromChannel)));
+	}
+}
+
 void UHITerrainData::DeleteChannel(FString ChannelName)
 {
 	if(!TerrainDataChannels.Contains(ChannelName))
@@ -142,6 +154,32 @@ void UHITerrainData::DeleteChannel(FString ChannelName)
 	else
 	{
 		TerrainDataChannels.Remove(ChannelName);
+	}
+}
+
+void UHITerrainData::CopyChannel(FString FromChannelName, FString ToChannelName)
+{
+	if(!TerrainDataChannels.Contains(FromChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::CopyChannel No ChannelName '%s'"), *FromChannelName)
+	}
+	else
+	{
+		if(TerrainDataChannels.Contains(ToChannelName))
+		{
+			if(TerrainDataChannels[ToChannelName]->GetType() != TerrainDataChannels[FromChannelName]->GetType())
+			{
+				UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::CopyChannel Type Error"))
+			}
+			else
+			{
+				TerrainDataChannels[ToChannelName]->CopyFromChannel(TerrainDataChannels[FromChannelName]);
+			}
+		}
+		else
+		{
+			AddChannel(ToChannelName, TerrainDataChannels[FromChannelName]);
+		}
 	}
 }
 

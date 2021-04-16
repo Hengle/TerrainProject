@@ -68,10 +68,17 @@ public:
 	 */
 	void AddChannel(FString ChannelName, ETerrainDataType Type);
 
+	void AddChannel(FString ChannelName, TSharedPtr<FHITerrainDataChannel> FromChannel);
+
 	/*
 	 * 删除指定名称的通道。
 	 */
 	void DeleteChannel(FString ChannelName);
+
+	/*
+	 * 复制指定名称的通道到另一通道。
+	 */
+	void CopyChannel(FString FromChannelName, FString ToChannelName);
 
 	/*
 	 * 获取指定名称的通道。

@@ -16,11 +16,23 @@ class FHITerrainDataChannel
 public:
 	FHITerrainDataChannel(int32 InSizeX, int32 InSizeY, ETerrainDataType InType, FString InChannelName);
 
+	FHITerrainDataChannel(TSharedPtr<FHITerrainDataChannel> FromChannel);
+
 	TSharedPtr<FHITerrainDataValue> GetChannelValue(int32 X, int32 Y);
 
 	void SetChannelValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value);
 
+	void CopyFromChannel(TSharedPtr<FHITerrainDataChannel> FromChannel);
+	
+	void SetChannelValue(int32 X, int32 Y, const float& Value);
+
+	void SetChannelValue(int32 X, int32 Y, const FVector& Value);
+
 	ETerrainDataType GetType();
+
+	int32 GetSizeX();
+
+	int32 GetSizeY();
 
 private:
 	TFixed2DArray<TSharedPtr<FHITerrainDataValue>> Data;
