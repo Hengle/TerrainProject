@@ -9,7 +9,8 @@
 uint32 UHITerrainData::Run()
 {
 	int32 TotalSize = Size();
-	TerrainData = TFixed2DArray<FTerrainSample>(TotalSize, TotalSize, FTerrainSample());
+	// TerrainData = TFixed2DArray<FTerrainSample>(TotalSize, TotalSize, FTerrainSample());
+	AddChannel("height", ETerrainDataType::FLOAT);
 	bIsGenerated = true;
 	for(UHITerrainAlgorithm* Algorithm: Algorithms)
 	{
@@ -63,7 +64,7 @@ void UHITerrainData::ApplyAlgorithm(UHITerrainAlgorithm* Algorithm)
 	// TODO
 }
 
-float UHITerrainData::GetSampleValue(int32 X, int32 Y)
+float UHITerrainData::GetHeightValue(int32 X, int32 Y)
 {
 	if (!bIsGenerated)
 	{
@@ -72,24 +73,12 @@ float UHITerrainData::GetSampleValue(int32 X, int32 Y)
 	}
 	else
 	{
-		return TerrainData.GetValue(X, Y).Value;
+		// return TerrainData.GetValue(X, Y).Value;
+		return TerrainDataChannels["height"]->GetChannelValue(X, Y)->GetNumber();
 	}
 }
 
-ESampleType UHITerrainData::GetSampleType(int32 X, int32 Y)
-{
-	if (!bIsGenerated)
-	{
-		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
-		return ESampleType::NONE;
-	}
-	else
-	{
-		return TerrainData.GetValue(X, Y).Type;
-	}
-}
-
-void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
+void UHITerrainData::SetHeightValue(int32 X, int32 Y, float Value)
 {
 	if (!bIsGenerated)
 	{
@@ -97,13 +86,14 @@ void UHITerrainData::SetSampleValue(int32 X, int32 Y, float Value)
 	}
 	else
 	{
-		TerrainData.GetValueRef(X, Y).Value = Value;
+		// TerrainData.GetValueRef(X, Y).Value = Value;
+		TerrainDataChannels["height"]->SetChannelValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
 	}
 }
 
-float UHITerrainData::GetSampleValue(float X, float Y)
+float UHITerrainData::GetHeightValue(float X, float Y)
 {
-	// TODO: 搞个插值
+	// TODO: 现在其实不用插值了。。。
 	if (!bIsGenerated)
 	{
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
@@ -121,10 +111,10 @@ float UHITerrainData::GetSampleValue(float X, float Y)
 		// {
 		// 	return TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
 		// }
-		float Value00 = TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
-		float Value01 = TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100)).Value;
-		float Value10 = TerrainData.GetValue(FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
-		float Value11 = TerrainData.GetValue(FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100)).Value;
+		float Value00 = GetHeightValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100));
+		float Value01 = GetHeightValue(FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100));
+		float Value10 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100));
+		float Value11 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100));
 		float Value = UHITerrainMathMisc::Lerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
 		return Value;
 	}
@@ -150,24 +140,6 @@ TSharedPtr<FHITerrainDataChannel> UHITerrainData::GetChannel(FString ChannelName
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannel Error ChannelName '%s'"), *ChannelName)
 	}
 	return TerrainDataChannels[ChannelName];
-}
-
-ESampleType UHITerrainData::GetSampleType(float X, float Y)
-{
-	// TODO: ESampleType没法插值，看看这里怎么搞，要不就优先级，要不就考虑别的实现
-	return ESampleType::NONE;
-}
-
-void UHITerrainData::SetSampleType(int32 X, int32 Y, ESampleType Type)
-{
-	if (!bIsGenerated)
-	{
-		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::SetSample Not Generated!"));
-	}
-	else
-	{
-		TerrainData.GetValueRef(X, Y).Type = Type;
-	}
 }
 
 void UHITerrainData::SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms)

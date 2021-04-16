@@ -18,3 +18,13 @@ FHITerrainDataChannel::FHITerrainDataChannel(int32 InSizeX, int32 InSizeY, ETerr
 		}
 	}
 }
+
+TSharedPtr<FHITerrainDataValue> FHITerrainDataChannel::GetChannelValue(int32 X, int32 Y)
+{
+	return Data.GetValue(X, Y);	
+}
+
+void FHITerrainDataChannel::SetChannelValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value)
+{
+	Data.SetValue(X, Y, Value);
+}

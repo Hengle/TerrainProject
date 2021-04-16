@@ -55,7 +55,7 @@ void USmallIslandAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 			{
 				Value *= 1000.0f;
 			}
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }
@@ -98,7 +98,7 @@ void USmallIslandAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 			// {
 			// 	Value = -1000.0f;
 			// }
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }

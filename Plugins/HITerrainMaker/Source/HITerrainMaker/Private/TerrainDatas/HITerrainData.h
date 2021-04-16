@@ -58,20 +58,12 @@ public:
 	 * 获取、修改索引为[X, Y]的采样点值
 	 * 获取位置为[X, Y]的采样点值
 	 */
-	float GetSampleValue(int32 X, int32 Y);
-	void SetSampleValue(int32 X, int32 Y, float Value);
-	float GetSampleValue(float X, float Y);
+	float GetHeightValue(int32 X, int32 Y);
+	void SetHeightValue(int32 X, int32 Y, float Value);
+	float GetHeightValue(float X, float Y);
 
 	void AddChannel(FString ChannelName, ETerrainDataType Type);
 	TSharedPtr<FHITerrainDataChannel> GetChannel(FString ChannelName);
-	
-	/*
-	* 获取、修改索引为[X, Y]的采样点类型
-	* 获取位置为[X, Y]的采样点类型
-	*/
-	ESampleType GetSampleType(int32 X, int32 Y);
-	void SetSampleType(int32 X, int32 Y, ESampleType Type);
-	ESampleType GetSampleType(float X, float Y);
 
 	/*
 	 * 获取区块数目（长宽）
@@ -108,7 +100,6 @@ protected:
 	bool bIsGenerated = false;
 	int32 ChunkNums;
 	int32 ChunkSize;
-	TFixed2DArray<FTerrainSample> TerrainData;
 	
 	TMap<FString, TSharedPtr<FHITerrainDataChannel>> TerrainDataChannels;
 	

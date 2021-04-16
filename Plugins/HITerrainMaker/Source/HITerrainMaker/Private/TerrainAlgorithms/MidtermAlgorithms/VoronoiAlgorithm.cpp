@@ -24,7 +24,7 @@ void UVoronoiAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 			float Value = 0.0f;
 			int32 Cell = Voronoi.Position2Cell(i, j);
 			Value = Voronoi.GetCellValue(i, j) * 1000;
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }
@@ -40,7 +40,7 @@ void UVoronoiAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 			float Value = 0.0f;
 			int32 Cell = Voronoi.Position2Cell(i, j);
 			Value = Voronoi.GetCellValue(i, j) * 1000;
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }

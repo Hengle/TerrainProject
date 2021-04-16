@@ -46,7 +46,7 @@ void UPerlinAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 		{
 			float Value = 0.0f;
 			Value = BaseLandscape_Cache.GetValue(i * 0.01f, j * 0.01f, 0.0f) * 2000;
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }
@@ -61,7 +61,7 @@ void UPerlinAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 		{
 			float Value = 0.0f;
 			Value = BaseLandscape_Cache.GetValue(i * 0.01f, j * 0.01f, 0.0f) * 2000;
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }

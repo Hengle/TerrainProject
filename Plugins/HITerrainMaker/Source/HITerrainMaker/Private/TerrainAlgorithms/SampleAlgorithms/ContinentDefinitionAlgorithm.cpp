@@ -85,7 +85,7 @@ void UContinentDefinitionAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 		for(int32 j = 0; j < Size; j++)
 		{
 			float Value = continentDef.GetValue(i * 0.001f, j * 0.001f, 0);
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }

@@ -19,6 +19,8 @@ public:
 	virtual float GetNumber();
 	virtual bool TryGetNumber(float& OutNumber);
 
+	virtual ~FHITerrainDataValue(){};
+
 protected:
 	ETerrainDataType Type;
 

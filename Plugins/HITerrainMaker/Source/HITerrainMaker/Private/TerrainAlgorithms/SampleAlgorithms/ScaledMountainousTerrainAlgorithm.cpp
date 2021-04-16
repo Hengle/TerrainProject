@@ -57,7 +57,7 @@ void UScaledMountainousTerrainAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 		for(int32 j = 0; j < Size; j++)
 		{
 			float Value = scaledMountainousTerrain.GetValue(i * 0.0001f, j * 0.0001f, 0) * 1000;
-			Data->SetSampleValue(i, j, Value);
+			Data->SetHeightValue(i, j, Value);
 		}
 	}
 }
