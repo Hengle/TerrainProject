@@ -6,15 +6,9 @@
 #include "HITerrainActor.h"
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainManager.h"
-#include "TerrainAlgorithms/BasicAlgorithms/BasicAlgorithm.h"
-#include "TerrainAlgorithms/IslandAlgorithm/SmallIslandAlgorithm.h"
 #include "TerrainAlgorithms/MidtermAlgorithms/PerlinAlgorithm.h"
 #include "TerrainAlgorithms/MidtermAlgorithms/RidgedMultiAlgorithm.h"
 #include "TerrainAlgorithms/MidtermAlgorithms/VoronoiAlgorithm.h"
-#include "TerrainAlgorithms/SampleAlgorithms/ContinentDefinitionAlgorithm.h"
-#include "TerrainAlgorithms/SampleAlgorithms/FinalPlanetAlgorithm.h"
-#include "TerrainAlgorithms/SampleAlgorithms/SampleAlgorithm.h"
-#include "TerrainAlgorithms/SampleAlgorithms/ScaledMountainousTerrainAlgorithm.h"
 #include "TerrainComponents/HITerrainChunkTicker.h"
 
 FTerrainInformationPtr AHITerrainInstance::GetTerrainInformation() const
