@@ -28,6 +28,8 @@ public:
 
 	void SetChannelValue(int32 X, int32 Y, const FVector& Value);
 
+	void SetChannelValue(int32 X, int32 Y, const bool Value);
+
 	ETerrainDataType GetType();
 
 	int32 GetSizeX();

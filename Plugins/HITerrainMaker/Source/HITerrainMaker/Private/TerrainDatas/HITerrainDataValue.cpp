@@ -28,6 +28,25 @@ void FHITerrainDataValue::SetFVector(const FVector& InFVector)
 {
 }
 
+void FHITerrainDataValue::SetBool(const bool InBool)
+{
+}
+
+bool FHITerrainDataValue::GetBool()
+{
+	bool Value = false;
+	if(!TryGetBool(Value))
+	{
+		ErrorMessage(TEXT("Number"));
+	}
+	return Value;
+}
+
+bool FHITerrainDataValue::TryGetBool(bool& OutBool)
+{
+	return false;
+}
+
 void FHITerrainDataValue::CopyFromValue(TSharedPtr<FHITerrainDataValue> Value)
 {
 	if(Type == ETerrainDataType::FLOAT)
@@ -37,6 +56,10 @@ void FHITerrainDataValue::CopyFromValue(TSharedPtr<FHITerrainDataValue> Value)
 	else if(Type == ETerrainDataType::FVECTOR)
 	{
 		SetFVector(Value->GetFVector());
+	}
+	else if(Type == ETerrainDataType::BOOL)
+	{
+		SetBool(Value->GetBool());
 	}
 }
 

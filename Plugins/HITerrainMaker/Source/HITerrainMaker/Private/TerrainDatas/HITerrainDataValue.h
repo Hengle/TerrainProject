@@ -10,6 +10,7 @@ enum class ETerrainDataType: uint8
 	None = 0,
 	FLOAT,
 	FVECTOR,
+	BOOL,
 };
 
 class FHITerrainDataValue
@@ -24,6 +25,10 @@ public:
 	virtual FVector GetFVector();
 	virtual bool TryGetFVector(FVector& OutFVector);
 	virtual void SetFVector(const FVector& InFVector);
+
+	virtual bool GetBool();
+	virtual bool TryGetBool(bool& OutBool);
+	virtual void SetBool(const bool InBool);
 	
 	void CopyFromValue(TSharedPtr<FHITerrainDataValue> Value);
 	
@@ -103,4 +108,38 @@ protected:
 
 private:
 	FVector Value;
+};
+
+class FHITerrainBoolValue: public FHITerrainDataValue
+{
+public:
+	FHITerrainBoolValue(bool InValue):Value(InValue)
+	{
+		Type = ETerrainDataType::BOOL;
+	}
+	
+	virtual bool GetBool() override
+	{
+		return Value;
+	}
+	
+	virtual bool TryGetBool(bool& OutBool) override
+	{
+		OutBool = Value;
+		return true;
+	}
+	
+	virtual void SetBool(const bool InBool) override
+	{
+		Value = InBool;
+	}
+
+protected:
+	virtual FString GetType() override
+	{
+		return TEXT("Bool");
+	}
+
+private:
+	bool Value;
 };
