@@ -12,6 +12,7 @@ enum class ETerrainType: uint8
 	PERLIN,
 	VORONOI,
 	RIDGED_MULTI,
+	TEST,
 };
 
 UENUM()
