@@ -14,10 +14,12 @@ void UTestAlgorithm::Init(FTerrainInformationPtr InInformation)
 
 void UTestAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
+	Super::ApplyAlgorithm(Data);
 	Perlin.ApplyModule(Data);
 }
 
 void UTestAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
+	Super::ApplyAlgorithm(Data);
 	Perlin.ApplyModule(Data);
 }

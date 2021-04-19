@@ -3,13 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "HITerrainModule.h"
 #include "Runtime/Experimental/Voronoi/Public/Voronoi/Voronoi.h"
 #include "TerrainMaths/2DArray.h"
 
-class HITERRAINMAKER_API FHITerrainVoronoi
+class HITERRAINMAKER_API FHITerrainVoronoi: public FHITerrainModule
 {
 public:
 	void Init(int32 InSeed, float InSizeX, float InSizeY, int32 InNumSites);
+
+	void SetTargetChannel(const FString& InChannelName);
+	void SetSeed(int32 InSeed);
+	void SetNumSites(int32 InNumSites);
+	void SetAmplitude(float InAmplitude);
+
+	virtual void ApplyModule(UHITerrainData* Data) override;
 	 
 	float GetCellValue(float X, float Y);
 
@@ -24,10 +33,10 @@ public:
 	 ~FHITerrainVoronoi();
 	
 private:
+	FString ChannelName;
 	int32 Seed;
-	float SizeX;
-	float SizeY;
 	float NumSites;
+	float Amplitude;
 	FBox Bounds;
 	TArray<FVector> Sites;
 	TArray<FVoronoiCellInfo> AllCells;

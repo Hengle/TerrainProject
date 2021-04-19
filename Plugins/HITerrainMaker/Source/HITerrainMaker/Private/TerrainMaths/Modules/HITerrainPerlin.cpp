@@ -59,6 +59,7 @@ void FHITerrainPerlin::SetOctaveCount(float InOctaveCount)
 
 void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 {
+	Data->AddChannel(ChannelName, ETerrainDataType::FLOAT);
 	auto Channel = Data->GetChannel(ChannelName);
 	for(int32 i = 0; i < Channel->GetSizeX(); i++)
 	{

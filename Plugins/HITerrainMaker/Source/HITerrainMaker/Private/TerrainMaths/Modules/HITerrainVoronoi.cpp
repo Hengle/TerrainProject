@@ -5,28 +5,45 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainMaths/HITerrainVoronoi.h"
+#include "TerrainMaths/Modules/HITerrainVoronoi.h"
 
+void FHITerrainVoronoi::SetTargetChannel(const FString& InChannelName)
+{
+	ChannelName = InChannelName;
+}
 
-void FHITerrainVoronoi::Init(int32 InSeed, float InSizeX, float InSizeY, int32 InNumSites)
+void FHITerrainVoronoi::SetSeed(int32 InSeed)
 {
 	Seed = InSeed;
-	SizeX = InSizeX;
-	SizeY = InSizeY;
+}
+
+void FHITerrainVoronoi::SetNumSites(int32 InNumSites)
+{
 	NumSites = InNumSites;
-	Bounds = FBox(FVector(0.0f, 0.0f, 0.0f), FVector(SizeX, SizeY, 0.0f));
+}
+
+void FHITerrainVoronoi::SetAmplitude(float InAmplitude)
+{
+	Amplitude = InAmplitude;
+}
+
+void FHITerrainVoronoi::ApplyModule(UHITerrainData* Data)
+{
+	Data->AddChannel(ChannelName, ETerrainDataType::FLOAT);
+	auto Channel = Data->GetChannel(ChannelName);
+	Bounds = FBox(FVector(0.0f, 0.0f, 0.0f), FVector(Channel->GetSizeX(), Channel->GetSizeY(), 0.0f));
 	FRandomStream RandomStream(Seed);
 	for(int i = 0; i < NumSites; i++)
 	{
-		Sites.Add(FVector(RandomStream.FRandRange(0.0f, SizeX), RandomStream.FRandRange(0.0f, SizeY), 0.0f));
+		Sites.Add(FVector(RandomStream.FRandRange(0.0f, Channel->GetSizeX()), RandomStream.FRandRange(0.0f, Channel->GetSizeY()), 0.0f));
 	}
 	VoronoiDiagram = new FVoronoiDiagram(Sites, Bounds, 0.0f);
 	VoronoiDiagram->ComputeAllCells(AllCells);
 	Sites.Empty();
 	/*
-	 * 因为前面的Sites是随机生成的，这里算一下各Cell的中心点，然后再更新一次Sites，生成效果会更好一点
-	 * 算中心点的方法不是很好，以后看看是不是要改进。
-	 */
+	* 因为前面的Sites是随机生成的，这里算一下各Cell的中心点，然后再更新一次Sites，生成效果会更好一点
+	* 算中心点的方法不是很好，以后看看是不是要改进。
+	*/
 	for(int32 i = 0; i < NumSites; i++)
 	{
 		FVector Site(0.0f, 0.0f, 0.0f);
@@ -41,6 +58,15 @@ void FHITerrainVoronoi::Init(int32 InSeed, float InSizeX, float InSizeY, int32 I
 	delete VoronoiDiagram;
 	VoronoiDiagram = new FVoronoiDiagram(Sites, Bounds, 0.0f);
 	VoronoiDiagram->ComputeAllCells(AllCells);
+
+	for(int32 i = 0; i < Channel->GetSizeX(); i++)
+	{
+		for(int32 j = 0; j < Channel->GetSizeY(); j++)
+		{
+			float Value = GetCellValue(i, j) * Amplitude;
+			Channel->SetChannelValue(i, j, Value);
+		}
+	}
 }
 
 float FHITerrainVoronoi::GetCellValue(float X, float Y)

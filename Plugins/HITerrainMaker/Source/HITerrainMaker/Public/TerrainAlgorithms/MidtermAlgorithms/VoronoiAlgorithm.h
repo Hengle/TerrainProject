@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
-#include "TerrainMaths/HITerrainVoronoi.h"
+#include "TerrainMaths/Modules/HITerrainVoronoi.h"
 #include "VoronoiAlgorithm.generated.h"
 
 /**

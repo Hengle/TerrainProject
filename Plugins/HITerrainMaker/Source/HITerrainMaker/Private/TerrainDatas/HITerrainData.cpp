@@ -122,11 +122,7 @@ float UHITerrainData::GetHeightValue(float X, float Y)
 
 void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 {
-	if(TerrainDataChannels.Contains(ChannelName))
-	{
-		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::AddChannel Existing ChannelName '%s'"), *ChannelName)
-	}
-	else
+	if(!TerrainDataChannels.Contains(ChannelName))
 	{
 		int32 TotalSize = Size();
 		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(TotalSize, TotalSize, Type, ChannelName)));
@@ -135,11 +131,7 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 
 void UHITerrainData::AddChannel(FString ChannelName, TSharedPtr<FHITerrainDataChannel> FromChannel)
 {
-	if(TerrainDataChannels.Contains(ChannelName))
-	{
-		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::AddChannel Existing ChannelName '%s'"), *ChannelName)
-	}
-	else
+	if(!TerrainDataChannels.Contains(ChannelName))
 	{
 		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(FromChannel)));
 	}
