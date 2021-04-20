@@ -8,9 +8,10 @@ UENUM()
 enum class ETerrainDataType: uint8
 {
 	None = 0,
+	BOOL,
 	FLOAT,
 	FVECTOR,
-	BOOL,
+	FQUAT,
 };
 
 class FHITerrainDataValue
@@ -29,6 +30,10 @@ public:
 	virtual bool GetBool();
 	virtual bool TryGetBool(bool& OutBool);
 	virtual void SetBool(const bool InBool);
+
+	virtual FQuat GetFQuat();
+	virtual bool TryGetFQuat(FQuat& OutFQuat);
+	virtual void SetFQuat(const FQuat& InFQuat);
 	
 	void CopyFromValue(TSharedPtr<FHITerrainDataValue> Value);
 	
@@ -142,4 +147,38 @@ protected:
 
 private:
 	bool Value;
+};
+
+class FHITerrainFQuatValue: public FHITerrainDataValue
+{
+public:
+	FHITerrainFQuatValue(const FQuat& InValue):Value(InValue)
+	{
+		Type = ETerrainDataType::FQUAT;
+	}
+	
+	virtual FQuat GetFQuat() override
+	{
+		return Value;
+	}
+	
+	virtual bool TryGetFQuat(FQuat& OutFQuat) override
+	{
+		OutFQuat = Value;
+		return true;
+	}
+
+	virtual void SetFQuat(const FQuat& InFQuat) override
+	{
+		Value = InFQuat;		
+	}
+
+protected:
+	virtual FString GetType() override
+	{
+		return TEXT("FQuat");
+	}
+
+private:
+	FQuat Value;
 };

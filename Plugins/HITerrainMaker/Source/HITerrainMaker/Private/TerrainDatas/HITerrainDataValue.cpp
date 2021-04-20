@@ -32,12 +32,31 @@ void FHITerrainDataValue::SetBool(const bool InBool)
 {
 }
 
+FQuat FHITerrainDataValue::GetFQuat()
+{
+	FQuat Value = FQuat();
+	if(!TryGetFQuat(Value))
+	{
+		ErrorMessage(TEXT("FQuat"));
+	}
+	return Value;
+}
+
+bool FHITerrainDataValue::TryGetFQuat(FQuat& OutFQuat)
+{
+	return false;
+}
+
+void FHITerrainDataValue::SetFQuat(const FQuat& InFQuat)
+{
+}
+
 bool FHITerrainDataValue::GetBool()
 {
 	bool Value = false;
 	if(!TryGetBool(Value))
 	{
-		ErrorMessage(TEXT("Number"));
+		ErrorMessage(TEXT("Bool"));
 	}
 	return Value;
 }

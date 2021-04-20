@@ -22,11 +22,22 @@ public:
     	return Lerp(L1, L2, HA);
     }
 
+	static float LinearLerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
+	{
+		float L1 = LinearLerp(LL, LH, LA);
+		float L2 = LinearLerp(HL, HH, LA);
+		return LinearLerp(L1, L2, HA);
+	}
+
     static float Lerp(float Low, float High, float Alpha)
     {
     	return Low * (1 - SmoothStep(Alpha)) + High * SmoothStep(Alpha);
-		// return Low * (1 - Alpha) + High * Alpha;
     }
+
+	static float LinearLerp(float Low, float High, float Alpha)
+	{
+		return Low * (1 - Alpha) + High * Alpha;
+	}
 
     static float SmoothStep(float Alpha)
     {

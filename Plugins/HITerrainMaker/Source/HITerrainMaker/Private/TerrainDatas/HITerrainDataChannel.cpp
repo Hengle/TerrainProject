@@ -51,7 +51,7 @@ FHITerrainDataChannel::FHITerrainDataChannel(TSharedPtr<FHITerrainDataChannel> F
 		{
 			for(int32 j = 0; j < SizeY; j++)
 			{
-				Data.SetValue(i, j, MakeShared<FHITerrainFloatValue>(FromChannel->GetChannelValue(i, j)->GetNumber()));
+				Data.SetValue(i, j, MakeShared<FHITerrainFloatValue>(FromChannel->GetValue(i, j)->GetNumber()));
 			}
 		}
 	}
@@ -61,7 +61,7 @@ FHITerrainDataChannel::FHITerrainDataChannel(TSharedPtr<FHITerrainDataChannel> F
 		{
 			for(int32 j = 0; j < SizeY; j++)
 			{
-				Data.SetValue(i, j, MakeShared<FHITerrainFVectorValue>(FromChannel->GetChannelValue(i, j)->GetFVector()));
+				Data.SetValue(i, j, MakeShared<FHITerrainFVectorValue>(FromChannel->GetValue(i, j)->GetFVector()));
 			}
 		}
 	}
@@ -71,18 +71,18 @@ FHITerrainDataChannel::FHITerrainDataChannel(TSharedPtr<FHITerrainDataChannel> F
 		{
 			for(int32 j = 0; j < SizeY; j++)
 			{
-				Data.SetValue(i, j, MakeShared<FHITerrainBoolValue>(FromChannel->GetChannelValue(i, j)->GetBool()));
+				Data.SetValue(i, j, MakeShared<FHITerrainBoolValue>(FromChannel->GetValue(i, j)->GetBool()));
 			}
 		}
 	}
 }
 
-TSharedPtr<FHITerrainDataValue> FHITerrainDataChannel::GetChannelValue(int32 X, int32 Y)
+TSharedPtr<FHITerrainDataValue> FHITerrainDataChannel::GetValue(int32 X, int32 Y)
 {
 	return Data.GetValue(X, Y);	
 }
 
-void FHITerrainDataChannel::SetChannelValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value)
+void FHITerrainDataChannel::SetValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value)
 {
 	Data.SetValue(X, Y, Value);
 }
@@ -93,24 +93,29 @@ void FHITerrainDataChannel::CopyFromChannel(TSharedPtr<FHITerrainDataChannel> Fr
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			Data.GetValue(i, j)->CopyFromValue(FromChannel->GetChannelValue(i, j));
+			Data.GetValue(i, j)->CopyFromValue(FromChannel->GetValue(i, j));
 		}
 	}
 }
 
-void FHITerrainDataChannel::SetChannelValue(int32 X, int32 Y, const float& Value)
+void FHITerrainDataChannel::SetValue(int32 X, int32 Y, const float& Value)
 {
 	Data.GetValueRef(X, Y)->SetNumber(Value);
 }
 
-void FHITerrainDataChannel::SetChannelValue(int32 X, int32 Y, const FVector& Value)
+void FHITerrainDataChannel::SetValue(int32 X, int32 Y, const FVector& Value)
 {
 	Data.GetValueRef(X, Y)->SetFVector(Value);
 }
 
-void FHITerrainDataChannel::SetChannelValue(int32 X, int32 Y, const bool Value)
+void FHITerrainDataChannel::SetValue(int32 X, int32 Y, const bool Value)
 {
 	Data.GetValueRef(X, Y)->SetBool(Value);
+}
+
+void FHITerrainDataChannel::SetValue(int32 X, int32 Y, const FQuat& Value)
+{
+	Data.GetValueRef(X, Y)->SetFQuat(Value);
 }
 
 ETerrainDataType FHITerrainDataChannel::GetType()

@@ -18,17 +18,19 @@ public:
 
 	FHITerrainDataChannel(TSharedPtr<FHITerrainDataChannel> FromChannel);
 
-	TSharedPtr<FHITerrainDataValue> GetChannelValue(int32 X, int32 Y);
+	TSharedPtr<FHITerrainDataValue> GetValue(int32 X, int32 Y);
 
-	void SetChannelValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value);
+	void SetValue(int32 X, int32 Y, TSharedPtr<FHITerrainDataValue> Value);
 
 	void CopyFromChannel(TSharedPtr<FHITerrainDataChannel> FromChannel);
 	
-	void SetChannelValue(int32 X, int32 Y, const float& Value);
+	void SetValue(int32 X, int32 Y, const float& Value);
 
-	void SetChannelValue(int32 X, int32 Y, const FVector& Value);
+	void SetValue(int32 X, int32 Y, const FVector& Value);
 
-	void SetChannelValue(int32 X, int32 Y, const bool Value);
+	void SetValue(int32 X, int32 Y, const bool Value);
+
+	void SetValue(int32 X, int32 Y, const FQuat& Value);
 
 	ETerrainDataType GetType();
 

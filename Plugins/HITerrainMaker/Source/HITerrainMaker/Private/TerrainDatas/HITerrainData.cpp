@@ -74,7 +74,7 @@ float UHITerrainData::GetHeightValue(int32 X, int32 Y)
 	else
 	{
 		// return TerrainData.GetValue(X, Y).Value;
-		return TerrainDataChannels["height"]->GetChannelValue(X, Y)->GetNumber();
+		return TerrainDataChannels["height"]->GetValue(X, Y)->GetNumber();
 	}
 }
 
@@ -87,7 +87,7 @@ void UHITerrainData::SetHeightValue(int32 X, int32 Y, float Value)
 	else
 	{
 		// TerrainData.GetValueRef(X, Y).Value = Value;
-		TerrainDataChannels["height"]->SetChannelValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
+		TerrainDataChannels["height"]->SetValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
 	}
 }
 
@@ -126,6 +126,10 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 	{
 		int32 TotalSize = Size();
 		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(TotalSize, TotalSize, Type, ChannelName)));
+	}
+	else if(TerrainDataChannels[ChannelName]->GetType() != Type)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::AddChannel Existing Channel With Different Type!"))
 	}
 }
 
@@ -193,7 +197,7 @@ bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, floa
 	}
 	else
 	{
-		if(TerrainDataChannels[ChannelName]->GetChannelValue(X, Y)->TryGetNumber(Value))
+		if(TerrainDataChannels[ChannelName]->GetValue(X, Y)->TryGetNumber(Value))
 		{
 			return true;		
 		}
@@ -215,7 +219,7 @@ bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, cons
 	{
 		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FLOAT)
 		{
-			TerrainDataChannels[ChannelName]->SetChannelValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
+			TerrainDataChannels[ChannelName]->SetValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
 			return true;		
 		}
 		else
@@ -234,7 +238,7 @@ bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, FVec
 	}
 	else
 	{
-		if(TerrainDataChannels[ChannelName]->GetChannelValue(X, Y)->TryGetFVector(Value))
+		if(TerrainDataChannels[ChannelName]->GetValue(X, Y)->TryGetFVector(Value))
 		{
 			return true;		
 		}
@@ -256,7 +260,7 @@ bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, cons
 	{
 		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FVECTOR)
 		{
-			TerrainDataChannels[ChannelName]->SetChannelValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFVectorValue(Value)));
+			TerrainDataChannels[ChannelName]->SetValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFVectorValue(Value)));
 			return true;		
 		}
 		else
