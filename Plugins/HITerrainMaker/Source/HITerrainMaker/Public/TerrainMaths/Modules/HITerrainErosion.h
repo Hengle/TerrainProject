@@ -16,11 +16,16 @@ public:
 	~FHITerrainErosion();
 
 	void SetNumIteration(int32 InNumIteration);
+	void SetDeltaTime(float InDeltaTime);
 	
 	void SetHydroErosionScale(float InHydroErosionScale);
 	void SetRainAmount(float InRainAmount);
 	void SetEvaporationAmount(float InEvaporationAmount);
 	void SetHydroErosionAngle(float InHydroErosionAngle);
+	void SetErosionScale(float InErosionScale);
+	void SetDepositionScale(float InDepositionScale);
+	void SetSedimentCapacityScale(float InSedimentCapacityScale);
+	
 
 	void SetThermalErosionScale(float InThermalErosionScale);
 
@@ -37,11 +42,15 @@ public:
 
 private:
 	int32 NumIteration;
+	float DeltaTime;
 	
 	float HydroErosionScale;
 	float RainAmount;
 	float EvaporationAmount;
 	float HydroErosionAngle;
+	float ErosionScale;
+	float DepositionScale;
+	float SedimentCapacityScale;
 
 	float ThermalErosionScale;
 	

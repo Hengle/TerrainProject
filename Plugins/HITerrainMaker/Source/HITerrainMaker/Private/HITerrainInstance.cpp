@@ -10,6 +10,7 @@
 #include "TerrainAlgorithms/MidtermAlgorithms/RidgedMultiAlgorithm.h"
 #include "TerrainAlgorithms/MidtermAlgorithms/VoronoiAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm.h"
+#include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm2.h"
 #include "TerrainComponents/HITerrainChunkTicker.h"
 
 FTerrainInformationPtr AHITerrainInstance::GetTerrainInformation() const
@@ -168,6 +169,12 @@ void AHITerrainInstance::InitAlgorithms()
 	else if (TerrainInformation->TerrainType == ETerrainType::TEST)
 	{
 		UTestAlgorithm* Algorithm = NewObject<UTestAlgorithm>(this);
+		Algorithm->Init(TerrainInformation);
+		Algorithms.Add(Algorithm);
+	}
+	else if (TerrainInformation->TerrainType == ETerrainType::TEST2)
+	{
+		UTestAlgorithm2* Algorithm = NewObject<UTestAlgorithm2>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
 	}
