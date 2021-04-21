@@ -6,8 +6,8 @@
 #include "TerrainMaths/HITerrainMathMisc.h"
 
 
-FHITerrainErosion::FHITerrainErosion():NumIteration(40), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(1.0),
-	EvaporationAmount(0.5), HydroErosionAngle(22.5), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(25),
+FHITerrainErosion::FHITerrainErosion():NumIteration(40), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(1000.0),
+	EvaporationAmount(0.5), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
 	ThermalErosionScale(1.0)
 {
 	
@@ -124,7 +124,7 @@ void FHITerrainErosion::ApplyInitialization()
 			// FluxValue.Z = FMath::Max(0.0f, Value - TValue);
 			// FluxValue.W = FMath::Max(0.0f, Value - BValue);
 			// FluxValue /= (FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W);
-			FluxChannel->GetValue(i, j)->SetFQuat(FluxValue);
+			FluxChannel->SetFQuat(i, j, FluxValue);
 		}
 	}
 }
@@ -140,7 +140,7 @@ void FHITerrainErosion::ApplyRainSimulation()
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			WaterChannel->SetValue(i, j, WaterChannel->GetValue(i, j)->GetNumber() + RainAmount * DeltaTime);
+			WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + RainAmount * DeltaTime);
 		}
 	}
 }
@@ -159,19 +159,19 @@ void FHITerrainErosion::ApplyFlowSimulation()
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			float LValue = i == 0? 0: (HeightChannel->GetValue(i - 1, j)->GetNumber() + WaterChannel->GetValue(i - 1, j)->GetNumber());
-			float RValue = i == SizeX - 1? 0: (HeightChannel->GetValue(i + 1, j)->GetNumber() + WaterChannel->GetValue(i + 1, j)->GetNumber());
-			float TValue = j == 0? 0: (HeightChannel->GetValue(i, j - 1)->GetNumber() + WaterChannel->GetValue(i, j - 1)->GetNumber());
-			float BValue = j == SizeY - 1? 0: (HeightChannel->GetValue(i, j + 1)->GetNumber() + WaterChannel->GetValue(i, j + 1)->GetNumber());
-			float Value = HeightChannel->GetValue(i, j)->GetNumber() + WaterChannel->GetValue(i, j)->GetNumber();
+			float LValue = i == 0? 0: (HeightChannel->GetFloat(i - 1, j) + WaterChannel->GetFloat(i - 1, j));
+			float RValue = i == SizeX - 1? 0: (HeightChannel->GetFloat(i + 1, j) + WaterChannel->GetFloat(i + 1, j));
+			float TValue = j == 0? 0: (HeightChannel->GetFloat(i, j - 1) + WaterChannel->GetFloat(i, j - 1));
+			float BValue = j == SizeY - 1? 0: (HeightChannel->GetFloat(i, j + 1) + WaterChannel->GetFloat(i, j + 1));
+			float Value = HeightChannel->GetFloat(i, j) + WaterChannel->GetFloat(i, j);
 			FQuat FluxValue;
-			FluxValue.X = FMath::Max(0.0f, Value - LValue + FluxChannel->GetValue(i, j)->GetFQuat().X * DeltaTime);
-			FluxValue.Y = FMath::Max(0.0f, Value - RValue + FluxChannel->GetValue(i, j)->GetFQuat().Y * DeltaTime);
-			FluxValue.Z = FMath::Max(0.0f, Value - TValue + FluxChannel->GetValue(i, j)->GetFQuat().Z * DeltaTime);
-			FluxValue.W = FMath::Max(0.0f, Value - BValue + FluxChannel->GetValue(i, j)->GetFQuat().W * DeltaTime);
-			float K = FMath::Max(1.0f, WaterChannel->GetValue(i, j)->GetNumber() / ((FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W) * DeltaTime));
+			FluxValue.X = FMath::Max(0.0f, Value - LValue + FluxChannel->GetFQuat(i, j).X * DeltaTime);
+			FluxValue.Y = FMath::Max(0.0f, Value - RValue + FluxChannel->GetFQuat(i, j).Y * DeltaTime);
+			FluxValue.Z = FMath::Max(0.0f, Value - TValue + FluxChannel->GetFQuat(i, j).Z * DeltaTime);
+			FluxValue.W = FMath::Max(0.0f, Value - BValue + FluxChannel->GetFQuat(i, j).W * DeltaTime);
+			float K = FMath::Max(1.0f, WaterChannel->GetFloat(i, j) / ((FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W) * DeltaTime));
 			FluxValue /= K;
-			FluxChannel->SetValue(i, j, FluxValue);
+			FluxChannel->SetFQuat(i, j, FluxValue);
 		}
 	}
 	/*
@@ -181,14 +181,14 @@ void FHITerrainErosion::ApplyFlowSimulation()
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			FQuat FluxValue = FluxChannel->GetValue(i, j)->GetFQuat();
+			FQuat FluxValue = FluxChannel->GetFQuat(i, j);
 			float OutValue = FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W;
-			float LInValue = i == 0? 0: FluxChannel->GetValue(i - 1, j)->GetFQuat().Y;
-			float RInValue = i == SizeX - 1? 0: FluxChannel->GetValue(i + 1, j)->GetFQuat().X;
-			float TInValue = j == 0? 0: FluxChannel->GetValue(i, j - 1)->GetFQuat().W;
-			float BInValue = j == SizeY - 1? 0: FluxChannel->GetValue(i, j + 1)->GetFQuat().Z;
+			float LInValue = i == 0? 0: FluxChannel->GetFQuat(i - 1, j).Y;
+			float RInValue = i == SizeX - 1? 0: FluxChannel->GetFQuat(i + 1, j).X;
+			float TInValue = j == 0? 0: FluxChannel->GetFQuat(i, j - 1).W;
+			float BInValue = j == SizeY - 1? 0: FluxChannel->GetFQuat(i, j + 1).Z;
 			float DeltaWaterValue = LInValue + RInValue + TInValue + BInValue - OutValue;
-			WaterChannel->SetValue(i, j, WaterChannel->GetValue(i, j)->GetNumber() + DeltaWaterValue);
+			WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + DeltaWaterValue);
 		}
 	}
 }
@@ -207,20 +207,20 @@ void FHITerrainErosion::ApplyErosionDepositionSimulation()
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			FQuat FluxValue = FluxChannel->GetValue(i, j)->GetFQuat();
-			float LInValue = i == 0? 0: FluxChannel->GetValue(i - 1, j)->GetFQuat().Y;
-			float RInValue = i == SizeX - 1? 0: FluxChannel->GetValue(i + 1, j)->GetFQuat().X;
-			float TInValue = j == 0? 0: FluxChannel->GetValue(i, j - 1)->GetFQuat().W;
-			float BInValue = j == SizeY - 1? 0: FluxChannel->GetValue(i, j + 1)->GetFQuat().Z;
+			FQuat FluxValue = FluxChannel->GetFQuat(i, j);
+			float LInValue = i == 0? 0: FluxChannel->GetFQuat(i - 1, j).Y;
+			float RInValue = i == SizeX - 1? 0: FluxChannel->GetFQuat(i + 1, j).X;
+			float TInValue = j == 0? 0: FluxChannel->GetFQuat(i, j - 1).W;
+			float BInValue = j == SizeY - 1? 0: FluxChannel->GetFQuat(i, j + 1).Z;
 			FVector Velocity;
 			Velocity.X = (LInValue - FluxValue.X + FluxValue.Y - RInValue) / 2;
 			Velocity.Y = (TInValue - FluxValue.Z + FluxValue.W - BInValue) / 2;
-			VelocityChannel->SetValue(i, j, Velocity);
+			VelocityChannel->SetFVector(i, j, Velocity);
 			float VelocityValue = FMath::Sqrt(Velocity.X * Velocity.X + Velocity.Y * Velocity.Y);
 			float SedimentCapacity = FMath::Sin(HydroErosionAngle) * VelocityValue;
-			float SedimentValue = SedimentChannel->GetValue(i, j)->GetNumber();
-			float Sediment = SedimentChannel->GetValue(i, j)->GetNumber();
-			float Height = HeightChannel->GetValue(i, j)->GetNumber() - Sediment;
+			float SedimentValue = SedimentChannel->GetFloat(i, j);
+			float Sediment = SedimentChannel->GetFloat(i, j);
+			float Height = HeightChannel->GetFloat(i, j) - Sediment;
 			if(SedimentValue > SedimentCapacity)
 			{
 				Height += DepositionScale * (SedimentValue - SedimentCapacity);
@@ -231,8 +231,8 @@ void FHITerrainErosion::ApplyErosionDepositionSimulation()
 				Height -= ErosionScale * (SedimentCapacity - SedimentValue);
 				Sediment += ErosionScale * (SedimentCapacity - SedimentValue);
 			}
-			HeightChannel->SetValue(i, j, Height + Sediment);
-			SedimentChannel->SetValue(i, j, Sediment);
+			HeightChannel->SetFloat(i, j, Height + Sediment);
+			SedimentChannel->SetFloat(i, j, Sediment);
 		}
 	}
 	
@@ -252,7 +252,7 @@ void FHITerrainErosion::ApplySedimentSimulation()
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			FVector Velocity = VelocityChannel->GetValue(i, j)->GetFVector();
+			FVector Velocity = VelocityChannel->GetFVector(i, j);
 			float FromPosX = i - Velocity.X * DeltaTime;
 			float FromPosY = j - Velocity.Y * DeltaTime;
 			int32 X0 = FMath::FloorToInt(FromPosX);
@@ -263,14 +263,14 @@ void FHITerrainErosion::ApplySedimentSimulation()
 			Y0 = FMath::Clamp(Y0, 0, SizeY - 1);
 			X1 = FMath::Clamp(X1, 0, SizeX - 1);
 			Y1 = FMath::Clamp(Y1, 0, SizeY - 1);
-			float S00 = SedimentChannel->GetValue(X0, Y0)->GetNumber();
-			float S01 = SedimentChannel->GetValue(X0, Y1)->GetNumber();
-			float S10 = SedimentChannel->GetValue(X1, Y0)->GetNumber();
-			float S11 = SedimentChannel->GetValue(X1, Y1)->GetNumber();
+			float S00 = SedimentChannel->GetFloat(X0, Y0);
+			float S01 = SedimentChannel->GetFloat(X0, Y1);
+			float S10 = SedimentChannel->GetFloat(X1, Y0);
+			float S11 = SedimentChannel->GetFloat(X1, Y1);
 			int32 AlphaX = FromPosX - FMath::FloorToInt(FromPosX);
 			int32 AlphaY = FromPosY - FMath::FloorToInt(FromPosY);
 			float NewSediment = UHITerrainMathMisc::LinearLerp2D(S00, S01, S10, S11, AlphaX, AlphaY);
-			SedimentChannel->SetValue(i, j, NewSediment);
+			SedimentChannel->SetFloat(i, j, NewSediment);
 		}
 	}
 }
@@ -290,9 +290,9 @@ void FHITerrainErosion::ApplyEvaporationSimulation()
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			float WaterValue = WaterChannel->GetValue(i, j)->GetNumber();
+			float WaterValue = WaterChannel->GetFloat(i, j);
 			WaterValue *= (1 - EvaporationAmount * DeltaTime);
-			WaterChannel->SetValue(i, j, WaterValue);
+			WaterChannel->SetFloat(i, j, WaterValue);
 		}
 	}
 }

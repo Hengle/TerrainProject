@@ -64,7 +64,7 @@ void FHITerrainVoronoi::ApplyModule(UHITerrainData* Data)
 		for(int32 j = 0; j < Channel->GetSizeY(); j++)
 		{
 			float Value = GetCellValue(i, j) * Amplitude;
-			Channel->SetValue(i, j, Value);
+			Channel->SetFloat(i, j, Value);
 		}
 	}
 }

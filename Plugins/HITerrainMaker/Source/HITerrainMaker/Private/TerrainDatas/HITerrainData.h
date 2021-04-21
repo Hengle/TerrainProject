@@ -3,8 +3,7 @@
 
 #include "HITerrainCommons.h"
 #include "HITerrainChunkData.h"
-#include "HITerrainDataChannel.h"
-#include "HITerrainDataValue.h"
+#include "HITerrainChannel.h"
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/2DArray.h"
 
@@ -68,7 +67,7 @@ public:
 	 */
 	void AddChannel(FString ChannelName, ETerrainDataType Type);
 
-	void AddChannel(FString ChannelName, TSharedPtr<FHITerrainDataChannel> FromChannel);
+	void AddChannel(FString ChannelName, TSharedPtr<FHITerrainChannel> FromChannel);
 
 	/*
 	 * 删除指定名称的通道。
@@ -83,13 +82,19 @@ public:
 	/*
 	 * 获取指定名称的通道。
 	 */
-	TSharedPtr<FHITerrainDataChannel> GetChannel(FString ChannelName);
+	TSharedPtr<FHITerrainChannel> GetChannel(FString ChannelName);
 
 	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, float& Value);
 	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const float& Value);
 
 	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, FVector& Value);
 	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const FVector& Value);
+
+	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, bool& Value);
+	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, bool Value);
+
+	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, FQuat& Value);
+	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const FQuat& Value);
 	
 	/*
 	 * 获取区块数目（长宽）
@@ -127,7 +132,7 @@ protected:
 	int32 ChunkNums;
 	int32 ChunkSize;
 	
-	TMap<FString, TSharedPtr<FHITerrainDataChannel>> TerrainDataChannels;
+	TMap<FString, TSharedPtr<FHITerrainChannel>> TerrainDataChannels;
 	
 	UPROPERTY()
 	TArray<UHITerrainAlgorithm*> Algorithms;

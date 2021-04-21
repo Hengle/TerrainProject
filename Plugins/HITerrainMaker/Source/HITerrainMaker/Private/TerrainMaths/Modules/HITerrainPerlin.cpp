@@ -66,7 +66,7 @@ void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 		for(int32 j = 0; j < Channel->GetSizeY(); j++)
 		{
 			float Value = Perlin.GetValue(i * Scale, j * Scale, 0) * Amplitude;
-			Channel->SetValue(i, j, Value);
+			Channel->SetFloat(i, j, Value);
 		}
 	}
 }

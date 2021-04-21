@@ -55,9 +55,9 @@ private:
 	float ThermalErosionScale;
 	
 private:
-	TSharedPtr<FHITerrainDataChannel> HeightChannel;
-	TSharedPtr<FHITerrainDataChannel> WaterChannel;
-	TSharedPtr<FHITerrainDataChannel> SedimentChannel;
-	TSharedPtr<FHITerrainDataChannel> FluxChannel;
-	TSharedPtr<FHITerrainDataChannel> VelocityChannel;
+	TSharedPtr<FHITerrainChannel> HeightChannel;
+	TSharedPtr<FHITerrainChannel> WaterChannel;
+	TSharedPtr<FHITerrainChannel> SedimentChannel;
+	TSharedPtr<FHITerrainChannel> FluxChannel;
+	TSharedPtr<FHITerrainChannel> VelocityChannel;
 };

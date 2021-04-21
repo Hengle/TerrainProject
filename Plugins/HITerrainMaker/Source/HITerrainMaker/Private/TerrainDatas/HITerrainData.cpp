@@ -74,7 +74,7 @@ float UHITerrainData::GetHeightValue(int32 X, int32 Y)
 	else
 	{
 		// return TerrainData.GetValue(X, Y).Value;
-		return TerrainDataChannels["height"]->GetValue(X, Y)->GetNumber();
+		return TerrainDataChannels["height"]->GetFloat(X, Y);
 	}
 }
 
@@ -87,7 +87,7 @@ void UHITerrainData::SetHeightValue(int32 X, int32 Y, float Value)
 	else
 	{
 		// TerrainData.GetValueRef(X, Y).Value = Value;
-		TerrainDataChannels["height"]->SetValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
+		TerrainDataChannels["height"]->SetFloat(X, Y, Value);
 	}
 }
 
@@ -125,7 +125,7 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 	if(!TerrainDataChannels.Contains(ChannelName))
 	{
 		int32 TotalSize = Size();
-		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(TotalSize, TotalSize, Type, ChannelName)));
+		TerrainDataChannels.Add(ChannelName, FHITerrainChannel::CreateChannelByType(ChannelName, TotalSize, TotalSize, Type));
 	}
 	else if(TerrainDataChannels[ChannelName]->GetType() != Type)
 	{
@@ -133,11 +133,12 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 	}
 }
 
-void UHITerrainData::AddChannel(FString ChannelName, TSharedPtr<FHITerrainDataChannel> FromChannel)
+void UHITerrainData::AddChannel(FString ChannelName, TSharedPtr<FHITerrainChannel> FromChannel)
 {
 	if(!TerrainDataChannels.Contains(ChannelName))
 	{
-		TerrainDataChannels.Add(ChannelName, MakeShareable<FHITerrainDataChannel>(new FHITerrainDataChannel(FromChannel)));
+		//TODO
+		TerrainDataChannels.Add(ChannelName, FHITerrainChannel::CopyChannel(ChannelName, FromChannel));
 	}
 }
 
@@ -163,13 +164,14 @@ void UHITerrainData::CopyChannel(FString FromChannelName, FString ToChannelName)
 	{
 		if(TerrainDataChannels.Contains(ToChannelName))
 		{
-			if(TerrainDataChannels[ToChannelName]->GetType() != TerrainDataChannels[FromChannelName]->GetType())
+			if(TerrainDataChannels[ToChannelName]->GetTypeName() != TerrainDataChannels[FromChannelName]->GetTypeName())
 			{
 				UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::CopyChannel Type Error"))
 			}
 			else
 			{
-				TerrainDataChannels[ToChannelName]->CopyFromChannel(TerrainDataChannels[FromChannelName]);
+				//TODO
+				// TerrainDataChannels[ToChannelName]->CopyFromChannel(TerrainDataChannels[FromChannelName]);
 			}
 		}
 		else
@@ -179,7 +181,7 @@ void UHITerrainData::CopyChannel(FString FromChannelName, FString ToChannelName)
 	}
 }
 
-TSharedPtr<FHITerrainDataChannel> UHITerrainData::GetChannel(FString ChannelName)
+TSharedPtr<FHITerrainChannel> UHITerrainData::GetChannel(FString ChannelName)
 {
 	if(!TerrainDataChannels.Contains(ChannelName))
 	{
@@ -197,7 +199,7 @@ bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, floa
 	}
 	else
 	{
-		if(TerrainDataChannels[ChannelName]->GetValue(X, Y)->TryGetNumber(Value))
+		if(TerrainDataChannels[ChannelName]->TryGetFloat(X, Y, Value))
 		{
 			return true;		
 		}
@@ -219,7 +221,7 @@ bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, cons
 	{
 		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FLOAT)
 		{
-			TerrainDataChannels[ChannelName]->SetValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFloatValue(Value)));
+			TerrainDataChannels[ChannelName]->SetFloat(X, Y, Value);
 			return true;		
 		}
 		else
@@ -238,7 +240,7 @@ bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, FVec
 	}
 	else
 	{
-		if(TerrainDataChannels[ChannelName]->GetValue(X, Y)->TryGetFVector(Value))
+		if(TerrainDataChannels[ChannelName]->TryGetFVector(X, Y, Value))
 		{
 			return true;		
 		}
@@ -260,7 +262,89 @@ bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, cons
 	{
 		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FVECTOR)
 		{
-			TerrainDataChannels[ChannelName]->SetValue(X, Y, MakeShareable<FHITerrainDataValue>(new FHITerrainFVectorValue(Value)));
+			TerrainDataChannels[ChannelName]->SetFVector(X, Y, Value);
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, bool& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->TryGetBool(X, Y, Value))
+		{
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, bool Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::SetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::BOOL)
+		{
+			TerrainDataChannels[ChannelName]->SetBool(X, Y, Value);
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, FQuat& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->TryGetFQuat(X, Y, Value))
+		{
+			return true;		
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool UHITerrainData::SetChannelValue(FString ChannelName, int32 X, int32 Y, const FQuat& Value)
+{
+	if(!TerrainDataChannels.Contains(ChannelName))
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::SetChannelValue Error ChannelName '%s'"), *ChannelName)
+		return false;
+	}
+	else
+	{
+		if(TerrainDataChannels[ChannelName]->GetType() == ETerrainDataType::FQUAT)
+		{
+			TerrainDataChannels[ChannelName]->SetFQuat(X, Y, Value);
 			return true;		
 		}
 		else
