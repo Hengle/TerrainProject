@@ -10,6 +10,8 @@ void UTestAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Perlin.SetAmplitude(2000);
 	Perlin.SetScale(0.01);
 	Perlin.SetTargetChannel("height");
+
+	Erosion.SetSeed(Information->Seed);
 }
 
 void UTestAlgorithm::ApplyAlgorithm(UHITerrainData* Data)

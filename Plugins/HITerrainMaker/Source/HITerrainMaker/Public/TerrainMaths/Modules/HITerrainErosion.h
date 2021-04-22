@@ -15,6 +15,8 @@ public:
 	FHITerrainErosion();
 	~FHITerrainErosion();
 
+	void SetSeed(int32 InSeed);
+	
 	void SetNumIteration(int32 InNumIteration);
 	void SetDeltaTime(float InDeltaTime);
 	
@@ -42,6 +44,8 @@ public:
 	void ApplyEvaporationSimulation();
 
 private:
+	int32 Seed;
+	
 	int32 NumIteration;
 	float DeltaTime;
 	

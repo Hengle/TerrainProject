@@ -7,8 +7,8 @@
 
 const float Gravity = 9.8f;
 
-FHITerrainErosion::FHITerrainErosion():NumIteration(20), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(5.0),
-	EvaporationAmount(0.5), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
+FHITerrainErosion::FHITerrainErosion():NumIteration(100), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(25.0),
+	EvaporationAmount(0.5), HydroErosionAngle(50), ErosionScale(0.12), DepositionScale(0.12), SedimentCapacityScale(1),
 	NumFlowIteration(1),
 	ThermalErosionScale(1.0)
 {
@@ -18,6 +18,11 @@ FHITerrainErosion::FHITerrainErosion():NumIteration(20), DeltaTime(1.0f / 60), H
 FHITerrainErosion::~FHITerrainErosion()
 {
 	
+}
+
+void FHITerrainErosion::SetSeed(int32 InSeed)
+{
+	Seed = InSeed;
 }
 
 void FHITerrainErosion::SetNumIteration(int32 InNumIteration)
@@ -142,17 +147,19 @@ void FHITerrainErosion::ApplyInitialization()
 }
 
 /*
- * 对每个格子加恒定的水量
+ * 模拟一个降雨
  */
 void FHITerrainErosion::ApplyRainSimulation()
 {
 	int32 SizeX = HeightChannel->GetSizeX();
 	int32 SizeY = HeightChannel->GetSizeY();
+	FRandomStream RandomStream(Seed);
 	for(int32 i = 0; i < SizeX; i++)
 	{
 		for(int32 j = 0; j < SizeY; j++)
 		{
-			WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + RainAmount * DeltaTime);
+			float RainBool = RandomStream.FRand() < 0.5? 0: 1;
+			WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + RainAmount * DeltaTime * RainBool);
 		}
 	}
 }
@@ -230,10 +237,17 @@ void FHITerrainErosion::ApplyErosionDepositionSimulation()
 			Velocity.Y = (TInValue - FluxValue.Z + FluxValue.W - BInValue) / 2;
 			VelocityChannel->SetFVector(i, j, Velocity);
 			float VelocityValue = FMath::Sqrt(Velocity.X * Velocity.X + Velocity.Y * Velocity.Y);
-			float SedimentCapacity = FMath::Sin(HydroErosionAngle) * VelocityValue;
+			float LHeight = i == 0? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i - 1, j);
+			float RHeight = i == SizeX - 1? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i + 1, j);
+			float THeight = j == 0? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i, j - 1);
+			float BHeight = j == SizeY - 1? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i, j + 1);
+			float TiltAngle = FMath::Sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
+			TiltAngle /= FMath::Sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
+			// float SedimentCapacity = FMath::Sin(HydroErosionAngle) * VelocityValue;
+			float SedimentCapacity = TiltAngle * VelocityValue;
 			float SedimentValue = SedimentChannel->GetFloat(i, j);
 			float Sediment = SedimentChannel->GetFloat(i, j);
-			float Height = HeightChannel->GetFloat(i, j) - Sediment;
+			float Height = HeightChannel->GetFloat(i, j);
 			if(SedimentValue > SedimentCapacity)
 			{
 				Height += DepositionScale * (SedimentValue - SedimentCapacity);
