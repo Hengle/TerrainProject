@@ -177,9 +177,43 @@ void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords, ELODLevel 
 
 void AHITerrainActor::GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel)
 {
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
-			Colors.Add(FColor(127, 127, 127, 255));
+	FColor BasicColor(255, 255, 255, 255);
+	FColor SedimentColor(0, 255, 0, 255);
+	FColor WaterColor(0, 0, 255, 255);
+	FColor WSColor(0, 255, 255, 255);
+	if(ChunkData->Data->ContainsChannel("sediment"))
+	{
+		for (int32 i = 0; i <= Size; i++) {
+			for (int32 j = 0; j <= Size; j++) {
+				float WaterValue = 0.0f;
+				float SedimentValue = 0.0f;
+				ChunkData->Data->GetChannelValue("water", i, j, WaterValue);
+				ChunkData->Data->GetChannelValue("sediment", i, j, SedimentValue);
+				if(WaterValue > 0.0f && SedimentValue > 0.0f)
+				{
+					Colors.Add(WSColor);
+				}
+				else if(WaterValue > 0.0f)
+				{
+					Colors.Add(WaterColor);
+				}
+				else if(SedimentValue > 0.0f)
+				{
+					Colors.Add(SedimentColor);
+				}
+				else
+				{
+					Colors.Add(BasicColor);
+				}
+			}
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i <= Size; i++) {
+			for (int32 j = 0; j <= Size; j++) {
+				Colors.Add(FColor(127, 127, 127, 255));
+			}
 		}
 	}
 }

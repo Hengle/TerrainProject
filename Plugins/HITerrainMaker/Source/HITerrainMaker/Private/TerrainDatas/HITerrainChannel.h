@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TerrainMaths/2DArray.h"
+#include "TerrainMaths/HITerrainMathMisc.h"
 
 UENUM()
 enum class ETerrainDataType: uint8
@@ -94,6 +95,10 @@ public:
 	
 	virtual void SetFloat(int32 X, int32 Y, const float& InFloat) override
 	{
+		if(FHITerrainMathMisc::IsNaN(InFloat))
+		{
+			UE_LOG(LogHITerrain, Warning, TEXT("[%s]::SetFloat NaN"), *ChannelName)
+		}
 		Data.SetValue(X, Y, InFloat);
 	}
 
@@ -170,6 +175,10 @@ public:
 	
 	virtual void SetFVector(int32 X, int32 Y, const FVector& InFVector) override
 	{
+		if(FHITerrainMathMisc::IsNaN(InFVector))
+		{
+			UE_LOG(LogHITerrain, Warning, TEXT("[%s]::SetFVector NaN"), *ChannelName)
+		}
 		Data.SetValue(X, Y, InFVector);
 	}
 
@@ -208,6 +217,10 @@ public:
 	
 	virtual void SetFQuat(int32 X, int32 Y, const FQuat& InFQuat) override
 	{
+		if(FHITerrainMathMisc::IsNaN(InFQuat))
+		{
+			UE_LOG(LogHITerrain, Warning, TEXT("[%s]::SetFQuat NaN"), *ChannelName)
+		}
 		Data.SetValue(X, Y, InFQuat);
 	}
 

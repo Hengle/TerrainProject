@@ -83,6 +83,7 @@ public:
 	 * 获取指定名称的通道。
 	 */
 	TSharedPtr<FHITerrainChannel> GetChannel(FString ChannelName);
+	bool ContainsChannel(FString ChannelName);
 
 	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, float& Value);
 	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const float& Value);

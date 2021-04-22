@@ -115,7 +115,7 @@ float UHITerrainData::GetHeightValue(float X, float Y)
 		float Value01 = GetHeightValue(FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100));
 		float Value10 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100));
 		float Value11 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100));
-		float Value = UHITerrainMathMisc::Lerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
+		float Value = FHITerrainMathMisc::Lerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
 		return Value;
 	}
 }
@@ -188,6 +188,11 @@ TSharedPtr<FHITerrainChannel> UHITerrainData::GetChannel(FString ChannelName)
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainData::GetChannel Error ChannelName '%s'"), *ChannelName)
 	}
 	return TerrainDataChannels[ChannelName];
+}
+
+bool UHITerrainData::ContainsChannel(FString ChannelName)
+{
+	return TerrainDataChannels.Contains(ChannelName);
 }
 
 bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, float& Value)

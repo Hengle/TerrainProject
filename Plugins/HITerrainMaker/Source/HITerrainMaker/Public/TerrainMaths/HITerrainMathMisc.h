@@ -4,17 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "HITerrainMathMisc.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class HITERRAINMAKER_API UHITerrainMathMisc : public UObject
+class HITERRAINMAKER_API FHITerrainMathMisc
 {
-	GENERATED_BODY()
-
 public:
+	static bool IsNaN(const float& InFloat)
+	{
+		return FMath::IsNaN(InFloat);
+	}
+
+	static bool IsNaN(const FVector& InFVector)
+	{
+		return FMath::IsNaN(InFVector.X) || FMath::IsNaN(InFVector.Y) || FMath::IsNaN(InFVector.Z);
+	}
+
+	static bool IsNaN(const FQuat& InFQuat)
+	{
+		return FMath::IsNaN(InFQuat.X) || FMath::IsNaN(InFQuat.Y) || FMath::IsNaN(InFQuat.Z) || FMath::IsNaN(InFQuat.W);
+	}
+
 	static float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
     {
     	float L1 = Lerp(LL, LH, LA);

@@ -25,6 +25,7 @@ public:
 	void SetErosionScale(float InErosionScale);
 	void SetDepositionScale(float InDepositionScale);
 	void SetSedimentCapacityScale(float InSedimentCapacityScale);
+	void SetNumFlowIteration(int32 InNumFlowIteration);
 	
 
 	void SetThermalErosionScale(float InThermalErosionScale);
@@ -51,6 +52,7 @@ private:
 	float ErosionScale;
 	float DepositionScale;
 	float SedimentCapacityScale;
+	int32 NumFlowIteration;
 
 	float ThermalErosionScale;
 	
