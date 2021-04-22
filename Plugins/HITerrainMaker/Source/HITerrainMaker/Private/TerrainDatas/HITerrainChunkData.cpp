@@ -22,3 +22,9 @@ float FHITerrainChunkData::GetHeightValue(float X, float Y)
 {
 	return Data->GetHeightValue(X, Y);
 }
+
+float FHITerrainChunkData::GetChannelFloatValue(FString ChannelName, int32 X, int32 Y)
+{
+	auto Channel = Data->GetChannel(ChannelName);
+	return Channel->GetFloat(Index.Key * ChunkSize + X, Index.Value * ChunkSize + Y);
+}

@@ -181,15 +181,9 @@ void FHITerrainErosion::ApplyFlowSimulation()
 			FluxValue.Y = FMath::Max(0.0f, (Value - RValue) * DeltaTime * Gravity + FluxChannel->GetFQuat(i, j).Y);
 			FluxValue.Z = FMath::Max(0.0f, (Value - TValue) * DeltaTime * Gravity + FluxChannel->GetFQuat(i, j).Z);
 			FluxValue.W = FMath::Max(0.0f, (Value - BValue) * DeltaTime * Gravity + FluxChannel->GetFQuat(i, j).W);
-			// float K = FMath::Min(1.0f, WaterChannel->GetFloat(i, j) / ((FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W) * DeltaTime));
-			// FQuat TempFlux = FluxValue * K;
-			// if(!UHITerrainMathMisc::IsNaN(TempFlux))
-			// {
-			// 	FluxValue = TempFlux;
-			// }
-			// FluxChannel->SetFQuat(i, j, FluxValue);
-			float K = FMath::Max(1.0f, WaterChannel->GetFloat(i, j) / ((FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W) * DeltaTime));
-			FluxValue /= K;
+			float K = FMath::Min(1.0f, WaterChannel->GetFloat(i, j) / ((FluxValue.X + FluxValue.Y + FluxValue.Z + FluxValue.W) * DeltaTime));
+			K = FMath::Max(0.0f, K);
+			FluxValue *= K;
 			FluxChannel->SetFQuat(i, j, FluxValue);
 		}
 	}

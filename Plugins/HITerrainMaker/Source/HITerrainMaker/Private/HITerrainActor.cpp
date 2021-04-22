@@ -185,10 +185,8 @@ void AHITerrainActor::GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel)
 	{
 		for (int32 i = 0; i <= Size; i++) {
 			for (int32 j = 0; j <= Size; j++) {
-				float WaterValue = 0.0f;
-				float SedimentValue = 0.0f;
-				ChunkData->Data->GetChannelValue("water", i, j, WaterValue);
-				ChunkData->Data->GetChannelValue("sediment", i, j, SedimentValue);
+				float WaterValue = ChunkData->GetChannelFloatValue("water", i, j);
+				float SedimentValue = ChunkData->GetChannelFloatValue("sediment", i, j);
 				if(WaterValue > 0.0f && SedimentValue > 0.0f)
 				{
 					Colors.Add(WSColor);
