@@ -78,6 +78,7 @@ bool AHITerrainInstance::GenerateChunkTerrain(TPair<int32, int32> Index)
 		else if(!TerrainActor->IsGenerated())
 		{
 			TerrainActor->Material = Material;
+			TerrainActor->WaterMaterial = WaterMaterial;
 			//TODO 初始的LODLevel
 			TerrainActor->GenerateChunk(ELODLevel::LOD_LOW);
 			UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::GenerateChunkTerrain [%d, %d]"), Index.Key, Index.Value)

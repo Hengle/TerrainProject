@@ -20,6 +20,7 @@ struct FHITerrainChunkData
 	float GetHeightValue(float X, float Y);
 
 	float GetChannelFloatValue(FString ChannelName, int32 X, int32 Y);
+	// float GetChannelFloatValue(FString ChannelName, float X, float Y);
 };
 
 typedef TSharedPtr<FHITerrainChunkData, ESPMode::ThreadSafe> FChunkDataPtr;

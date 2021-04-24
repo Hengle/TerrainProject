@@ -34,6 +34,7 @@ void AHITerrainActor::DeleteChunk()
 	{
 		StaticProvider->ClearSection(0, 0);
 		bGenerated = false;
+		bWaterGenerated = false;
 	}
 }
 
@@ -60,10 +61,14 @@ void AHITerrainActor::GenerateChunk(ELODLevel LODLevel)
 		}
 		else
 		{
-			StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, true);
+			StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, false);
 			bGenerated = true;
 		}
-		
+
+		if(ChunkData->Data->ContainsChannel("water"))
+		{
+			GenerateWater(LODLevel);
+		}
 	}
 }
 
@@ -212,6 +217,122 @@ void AHITerrainActor::GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel)
 			for (int32 j = 0; j <= Size; j++) {
 				Colors.Add(FColor(127, 127, 127, 255));
 			}
+		}
+	}
+}
+
+void AHITerrainActor::GenerateWater(ELODLevel LODLevel)
+{
+	if (StaticProvider){
+		StaticProvider->SetupMaterialSlot(1, TEXT("Material"), WaterMaterial);
+		TArray<FVector> Positions;
+		TArray<FColor> Colors;
+		TArray<int32> Triangles;
+		TArray<FVector> Normals;
+		TArray<FVector2D> TexCoords;
+		TArray<FRuntimeMeshTangent> Tangents;
+
+		GenerateWaterPositions(Positions, LODLevel);
+		GenerateWaterTriangles(Triangles, LODLevel);
+		GenerateWaterNormals(Normals, LODLevel);
+		GenerateWaterTexCoords(TexCoords, LODLevel);
+		GenerateWaterTangents(Tangents, LODLevel);
+		GenerateWaterColors(Colors, LODLevel);
+		if(bWaterGenerated)
+		{
+			StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+		}
+		else
+		{
+			StaticProvider->CreateSectionFromComponents(0, 1, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, true);
+			bWaterGenerated = true;
+		}
+		
+	}
+}
+
+void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel LODLevel)
+{
+	float RecentX = 0, RecentY = 0;
+	for (int32 i = 0; i <= Size; i++) {
+		for (int32 j = 0; j <= Size; j++) {
+			float LocationX = Size * Step * Index.Key + RecentX;
+			float LocationY = Size * Step * Index.Value + RecentY;
+			// 这里在LOD下会有BUG，待解决
+			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("water", i, j);
+			Positions.Add(FVector(LocationX, LocationY, LocationZ));
+			RecentY += Step;
+		}
+		RecentX += Step;
+		RecentY = 0.0f;
+	}
+}
+
+void AHITerrainActor::GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel LODLevel)
+{
+	int32 Vertice1 = 0;
+	int32 Vertice2 = 1;
+	int32 Vertice3 = Size + 1;
+	int32 Vertice4 = Size + 2;
+	for (int32 i = 0; i < Size; i++) {
+		for (int32 j = 0; j < Size; j++) {
+			Triangles.Add(Vertice1);
+			Triangles.Add(Vertice2);
+			Triangles.Add(Vertice4);
+			Triangles.Add(Vertice4);
+			Triangles.Add(Vertice3);
+			Triangles.Add(Vertice1);
+			Vertice1++;
+			Vertice2++;
+			Vertice3++;
+			Vertice4++;
+		}
+		Vertice1++;
+		Vertice2++;
+		Vertice3++;
+		Vertice4++;
+	}
+}
+
+void AHITerrainActor::GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel LODLevel)
+{
+	for (int32 i = 0; i <= Size; i++) {
+		for (int32 j = 0; j <= Size; j++) {
+			Normals.Add(FVector(0, 0, 1));
+		}
+	}
+}
+
+void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel)
+{
+	for (int32 i = 0; i <= Size; i++) {
+		for (int32 j = 0; j <= Size; j++) {
+			Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+		}
+	}
+}
+
+void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel)
+{
+	float UVStep = 1.0 / Size;
+	float RecentX = 0, RecentY = 0;
+	for (int32 i = 0; i <= Size; i++)
+	{
+		for (int32 j = 0; j <= Size; j++)
+		{
+			TexCoords.Add(FVector2D(RecentX, RecentY));
+			RecentY += UVStep;
+		}
+		RecentX += UVStep;
+		RecentY = 0.0;
+	}
+}
+
+void AHITerrainActor::GenerateWaterColors(TArray<FColor>& Colors, ELODLevel LODLevel)
+{
+	for (int32 i = 0; i <= Size; i++) {
+		for (int32 j = 0; j <= Size; j++) {
+			Colors.Add(FColor(212, 241, 249, 127));
 		}
 	}
 }

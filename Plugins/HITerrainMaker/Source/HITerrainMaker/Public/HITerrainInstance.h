@@ -72,6 +72,9 @@ public:
 	UPROPERTY()
 	UMaterialInterface* Material;
 
+	UPROPERTY()
+	UMaterialInterface* WaterMaterial;
+
 private:
 	void InitAlgorithms();
 	

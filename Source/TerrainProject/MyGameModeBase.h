@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TerrainInformation")
 	UMaterialInterface* Material;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TerrainInformation")
+	UMaterialInterface* WaterMaterial;
+
 private:
 	UPROPERTY()
 		class AHITerrainInstance* TerrainInstance;

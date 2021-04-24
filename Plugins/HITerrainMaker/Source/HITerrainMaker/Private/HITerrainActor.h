@@ -31,10 +31,26 @@ public:
 
 	void GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel);
 
+	void GenerateWater(ELODLevel LODLevel);
+
+	void GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel LODLevel);
+
+	void GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel LODLevel);
+
+	void GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel LODLevel);
+
+	void GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel);
+
+	void GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel);
+
+	void GenerateWaterColors(TArray<FColor>& Colors, ELODLevel LODLevel);
 
 public:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* WaterMaterial;
 
 	int32 Size;
 	float Step;
@@ -42,6 +58,7 @@ public:
 
 private:
 	bool bGenerated = false;
+	bool bWaterGenerated = false;
 	
 	URuntimeMeshProviderStatic* StaticProvider;
 	

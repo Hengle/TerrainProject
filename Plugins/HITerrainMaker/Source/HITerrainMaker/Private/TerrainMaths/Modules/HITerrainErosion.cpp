@@ -7,9 +7,9 @@
 
 const float Gravity = 9.8f;
 
-FHITerrainErosion::FHITerrainErosion():NumIteration(100), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(25.0),
-	EvaporationAmount(0.5), HydroErosionAngle(50), ErosionScale(0.12), DepositionScale(0.12), SedimentCapacityScale(1),
-	NumFlowIteration(1),
+FHITerrainErosion::FHITerrainErosion():NumIteration(20), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(1000.0),
+	EvaporationAmount(0.2), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
+	NumFlowIteration(10),
 	ThermalErosionScale(1.0)
 {
 	
@@ -102,11 +102,15 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 	 * 四个方向上的流量，顺序是L、R、T、B
 	 */
 	ApplyInitialization();
-	ApplyRainSimulation();
+	// ApplyRainSimulation();
 	for(int32 Iterate = 0; Iterate < NumIteration; Iterate++)
 	{
 		UE_LOG(LogHITerrain, Warning, TEXT("Erosion Iteration %d"), Iterate);
-		// ApplyRainSimulation();
+		if(Iterate < NumIteration / 2)
+		{
+			ApplyRainSimulation();
+		}
+		
 		for(int32 FlowIterate = 0; FlowIterate < NumFlowIteration; FlowIterate++)
 		{
 			ApplyFlowSimulation();
@@ -159,7 +163,8 @@ void FHITerrainErosion::ApplyRainSimulation()
 		for(int32 j = 0; j < SizeY; j++)
 		{
 			float RainBool = RandomStream.FRand() < 0.5? 0: 1;
-			WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + RainAmount * DeltaTime * RainBool);
+			// WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + RainAmount * DeltaTime * RainBool);
+			WaterChannel->SetFloat(i, j, WaterChannel->GetFloat(i, j) + RainAmount * DeltaTime);
 		}
 	}
 }
