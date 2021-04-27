@@ -7,10 +7,12 @@
 
 const float Gravity = 9.8f;
 
-FHITerrainErosion::FHITerrainErosion():NumIteration(20), DeltaTime(1.0f / 60), HydroErosionScale(1.0), RainAmount(1000.0),
+FHITerrainErosion::FHITerrainErosion():NumIteration(20), DeltaTime(1.0f / 60),bEnableHydroErosion(true), bEnableThermalErosion(true),
+	HydroErosionScale(1.0), RainAmount(1000.0),
 	EvaporationAmount(0.2), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
 	NumFlowIteration(10),
 	ThermalErosionScale(1.0)
+	
 {
 	
 }
@@ -33,6 +35,16 @@ void FHITerrainErosion::SetNumIteration(int32 InNumIteration)
 void FHITerrainErosion::SetDeltaTime(float InDeltaTime)
 {
 	DeltaTime = InDeltaTime;
+}
+
+void FHITerrainErosion::SetEnableHydroErosion(bool InBool)
+{
+	bEnableHydroErosion = InBool;
+}
+
+void FHITerrainErosion::SetEnableThermalErosion(bool InBool)
+{
+	bEnableThermalErosion = InBool;
 }
 
 void FHITerrainErosion::SetHydroErosionScale(float InHydroErosionScale)
@@ -108,19 +120,25 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 	for(int32 Iterate = 0; Iterate < NumIteration; Iterate++)
 	{
 		UE_LOG(LogHITerrain, Warning, TEXT("Erosion Iteration %d"), Iterate);
-		if(Iterate < NumIteration / 2)
+		if(bEnableHydroErosion)
 		{
-			ApplyRainSimulation();
-		}
+			if(Iterate < NumIteration / 2)
+			{
+				ApplyRainSimulation();
+			}
 		
-		for(int32 FlowIterate = 0; FlowIterate < NumFlowIteration; FlowIterate++)
-		{
-			ApplyFlowSimulation();
-			ApplyErosionDepositionSimulation();
+			for(int32 FlowIterate = 0; FlowIterate < NumFlowIteration; FlowIterate++)
+			{
+				ApplyFlowSimulation();
+				ApplyErosionDepositionSimulation();
+			}
+			ApplySedimentSimulation();
+			ApplyEvaporationSimulation();
 		}
-		ApplySedimentSimulation();
-		ApplyThermalErosionSimulation();
-		ApplyEvaporationSimulation();
+		if(bEnableThermalErosion)
+		{
+			ApplyThermalErosionSimulation();
+		}
 	}
 }
 

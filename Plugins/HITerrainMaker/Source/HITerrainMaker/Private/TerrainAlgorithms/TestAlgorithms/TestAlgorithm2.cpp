@@ -12,7 +12,8 @@ void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
 	Perlin.SetTargetChannel("height");
 
 	Erosion.SetSeed(Information->Seed);
-	Erosion.SetThermalErosionScale(0.0f);
+	Erosion.SetEnableHydroErosion(false);
+	Erosion.SetThermalErosionScale(10.0f);
 }
 
 void UTestAlgorithm2::ApplyAlgorithm(UHITerrainData* Data)
