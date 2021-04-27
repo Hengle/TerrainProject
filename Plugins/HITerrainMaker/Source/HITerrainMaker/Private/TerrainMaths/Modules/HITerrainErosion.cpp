@@ -93,11 +93,13 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("flux", ETerrainDataType::FQUAT);
 	Data->AddChannel("velocity", ETerrainDataType::FVECTOR);
+	Data->AddChannel("terrainflux", ETerrainDataType::FQUAT);
 	HeightChannel = Data->GetChannel("height");
 	WaterChannel = Data->GetChannel("water");
 	SedimentChannel = Data->GetChannel("sediment");
 	VelocityChannel = Data->GetChannel("velocity");
 	FluxChannel = Data->GetChannel("flux");
+	TerrainFluxChannel = Data->GetChannel("terrainflux");
 	/*
 	 * 四个方向上的流量，顺序是L、R、T、B
 	 */
@@ -309,6 +311,50 @@ void FHITerrainErosion::ApplySedimentSimulation()
 
 void FHITerrainErosion::ApplyThermalErosionSimulation()
 {
+	int32 SizeX = HeightChannel->GetSizeX();
+	int32 SizeY = HeightChannel->GetSizeY();
+	for(int32 i = 0; i < SizeX; i++)
+	{
+		for(int32 j = 0; j < SizeY; j++)
+		{
+			float HeightValue = HeightChannel->GetFloat(i, j);
+			float LHeight = i == 0? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i - 1, j);
+			float RHeight = i == SizeX - 1? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i + 1, j);
+			float THeight = j == 0? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i, j - 1);
+			float BHeight = j == SizeY - 1? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i, j + 1);
+			float LHeightDiff = FMath::Max(0.0f, HeightValue - LHeight);
+			float RHeightDiff = FMath::Max(0.0f, HeightValue - RHeight);
+			float THeightDiff = FMath::Max(0.0f, HeightValue - THeight);
+			float BHeightDiff = FMath::Max(0.0f, HeightValue - BHeight);
+			float MaxHeightDiff = FMath::Max(FMath::Max(LHeightDiff, RHeightDiff), FMath::Max(THeightDiff, BHeightDiff));
+			float RemovedHeight = MaxHeightDiff * ThermalErosionScale / 2;
+			float SumHeightDiff = LHeightDiff + RHeightDiff + THeightDiff + BHeightDiff;
+			if(SumHeightDiff != 0.0f)
+			{
+				FQuat TerrainFluxValue;
+				TerrainFluxValue.X = RemovedHeight * LHeightDiff / SumHeightDiff;
+				TerrainFluxValue.X = RemovedHeight * RHeightDiff / SumHeightDiff;
+				TerrainFluxValue.X = RemovedHeight * THeightDiff / SumHeightDiff;
+				TerrainFluxValue.X = RemovedHeight * BHeightDiff / SumHeightDiff;
+				TerrainFluxChannel->SetFQuat(i, j, TerrainFluxValue);
+			}
+			
+		}
+	}
+	for(int32 i = 0; i < SizeX; i++)
+	{
+		for(int32 j = 0; j < SizeY; j++)
+		{
+			FQuat TerrainFluxValue = TerrainFluxChannel->GetFQuat(i, j);
+			float OutValue = TerrainFluxValue.X + TerrainFluxValue.Y + TerrainFluxValue.Z + TerrainFluxValue.W;
+			float LInValue = i == 0? 0: TerrainFluxChannel->GetFQuat(i - 1, j).Y;
+			float RInValue = i == SizeX - 1? 0: TerrainFluxChannel->GetFQuat(i + 1, j).X;
+			float TInValue = j == 0? 0: TerrainFluxChannel->GetFQuat(i, j - 1).W;
+			float BInValue = j == SizeY - 1? 0: TerrainFluxChannel->GetFQuat(i, j + 1).Z;
+			float DeltaTerrainValue = (LInValue + RInValue + TInValue + BInValue - OutValue) * FMath::Min(1.0f, DeltaTime * ThermalErosionScale);
+			HeightChannel->SetFloat(i, j, HeightChannel->GetFloat(i, j) + DeltaTerrainValue);
+		}
+	}
 }
 
 /*

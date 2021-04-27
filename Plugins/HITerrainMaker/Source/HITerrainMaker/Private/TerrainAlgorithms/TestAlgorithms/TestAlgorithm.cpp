@@ -8,7 +8,7 @@ void UTestAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Super::Init(InInformation);
 	Perlin.SetSeed(Information->Seed);
 	Perlin.SetAmplitude(2000);
-	Perlin.SetScale(0.01);
+	Perlin.SetScale(0.005);
 	Perlin.SetTargetChannel("height");
 
 	Erosion.SetSeed(Information->Seed);

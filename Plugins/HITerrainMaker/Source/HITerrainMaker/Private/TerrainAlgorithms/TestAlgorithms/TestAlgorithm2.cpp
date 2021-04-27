@@ -8,18 +8,23 @@ void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
 	Super::Init(InInformation);
 	Perlin.SetSeed(Information->Seed);
 	Perlin.SetAmplitude(2000);
-	Perlin.SetScale(0.01);
+	Perlin.SetScale(0.005);
 	Perlin.SetTargetChannel("height");
+
+	Erosion.SetSeed(Information->Seed);
+	Erosion.SetThermalErosionScale(0.0f);
 }
 
 void UTestAlgorithm2::ApplyAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
 	Perlin.ApplyModule(Data);
+	Erosion.ApplyModule(Data);
 }
 
 void UTestAlgorithm2::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
 	Perlin.ApplyModule(Data);
+	Erosion.ApplyModule(Data);
 }

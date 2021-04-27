@@ -66,4 +66,5 @@ private:
 	TSharedPtr<FHITerrainChannel> SedimentChannel;
 	TSharedPtr<FHITerrainChannel> FluxChannel;
 	TSharedPtr<FHITerrainChannel> VelocityChannel;
+	TSharedPtr<FHITerrainChannel> TerrainFluxChannel;
 };

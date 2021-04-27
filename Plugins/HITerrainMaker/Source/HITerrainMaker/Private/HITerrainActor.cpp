@@ -85,8 +85,16 @@ void AHITerrainActor::GeneratePositions(TArray<FVector>& Positions, ELODLevel LO
 		for (int32 j = 0; j <= Size; j++) {
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
-			// float LocationZ = ChunkData->GetSampleValue(i, j);
-			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
+			float LocationZ = 0.0f;
+			if(ChunkData->Data->ContainsChannel("sediment"))
+			{
+				LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j);
+			}
+			else
+			{
+				LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
+			}
+			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}
@@ -182,25 +190,14 @@ void AHITerrainActor::GenerateTexCoords(TArray<FVector2D>& TexCoords, ELODLevel 
 
 void AHITerrainActor::GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel)
 {
-	FColor BasicColor(255, 255, 255, 255);
+	FColor BasicColor(127, 127, 127, 255);
 	FColor SedimentColor(0, 255, 0, 255);
-	FColor WaterColor(0, 0, 255, 255);
-	FColor WSColor(0, 255, 255, 255);
 	if(ChunkData->Data->ContainsChannel("sediment"))
 	{
 		for (int32 i = 0; i <= Size; i++) {
 			for (int32 j = 0; j <= Size; j++) {
-				float WaterValue = ChunkData->GetChannelFloatValue("water", i, j);
 				float SedimentValue = ChunkData->GetChannelFloatValue("sediment", i, j);
-				if(WaterValue > 0.0f && SedimentValue > 0.0f)
-				{
-					Colors.Add(WSColor);
-				}
-				else if(WaterValue > 0.0f)
-				{
-					Colors.Add(WaterColor);
-				}
-				else if(SedimentValue > 0.0f)
+				if(SedimentValue > 0.0f)
 				{
 					Colors.Add(SedimentColor);
 				}
