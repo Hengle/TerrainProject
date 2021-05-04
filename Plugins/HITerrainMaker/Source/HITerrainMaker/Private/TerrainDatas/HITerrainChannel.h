@@ -102,6 +102,11 @@ public:
 		Data.SetValue(X, Y, InFloat);
 	}
 
+	virtual const TArray<float>& GetRawFloatArray()
+	{
+		return Data.RawArray;
+	};
+
 private:
 	TFixed2DArray<float> Data;
 };
@@ -139,6 +144,11 @@ public:
 	{
 		Data.SetValue(X, Y, InBool);
 	}
+
+	virtual const TArray<bool>& GetRawBoolArray()
+	{
+		return Data.RawArray;
+	};
 
 private:
 	TFixed2DArray<bool> Data;
@@ -181,6 +191,11 @@ public:
 		}
 		Data.SetValue(X, Y, InFVector);
 	}
+	
+	virtual const TArray<FVector>& GetRawFVectorArray()
+	{
+		return Data.RawArray;
+	};
 
 private:
 	TFixed2DArray<FVector> Data;
@@ -223,6 +238,11 @@ public:
 		}
 		Data.SetValue(X, Y, InFQuat);
 	}
+
+	virtual const TArray<FQuat>& GetRawFQuatArray()
+	{
+		return Data.RawArray;
+	};
 
 private:
 	TFixed2DArray<FQuat> Data;

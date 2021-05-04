@@ -19,13 +19,15 @@ void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
 void UTestAlgorithm2::ApplyAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
-	Perlin.ApplyModule(Data);
-	Erosion.ApplyModule(Data);
+	// Perlin.ApplyModule(Data);
+	// Erosion.ApplyModule(Data);
+	ErosionGPU.ApplyModule(Data);
 }
 
 void UTestAlgorithm2::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
-	Perlin.ApplyModule(Data);
-	Erosion.ApplyModule(Data);
+	// Perlin.ApplyModule(Data);
+	// Erosion.ApplyModule(Data);
+	ErosionGPU.ApplyModule(Data);
 }
