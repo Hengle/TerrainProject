@@ -61,7 +61,7 @@ void AHITerrainActor::GenerateChunk(ELODLevel LODLevel)
 		}
 		else
 		{
-			StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, false);
+			StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, true);
 			bGenerated = true;
 		}
 
@@ -241,7 +241,7 @@ void AHITerrainActor::GenerateWater(ELODLevel LODLevel)
 		}
 		else
 		{
-			StaticProvider->CreateSectionFromComponents(0, 1, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, true);
+			StaticProvider->CreateSectionFromComponents(0, 1, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, false);
 			bWaterGenerated = true;
 		}
 		
