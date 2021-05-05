@@ -157,5 +157,6 @@ int32 FHITerrainChannel::GetSizeY()
 
 void FHITerrainChannel::ErrorMessage(const FString& InType)
 {
-	UE_LOG(LogHITerrain, Error, TEXT("Terrain Channel of type '%s' used as a '%s'."), *GetTypeName(), *InType);
+	FString RealType = GetTypeName();
+	UE_LOG(LogHITerrain, Error, TEXT("Terrain Channel of type '%s' used as a '%s'."), *RealType, *InType);
 }

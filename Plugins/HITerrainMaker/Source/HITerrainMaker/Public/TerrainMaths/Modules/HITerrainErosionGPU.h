@@ -14,9 +14,13 @@ class HITERRAINMAKER_API FErosionShader: public FGlobalShader
 
 public:
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
-		SHADER_PARAMETER(int, SizeX)
-		SHADER_PARAMETER(int, SizeY)
-		SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, Height)
+	
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, TerrainHeight)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, TerrainWater)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, TerrainSediment)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, TerrainHardness)
+	
 	END_SHADER_PARAMETER_STRUCT()
 
 	
@@ -39,6 +43,5 @@ class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
 public:
 	virtual void ApplyModule(UHITerrainData* Data) override;
 
-	UTextureRenderTarget2D* CreateRenderTarget(uint32 sizex, uint32 sizey, FLinearColor clearColor);
-	UTexture2D* GetRenderTargetTexture(UTextureRenderTarget2D* result);
+	void ApplyErosionShader(UHITerrainData* Data);
 };

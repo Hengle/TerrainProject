@@ -1,17 +1,22 @@
 ﻿#include "/Engine/Public/Platform.ush"
 
 
-int SizeX;
-int SizeY;
-RWStructuredBuffer<float> Height;
+int Size;
+RWStructuredBuffer<float> TerrainHeight;
+RWStructuredBuffer<float> TerrainWater;
+RWStructuredBuffer<float> TerrainSediment;
+RWStructuredBuffer<float> TerrainHardness;
 
 int GetIndex(int X, int Y)
 {
-	return X * SizeX + Y;
+	return X * Size + Y;
 };
 
 [numthreads(32, 32, 1)]
 void MainComputeShader(uint3 DTid : SV_DispatchThreadID)
 {   
-	Height[GetIndex(DTid.x, DTid.y)] = 1000.0f;
+	TerrainHeight[GetIndex(DTid.x, DTid.y)] = 1000.0f;
+	TerrainWater[GetIndex(DTid.x, DTid.y)] = 1000.0f;
+	TerrainSediment[GetIndex(DTid.x, DTid.y)] = 1000.0f;
+	TerrainHardness[GetIndex(DTid.x, DTid.y)] = 0.0f;
 }
