@@ -13,7 +13,7 @@ class HITERRAINMAKER_API FHITerrainErosion: public FHITerrainModule
 {
 public:
 	FHITerrainErosion();
-	~FHITerrainErosion();
+	virtual ~FHITerrainErosion() override;
 
 	void SetSeed(int32 InSeed);
 	

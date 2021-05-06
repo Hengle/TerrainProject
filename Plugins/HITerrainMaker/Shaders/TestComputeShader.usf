@@ -1,23 +1,96 @@
 ﻿#include "/Engine/Public/Platform.ush"
 
-#define NUMTHREADS numthreads(32, 32, 1)
+#define NUM_THREADS numthreads(32, 32, 1)
 
+#define INDEX GetIndex(id.xy)
+#define HEIGHT TerrainHeight[INDEX]
+#define WATER TerrainWater[INDEX]
+#define SEDIMENT TerrainSediment[INDEX]
+#define HARDNESS TerrainHardness[INDEX]
+#define FLUX TerrainFlux[INDEX]
+#define TERRAIN_FLUX TerrainTerrainFlux[INDEX]
+#define VELOCITY TerrainVelocity[INDEX]
+
+/*
+ * 输入通道
+ */
 int Size;
+
+int NumIteration;
+float DeltaTime;
+int GBEnableHydroErosion;
+int GBEnableThermalErosion;
+	
+float HydroErosionScale;
+float RainAmount;
+float EvaporationAmount;
+float HydroErosionAngle;
+float ErosionScale;
+float DepositionScale;
+float SedimentCapacityScale;
+
+float ThermalErosionScale;
+
 RWStructuredBuffer<float> TerrainHeight;
 RWStructuredBuffer<float> TerrainWater;
 RWStructuredBuffer<float> TerrainSediment;
 RWStructuredBuffer<float> TerrainHardness;
+RWStructuredBuffer<float4> TerrainFlux;
+RWStructuredBuffer<float4> TerrainTerrainFlux;
+RWStructuredBuffer<float3> TerrainVelocity;
 
 int GetIndex(int2 id)
 {
 	return id.x * Size + id.y;
 };
 
-[NUMTHREADS]
+[NUM_THREADS]
+void ApplyRainSimulation(uint3 id)
+{
+	WATER += RainAmount * DeltaTime;
+}
+
+[NUM_THREADS]
+void ApplyFlowSimulation(uint3 id)
+{
+	
+}
+
+[NUM_THREADS]
+void ApplyErosionDepositionSimulation(uint3 id)
+{
+	
+}
+
+[NUM_THREADS]
+void ApplySedimentSimulation(uint3 id)
+{
+	
+}
+
+[NUM_THREADS]
+void ApplyThermalErosionSimulation(uint3 id)
+{
+	
+}
+
+[NUM_THREADS]
+void ApplyEvaporationSimulation(uint3 id)
+{
+	
+}
+
+[NUM_THREADS]
 void MainComputeShader(uint3 id : SV_DispatchThreadID)
-{   
-	TerrainHeight[GetIndex(id.xy)] = 1000.0f;
-	TerrainWater[GetIndex(id.xy)] = 1000.0f;
-	TerrainSediment[GetIndex(id.xy)] = 1000.0f;
-	TerrainHardness[GetIndex(id.xy)] = 0.0f;
+{
+	for(int i = 0; i < NumIteration; i++)
+	{
+		ApplyRainSimulation(id);
+		ApplyFlowSimulation(id);
+		ApplyErosionDepositionSimulation(id);
+		ApplySedimentSimulation(id);
+		ApplyEvaporationSimulation(id);
+		ApplyThermalErosionSimulation(id);
+	}
+	
 }

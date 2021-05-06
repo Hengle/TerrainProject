@@ -12,6 +12,79 @@
 IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/TestComputeShader.usf", "MainComputeShader", SF_Compute);
 
 
+FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(20), DeltaTime(1.0f / 60),bEnableHydroErosion(true), bEnableThermalErosion(true),
+	HydroErosionScale(1.0), RainAmount(1000.0),
+	EvaporationAmount(0.2), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
+	ThermalErosionScale(1.0)
+	
+{
+	
+}
+
+FHITerrainErosionGPU::~FHITerrainErosionGPU()
+{
+	
+}
+
+void FHITerrainErosionGPU::SetNumIteration(int32 InNumIteration)
+{
+	NumIteration = InNumIteration;
+}
+
+void FHITerrainErosionGPU::SetDeltaTime(float InDeltaTime)
+{
+	DeltaTime = InDeltaTime;
+}
+
+void FHITerrainErosionGPU::SetEnableHydroErosion(bool InBool)
+{
+	bEnableHydroErosion = InBool;
+}
+
+void FHITerrainErosionGPU::SetEnableThermalErosion(bool InBool)
+{
+	bEnableThermalErosion = InBool;
+}
+
+void FHITerrainErosionGPU::SetHydroErosionScale(float InHydroErosionScale)
+{
+	HydroErosionScale = InHydroErosionScale;
+}
+
+void FHITerrainErosionGPU::SetRainAmount(float InRainAmount)
+{
+	RainAmount = InRainAmount;
+}
+
+void FHITerrainErosionGPU::SetEvaporationAmount(float InEvaporationAmount)
+{
+	EvaporationAmount = InEvaporationAmount;
+}
+
+void FHITerrainErosionGPU::SetHydroErosionAngle(float InHydroErosionAngle)
+{
+	HydroErosionAngle = InHydroErosionAngle;
+}
+
+void FHITerrainErosionGPU::SetErosionScale(float InErosionScale)
+{
+	ErosionScale = InErosionScale;
+}
+
+void FHITerrainErosionGPU::SetDepositionScale(float InDepositionScale)
+{
+	DepositionScale = InDepositionScale;
+}
+
+void FHITerrainErosionGPU::SetSedimentCapacityScale(float InSedimentCapacityScale)
+{
+	SedimentCapacityScale = InSedimentCapacityScale;
+}
+
+void FHITerrainErosionGPU::SetThermalErosionScale(float InThermalErosionScale)
+{
+	ThermalErosionScale = InThermalErosionScale;
+}
 
 void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 {
@@ -31,6 +104,11 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	TResourceArray<float> WaterBuffer;
 	TResourceArray<float> SedimentBuffer;
 	TResourceArray<float> HardnessBuffer;
+
+	TResourceArray<float> FluxBuffer;
+	TResourceArray<float> TerrainFluxBuffer;
+	TResourceArray<float> VelocityBuffer;
+	
 	for(int32 i = 0; i < Size; i++)
 	{
 		for(int32 j = 0; j < Size; j++)
@@ -39,6 +117,20 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			WaterBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
 			SedimentBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
 			HardnessBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
+
+			FluxBuffer.Add(0.0f);
+			FluxBuffer.Add(0.0f);
+			FluxBuffer.Add(0.0f);
+			FluxBuffer.Add(0.0f);
+
+			TerrainFluxBuffer.Add(0.0f);
+			TerrainFluxBuffer.Add(0.0f);
+			TerrainFluxBuffer.Add(0.0f);
+			TerrainFluxBuffer.Add(0.0f);
+
+			VelocityBuffer.Add(0.0f);
+			VelocityBuffer.Add(0.0f);
+			VelocityBuffer.Add(0.0f);
 		}
 	}
 	HeightBuffer.SetAllowCPUAccess(true);
@@ -54,6 +146,12 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	SedimentCreateInfo.ResourceArray = &SedimentBuffer;
 	FRHIResourceCreateInfo HardnessCreateInfo;
 	HardnessCreateInfo.ResourceArray = &HardnessBuffer;
+	FRHIResourceCreateInfo FluxCreateInfo;
+	FluxCreateInfo.ResourceArray = &FluxBuffer;
+	FRHIResourceCreateInfo TerrainFluxCreateInfo;
+	TerrainFluxCreateInfo.ResourceArray = &TerrainFluxBuffer;
+	FRHIResourceCreateInfo VelocityCreateInfo;
+	VelocityCreateInfo.ResourceArray = &VelocityBuffer;
 	
 	FStructuredBufferRHIRef HeightRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size, BUF_UnorderedAccess | BUF_ShaderResource, HeightCreateInfo);
 	FUnorderedAccessViewRHIRef HeightUAVRef = RHICreateUnorderedAccessView(HeightRHIRef, true, false);
@@ -63,13 +161,34 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	FUnorderedAccessViewRHIRef SedimentUAVRef = RHICreateUnorderedAccessView(SedimentRHIRef, true, false);
 	FStructuredBufferRHIRef HardnessRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size, BUF_UnorderedAccess | BUF_ShaderResource, HardnessCreateInfo);
 	FUnorderedAccessViewRHIRef HardnessUAVRef = RHICreateUnorderedAccessView(HardnessRHIRef, true, false);
+	FStructuredBufferRHIRef FluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, FluxCreateInfo);
+	FUnorderedAccessViewRHIRef FluxUAVRef = RHICreateUnorderedAccessView(FluxRHIRef, true, false);
+	FStructuredBufferRHIRef TerrainFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainFluxCreateInfo);
+	FUnorderedAccessViewRHIRef TerrainFluxUAVRef = RHICreateUnorderedAccessView(TerrainFluxRHIRef, true, false);
+	FStructuredBufferRHIRef VelocityRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, VelocityCreateInfo);
+	FUnorderedAccessViewRHIRef VelocityUAVRef = RHICreateUnorderedAccessView(VelocityRHIRef, true, false);
 
 	FErosionShader::FParameters Parameters;
 	Parameters.Size = Size;
+	Parameters.NumIteration = NumIteration;
+	Parameters.DeltaTime = DeltaTime;
+	Parameters.GBEnableHydroErosion = bEnableHydroErosion;
+	Parameters.GBEnableThermalErosion = bEnableThermalErosion;
+	Parameters.HydroErosionScale = HydroErosionScale;
+	Parameters.RainAmount = RainAmount;
+	Parameters.EvaporationAmount = EvaporationAmount;
+	Parameters.HydroErosionAngle = HydroErosionAngle;
+	Parameters.ErosionScale = ErosionScale;
+	Parameters.DepositionScale = DepositionScale;
+	Parameters.SedimentCapacityScale = SedimentCapacityScale;
+	Parameters.ThermalErosionScale = ThermalErosionScale;
 	Parameters.TerrainHeight = HeightUAVRef;
 	Parameters.TerrainWater = WaterUAVRef;
 	Parameters.TerrainSediment = SedimentUAVRef;
 	Parameters.TerrainHardness = HardnessUAVRef;
+	Parameters.TerrainFlux = FluxUAVRef;
+	Parameters.TerrainTerrainFlux = TerrainFluxUAVRef;
+	Parameters.TerrainVelocity = VelocityUAVRef;
 
 
 	

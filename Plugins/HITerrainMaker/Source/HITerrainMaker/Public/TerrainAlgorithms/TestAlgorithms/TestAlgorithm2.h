@@ -25,7 +25,6 @@ class HITERRAINMAKER_API UTestAlgorithm2 : public UHITerrainAlgorithm
 	virtual void DebugAlgorithm(UHITerrainData* Data) override;
 
 	private:
-	// FHITerrainPerlin Perlin;
-	// FHITerrainErosion Erosion;
+	FHITerrainPerlin Perlin;
 	FHITerrainErosionGPU ErosionGPU;
 };
