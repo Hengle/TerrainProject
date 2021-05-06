@@ -1,5 +1,6 @@
 ﻿#include "/Engine/Public/Platform.ush"
 
+#define NUMTHREADS numthreads(32, 32, 1)
 
 int Size;
 RWStructuredBuffer<float> TerrainHeight;
@@ -7,16 +8,16 @@ RWStructuredBuffer<float> TerrainWater;
 RWStructuredBuffer<float> TerrainSediment;
 RWStructuredBuffer<float> TerrainHardness;
 
-int GetIndex(int X, int Y)
+int GetIndex(int2 id)
 {
-	return X * Size + Y;
+	return id.x * Size + id.y;
 };
 
-[numthreads(32, 32, 1)]
-void MainComputeShader(uint3 DTid : SV_DispatchThreadID)
+[NUMTHREADS]
+void MainComputeShader(uint3 id : SV_DispatchThreadID)
 {   
-	TerrainHeight[GetIndex(DTid.x, DTid.y)] = 1000.0f;
-	TerrainWater[GetIndex(DTid.x, DTid.y)] = 1000.0f;
-	TerrainSediment[GetIndex(DTid.x, DTid.y)] = 1000.0f;
-	TerrainHardness[GetIndex(DTid.x, DTid.y)] = 0.0f;
+	TerrainHeight[GetIndex(id.xy)] = 1000.0f;
+	TerrainWater[GetIndex(id.xy)] = 1000.0f;
+	TerrainSediment[GetIndex(id.xy)] = 1000.0f;
+	TerrainHardness[GetIndex(id.xy)] = 0.0f;
 }

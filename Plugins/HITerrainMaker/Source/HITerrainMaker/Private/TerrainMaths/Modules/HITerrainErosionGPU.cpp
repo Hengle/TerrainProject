@@ -7,6 +7,7 @@
 #include "RenderTargetPool.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Rendering/Texture2DResource.h"
+#include "Async/Async.h"
 
 IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/TestComputeShader.usf", "MainComputeShader", SF_Compute);
 
@@ -70,39 +71,62 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	Parameters.TerrainSediment = SedimentUAVRef;
 	Parameters.TerrainHardness = HardnessUAVRef;
 
-	TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
-	FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, 
-						FIntVector(FMath::DivideAndRoundUp(Size, 32),
-								FMath::DivideAndRoundUp(Size, 32), 1));
+
 	
+	// AsyncTask(ENamedThreads::GameThread, []()
+	// {
+	// 	FlushRenderingCommands();
+	// });
+
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList){
-			
+			TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, 
+								FIntVector(FMath::DivideAndRoundUp(Size, 32),
+										FMath::DivideAndRoundUp(Size, 32), 1));
 
+			AsyncTask(ENamedThreads::GameThread, []()
+			{
+				FlushRenderingCommands();
+			});
+			
 			float* HeightSrc = (float*)RHICmdList.LockStructuredBuffer(HeightRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
 			float* WaterSrc = (float*)RHICmdList.LockStructuredBuffer(WaterRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
 			float* SedimentSrc = (float*)RHICmdList.LockStructuredBuffer(SedimentRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
 			float* HardnessSrc = (float*)RHICmdList.LockStructuredBuffer(HardnessRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
 
 			TArray<float> ResultHeight;
+			ResultHeight.Reserve(Size * Size);
+			ResultHeight.AddUninitialized(Size * Size);
 			TArray<float> ResultWater;
+			ResultWater.Reserve(Size * Size);
+			ResultWater.AddUninitialized(Size * Size);
 			TArray<float> ResultSediment;
+			ResultSediment.Reserve(Size * Size);
+			ResultSediment.AddUninitialized(Size * Size);
 			TArray<float> ResultHardness;
+			ResultHardness.Reserve(Size * Size);
+			ResultHardness.AddUninitialized(Size * Size);
 
-			for(int32 i = 0; i < Size; i++)
-			{
-				for(int32 j = 0; j < Size; j++)
-				{
-					ResultHeight.Add(*HeightSrc);
-					ResultWater.Add(*WaterSrc);
-					ResultSediment.Add(*SedimentSrc);
-					ResultHardness.Add(*HardnessSrc);
-					HeightSrc++;
-					WaterSrc++;
-					SedimentSrc++;
-					HardnessSrc++;
-				}
-			}
+			FMemory::Memcpy(ResultHeight.GetData(), HeightSrc, sizeof(float) * Size * Size);
+			FMemory::Memcpy(ResultWater.GetData(), WaterSrc, sizeof(float) * Size * Size);
+			FMemory::Memcpy(ResultSediment.GetData(), SedimentSrc, sizeof(float) * Size * Size);
+			FMemory::Memcpy(ResultHardness.GetData(), HardnessSrc, sizeof(float) * Size * Size);
+			
+			// for(int32 i = 0; i < Size; i++)
+			// {
+			// 	for(int32 j = 0; j < Size; j++)
+			// 	{
+			// 		ResultHeight.Add(*HeightSrc);
+			// 		ResultWater.Add(*WaterSrc);
+			// 		ResultSediment.Add(*SedimentSrc);
+			// 		ResultHardness.Add(*HardnessSrc);
+			// 		HeightSrc++;
+			// 		WaterSrc++;
+			// 		SedimentSrc++;
+			// 		HardnessSrc++;
+			// 	}
+			// }
 			RHICmdList.UnlockStructuredBuffer(HeightRHIRef.GetReference());
 			RHICmdList.UnlockStructuredBuffer(WaterRHIRef.GetReference());
 			RHICmdList.UnlockStructuredBuffer(SedimentRHIRef.GetReference());
@@ -121,4 +145,5 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			}
 		}
 	);
+	
 }
