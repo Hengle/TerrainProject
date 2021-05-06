@@ -1,15 +1,15 @@
-﻿#include "/Engine/Public/Platform.ush"
+#include "/Engine/Public/Platform.ush"
 
-#define NUM_THREADS numthreads(32, 32, 1)
+#define NUM_THREADS numthreads(8, 8, 1)
 
 #define INDEX GetIndex(id.xy)
-#define HEIGHT TerrainHeight[INDEX]
-#define WATER TerrainWater[INDEX]
-#define SEDIMENT TerrainSediment[INDEX]
-#define HARDNESS TerrainHardness[INDEX]
-#define FLUX TerrainFlux[INDEX]
-#define TERRAIN_FLUX TerrainTerrainFlux[INDEX]
-#define VELOCITY TerrainVelocity[INDEX]
+#define L_INDEX GetIndex(id.xy + int2(-1, 0))
+#define R_INDEX GetIndex(id.xy + int2(1, 0))
+#define T_INDEX GetIndex(id.xy + int2(0, -1))
+#define B_INDEX GetIndex(id.xy + int2(0, 1))
+
+#define GRAVITY 9.8
+
 
 /*
  * 输入通道
@@ -31,53 +31,121 @@ float SedimentCapacityScale;
 
 float ThermalErosionScale;
 
-RWStructuredBuffer<float> TerrainHeight;
-RWStructuredBuffer<float> TerrainWater;
-RWStructuredBuffer<float> TerrainSediment;
-RWStructuredBuffer<float> TerrainHardness;
+RWStructuredBuffer<float> Height;
+RWStructuredBuffer<float> Water;
+RWStructuredBuffer<float> Sediment;
+RWStructuredBuffer<float> Hardness;
+RWStructuredBuffer<float4> Flux;
 RWStructuredBuffer<float4> TerrainFlux;
-RWStructuredBuffer<float4> TerrainTerrainFlux;
-RWStructuredBuffer<float3> TerrainVelocity;
+RWStructuredBuffer<float3> Velocity;
+
 
 int GetIndex(int2 id)
 {
 	return id.x * Size + id.y;
 };
 
-[NUM_THREADS]
+float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
+{
+	float L1 = lerp(LL, LH, LA);
+	float L2 = lerp(HL, HH, LA);
+	return lerp(L1, L2, HA);
+}
+
+
 void ApplyRainSimulation(uint3 id)
 {
-	WATER += RainAmount * DeltaTime;
+	Water[INDEX] += RainAmount * DeltaTime;
 }
 
-[NUM_THREADS]
 void ApplyFlowSimulation(uint3 id)
 {
-	
+	float LValue = id.x == 0? 0: Height[L_INDEX] + Water[L_INDEX];
+	float RValue = id.x == (uint)Size - 1? 0: Height[R_INDEX] + Water[R_INDEX];
+	float TValue = id.y == 0? 0: Height[T_INDEX] + Water[T_INDEX];
+	float BValue = id.y == (uint)Size - 1? 0: Height[B_INDEX] + Water[B_INDEX];
+	float Value = Height[INDEX] + Water[INDEX];
+	float4 FluxValue;
+	FluxValue.x = max(0.0, (Value - LValue) * DeltaTime * GRAVITY + Flux[INDEX].x);
+	FluxValue.y = max(0.0, (Value - RValue) * DeltaTime * GRAVITY + Flux[INDEX].y);
+	FluxValue.z = max(0.0, (Value - TValue) * DeltaTime * GRAVITY + Flux[INDEX].z);
+	FluxValue.w = max(0.0, (Value - BValue) * DeltaTime * GRAVITY + Flux[INDEX].w);
+	float K = min(1.0f, Water[INDEX] / ((FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) * DeltaTime));
+	K = max(0.0f, K);
+	Flux[INDEX] = FluxValue * K;
 }
 
-[NUM_THREADS]
+void ApplyWaterFlowSimulation(uint3 id)
+{
+	float OutValue = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
+	float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? 0: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
+	Water[INDEX] += LInValue + RInValue + TInValue + BInValue - OutValue;
+}
+
 void ApplyErosionDepositionSimulation(uint3 id)
 {
-	
+	float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? 0: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
+	float3 NewVelocity;
+	NewVelocity.x = (LInValue - Flux[INDEX].x + Flux[INDEX].y - RInValue) / 2;
+	NewVelocity.y = (TInValue - Flux[INDEX].z + Flux[INDEX].w - BInValue) / 2;
+	NewVelocity.z = 0.0f;
+	Velocity[INDEX] = NewVelocity;
+	float VelocityValue = sqrt(Velocity[INDEX].x * Velocity[INDEX].x + Velocity[INDEX].y * Velocity[INDEX].y);
+	float LHeight = id.x == 0? Height[INDEX]: Height[L_INDEX];
+	float RHeight = id.x == (uint)Size - 1? Height[INDEX]: Height[R_INDEX];
+	float THeight = id.y == 0? Height[INDEX]: Height[T_INDEX];
+	float BHeight = id.y == (uint)Size - 1? Height[INDEX]: Height[B_INDEX];
+	float TiltAngle = sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
+	TiltAngle /= sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
+	float SedimentCapacity = TiltAngle * VelocityValue;
+	if(Sediment[INDEX] > SedimentCapacity)
+	{
+		Height[INDEX] += DepositionScale * (Sediment[INDEX] - SedimentCapacity);
+		Sediment[INDEX] -= DepositionScale * (Sediment[INDEX] - SedimentCapacity);
+	}
+	else
+	{
+		Height[INDEX] -= ErosionScale * (SedimentCapacity - Sediment[INDEX]);
+		Sediment[INDEX] += ErosionScale * (SedimentCapacity - Sediment[INDEX]);
+	}
 }
 
-[NUM_THREADS]
 void ApplySedimentSimulation(uint3 id)
 {
-	
+	float FromPosX = id.x - Velocity[INDEX].x * DeltaTime;
+	float FromPosY = id.y - Velocity[INDEX].y * DeltaTime;
+	int X0 = floor(FromPosX);
+	int Y0 = floor(FromPosY);
+	int X1 = X0 + 1;
+	int Y1 = Y0 + 1;
+	X0 = clamp(X0, 0, Size - 1);
+	Y0 = clamp(Y0, 0, Size - 1);
+	X1 = clamp(X1, 0, Size - 1);
+	Y1 = clamp(Y1, 0, Size - 1);
+	float S00 = Sediment[GetIndex(int2(X0, Y0))];
+	float S01 = Sediment[GetIndex(int2(X0, Y1))];
+	float S10 = Sediment[GetIndex(int2(X1, Y0))];
+	float S11 = Sediment[GetIndex(int2(X1, Y1))];
+	int AlphaX = FromPosX - floor(FromPosX);
+	int AlphaY = FromPosY - floor(FromPosY);
+	float NewSediment = Lerp2D(S00, S01, S10, S11, AlphaX, AlphaY);
+	Sediment[INDEX] = NewSediment;
 }
 
-[NUM_THREADS]
 void ApplyThermalErosionSimulation(uint3 id)
 {
 	
 }
 
-[NUM_THREADS]
 void ApplyEvaporationSimulation(uint3 id)
 {
-	
+	Water[INDEX] = max(0.0f, Water[INDEX] * (1 - EvaporationAmount * DeltaTime));
 }
 
 [NUM_THREADS]
@@ -87,6 +155,7 @@ void MainComputeShader(uint3 id : SV_DispatchThreadID)
 	{
 		ApplyRainSimulation(id);
 		ApplyFlowSimulation(id);
+		ApplyWaterFlowSimulation(id);
 		ApplyErosionDepositionSimulation(id);
 		ApplySedimentSimulation(id);
 		ApplyEvaporationSimulation(id);

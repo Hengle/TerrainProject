@@ -12,7 +12,7 @@
 IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/TestComputeShader.usf", "MainComputeShader", SF_Compute);
 
 
-FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(20), DeltaTime(1.0f / 60),bEnableHydroErosion(true), bEnableThermalErosion(true),
+FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(120), DeltaTime(1.0f / 60),bEnableHydroErosion(true), bEnableThermalErosion(true),
 	HydroErosionScale(1.0), RainAmount(1000.0),
 	EvaporationAmount(0.2), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
 	ThermalErosionScale(1.0)
@@ -182,13 +182,13 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	Parameters.DepositionScale = DepositionScale;
 	Parameters.SedimentCapacityScale = SedimentCapacityScale;
 	Parameters.ThermalErosionScale = ThermalErosionScale;
-	Parameters.TerrainHeight = HeightUAVRef;
-	Parameters.TerrainWater = WaterUAVRef;
-	Parameters.TerrainSediment = SedimentUAVRef;
-	Parameters.TerrainHardness = HardnessUAVRef;
-	Parameters.TerrainFlux = FluxUAVRef;
-	Parameters.TerrainTerrainFlux = TerrainFluxUAVRef;
-	Parameters.TerrainVelocity = VelocityUAVRef;
+	Parameters.Height = HeightUAVRef;
+	Parameters.Water = WaterUAVRef;
+	Parameters.Sediment = SedimentUAVRef;
+	Parameters.Hardness = HardnessUAVRef;
+	Parameters.Flux = FluxUAVRef;
+	Parameters.TerrainFlux = TerrainFluxUAVRef;
+	Parameters.Velocity = VelocityUAVRef;
 
 
 	
@@ -201,8 +201,8 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 		[=](FRHICommandListImmediate& RHICmdList){
 			TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, 
-								FIntVector(FMath::DivideAndRoundUp(Size, 32),
-										FMath::DivideAndRoundUp(Size, 32), 1));
+								FIntVector(Size / 8,
+										Size / 8, 1));
 
 			AsyncTask(ENamedThreads::GameThread, []()
 			{
