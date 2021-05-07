@@ -9,12 +9,12 @@
 #include "Rendering/Texture2DResource.h"
 #include "Async/Async.h"
 
-IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/TestComputeShader.usf", "MainComputeShader", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Main", SF_Compute);
 
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
 	HydroErosionScale(0), RainAmount(50.0f),
-	EvaporationAmount(0.1), HydroErosionAngle(0), ErosionScale(0.005), DepositionScale(0.005), SedimentCapacityScale(1),
+	EvaporationAmount(0.1), ErosionScale(0.005), DepositionScale(0.005), SedimentCapacityScale(1),
 	ThermalErosionScale(0)
 	
 {
@@ -59,11 +59,6 @@ void FHITerrainErosionGPU::SetRainAmount(float InRainAmount)
 void FHITerrainErosionGPU::SetEvaporationAmount(float InEvaporationAmount)
 {
 	EvaporationAmount = InEvaporationAmount;
-}
-
-void FHITerrainErosionGPU::SetHydroErosionAngle(float InHydroErosionAngle)
-{
-	HydroErosionAngle = InHydroErosionAngle;
 }
 
 void FHITerrainErosionGPU::SetErosionScale(float InErosionScale)
@@ -192,7 +187,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	Parameters.HydroErosionScale = HydroErosionScale;
 	Parameters.RainAmount = RainAmount;
 	Parameters.EvaporationAmount = EvaporationAmount;
-	Parameters.HydroErosionAngle = HydroErosionAngle;
 	Parameters.ErosionScale = ErosionScale;
 	Parameters.DepositionScale = DepositionScale;
 	Parameters.SedimentCapacityScale = SedimentCapacityScale;

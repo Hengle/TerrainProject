@@ -24,7 +24,6 @@ public:
 	SHADER_PARAMETER(float, HydroErosionScale)
 	SHADER_PARAMETER(float, RainAmount)
 	SHADER_PARAMETER(float, EvaporationAmount)
-	SHADER_PARAMETER(float, HydroErosionAngle)
 	SHADER_PARAMETER(float, ErosionScale)
 	SHADER_PARAMETER(float, DepositionScale)
 	SHADER_PARAMETER(float, SedimentCapacityScale)
@@ -68,7 +67,6 @@ public:
 	void SetHydroErosionScale(float InHydroErosionScale);
 	void SetRainAmount(float InRainAmount);
 	void SetEvaporationAmount(float InEvaporationAmount);
-	void SetHydroErosionAngle(float InHydroErosionAngle);
 	void SetErosionScale(float InErosionScale);
 	void SetDepositionScale(float InDepositionScale);
 	void SetSedimentCapacityScale(float InSedimentCapacityScale);
@@ -89,7 +87,6 @@ private:
 	float HydroErosionScale;
 	float RainAmount;
 	float EvaporationAmount;
-	float HydroErosionAngle;
 	float ErosionScale;
 	float DepositionScale;
 	float SedimentCapacityScale;

@@ -35,7 +35,6 @@ int GBEnableThermalErosion;
 float HydroErosionScale;
 float RainAmount;
 float EvaporationAmount;
-float HydroErosionAngle;
 float ErosionScale;
 float DepositionScale;
 float SedimentCapacityScale;
@@ -163,7 +162,7 @@ void ApplyEvaporationSimulation(uint3 id)
 }
 
 [NUM_THREADS]
-void MainComputeShader(uint3 id : SV_DispatchThreadID)
+void Main(uint3 id : SV_DispatchThreadID)
 {
 	if(CurrentIteration <= NumIteration / 2)
 	{
