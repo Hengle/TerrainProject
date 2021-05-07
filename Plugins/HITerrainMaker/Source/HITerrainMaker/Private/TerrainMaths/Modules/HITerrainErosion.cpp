@@ -130,14 +130,14 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 			for(int32 FlowIterate = 0; FlowIterate < NumFlowIteration; FlowIterate++)
 			{
 				ApplyFlowSimulation();
-				ApplyErosionDepositionSimulation();
+				// ApplyErosionDepositionSimulation();
 			}
-			ApplySedimentSimulation();
-			ApplyEvaporationSimulation();
+			// ApplySedimentSimulation();
+			// ApplyEvaporationSimulation();
 		}
 		if(bEnableThermalErosion)
 		{
-			ApplyThermalErosionSimulation();
+			// ApplyThermalErosionSimulation();
 		}
 	}
 }

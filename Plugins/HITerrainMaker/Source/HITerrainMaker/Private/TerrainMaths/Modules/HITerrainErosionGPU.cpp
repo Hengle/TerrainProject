@@ -12,10 +12,10 @@
 IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/TestComputeShader.usf", "MainComputeShader", SF_Compute);
 
 
-FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(120), DeltaTime(1.0f / 60),bEnableHydroErosion(true), bEnableThermalErosion(true),
-	HydroErosionScale(1.0), RainAmount(1000.0),
-	EvaporationAmount(0.2), HydroErosionAngle(50), ErosionScale(0.012), DepositionScale(0.012), SedimentCapacityScale(1),
-	ThermalErosionScale(1.0)
+FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
+	HydroErosionScale(0), RainAmount(50.0f),
+	EvaporationAmount(0.1), HydroErosionAngle(0), ErosionScale(0.005), DepositionScale(0.005), SedimentCapacityScale(1),
+	ThermalErosionScale(0)
 	
 {
 	
@@ -100,23 +100,24 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	
 	int32 Size = Data->Size();
 			
-	TResourceArray<float> HeightBuffer;
-	TResourceArray<float> WaterBuffer;
-	TResourceArray<float> SedimentBuffer;
-	TResourceArray<float> HardnessBuffer;
-
+	TResourceArray<float> TerrainDataBuffer;
 	TResourceArray<float> FluxBuffer;
 	TResourceArray<float> TerrainFluxBuffer;
 	TResourceArray<float> VelocityBuffer;
+
+	TResourceArray<float> TempFluxBuffer;
+	TResourceArray<float> TempTerrainFluxBuffer;
+	TResourceArray<float> TempTerrainDataBuffer;
+
 	
 	for(int32 i = 0; i < Size; i++)
 	{
 		for(int32 j = 0; j < Size; j++)
 		{
-			HeightBuffer.Add(Data->GetChannel("height")->GetFloat(i, j));
-			WaterBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
-			SedimentBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
-			HardnessBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
+			TerrainDataBuffer.Add(Data->GetChannel("height")->GetFloat(i, j));
+			TerrainDataBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
+			TerrainDataBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
+			TerrainDataBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
 
 			FluxBuffer.Add(0.0f);
 			FluxBuffer.Add(0.0f);
@@ -131,43 +132,57 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			VelocityBuffer.Add(0.0f);
 			VelocityBuffer.Add(0.0f);
 			VelocityBuffer.Add(0.0f);
+
+			TempFluxBuffer.Add(0.0f);
+			TempFluxBuffer.Add(0.0f);
+			TempFluxBuffer.Add(0.0f);
+			TempFluxBuffer.Add(0.0f);
+
+			TempTerrainFluxBuffer.Add(0.0f);
+			TempTerrainFluxBuffer.Add(0.0f);
+			TempTerrainFluxBuffer.Add(0.0f);
+			TempTerrainFluxBuffer.Add(0.0f);
+
+			TempTerrainDataBuffer.Add(Data->GetChannel("height")->GetFloat(i, j));
+			TempTerrainDataBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
+			TempTerrainDataBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
+			TempTerrainDataBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
 		}
 	}
-	HeightBuffer.SetAllowCPUAccess(true);
-	WaterBuffer.SetAllowCPUAccess(true);
-	SedimentBuffer.SetAllowCPUAccess(true);
-	HardnessBuffer.SetAllowCPUAccess(true);
+	TerrainDataBuffer.SetAllowCPUAccess(true);
 	
-	FRHIResourceCreateInfo HeightCreateInfo;
-	HeightCreateInfo.ResourceArray = &HeightBuffer;
-	FRHIResourceCreateInfo WaterCreateInfo;
-	WaterCreateInfo.ResourceArray = &WaterBuffer;
-	FRHIResourceCreateInfo SedimentCreateInfo;
-	SedimentCreateInfo.ResourceArray = &SedimentBuffer;
-	FRHIResourceCreateInfo HardnessCreateInfo;
-	HardnessCreateInfo.ResourceArray = &HardnessBuffer;
+	FRHIResourceCreateInfo TerrainDataCreateInfo;
+	TerrainDataCreateInfo.ResourceArray = &TerrainDataBuffer;
 	FRHIResourceCreateInfo FluxCreateInfo;
 	FluxCreateInfo.ResourceArray = &FluxBuffer;
 	FRHIResourceCreateInfo TerrainFluxCreateInfo;
 	TerrainFluxCreateInfo.ResourceArray = &TerrainFluxBuffer;
 	FRHIResourceCreateInfo VelocityCreateInfo;
 	VelocityCreateInfo.ResourceArray = &VelocityBuffer;
+
+	FRHIResourceCreateInfo TempTerrainDataCreateInfo;
+	TempTerrainDataCreateInfo.ResourceArray = &TempTerrainDataBuffer;
+	FRHIResourceCreateInfo TempFluxCreateInfo;
+	TempFluxCreateInfo.ResourceArray = &TempFluxBuffer;
+	FRHIResourceCreateInfo TempTerrainFluxCreateInfo;
+	TempTerrainFluxCreateInfo.ResourceArray = &TempTerrainFluxBuffer;
 	
-	FStructuredBufferRHIRef HeightRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size, BUF_UnorderedAccess | BUF_ShaderResource, HeightCreateInfo);
-	FUnorderedAccessViewRHIRef HeightUAVRef = RHICreateUnorderedAccessView(HeightRHIRef, true, false);
-	FStructuredBufferRHIRef WaterRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size, BUF_UnorderedAccess | BUF_ShaderResource, WaterCreateInfo);
-	FUnorderedAccessViewRHIRef WaterUAVRef = RHICreateUnorderedAccessView(WaterRHIRef, true, false);
-	FStructuredBufferRHIRef SedimentRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size, BUF_UnorderedAccess | BUF_ShaderResource, SedimentCreateInfo);
-	FUnorderedAccessViewRHIRef SedimentUAVRef = RHICreateUnorderedAccessView(SedimentRHIRef, true, false);
-	FStructuredBufferRHIRef HardnessRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size, BUF_UnorderedAccess | BUF_ShaderResource, HardnessCreateInfo);
-	FUnorderedAccessViewRHIRef HardnessUAVRef = RHICreateUnorderedAccessView(HardnessRHIRef, true, false);
+	FStructuredBufferRHIRef TerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainDataCreateInfo);
+	FUnorderedAccessViewRHIRef TerrainDataUAVRef = RHICreateUnorderedAccessView(TerrainDataRHIRef, true, false);
 	FStructuredBufferRHIRef FluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, FluxCreateInfo);
 	FUnorderedAccessViewRHIRef FluxUAVRef = RHICreateUnorderedAccessView(FluxRHIRef, true, false);
 	FStructuredBufferRHIRef TerrainFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainFluxCreateInfo);
 	FUnorderedAccessViewRHIRef TerrainFluxUAVRef = RHICreateUnorderedAccessView(TerrainFluxRHIRef, true, false);
 	FStructuredBufferRHIRef VelocityRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, VelocityCreateInfo);
 	FUnorderedAccessViewRHIRef VelocityUAVRef = RHICreateUnorderedAccessView(VelocityRHIRef, true, false);
-
+	
+	FStructuredBufferRHIRef TempTerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempTerrainDataCreateInfo);
+	FUnorderedAccessViewRHIRef TempTerrainDataUAVRef = RHICreateUnorderedAccessView(TempTerrainDataRHIRef, true, false);
+	FStructuredBufferRHIRef TempFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempFluxCreateInfo);
+	FUnorderedAccessViewRHIRef TempFluxUAVRef = RHICreateUnorderedAccessView(TempFluxRHIRef, true, false);
+	FStructuredBufferRHIRef TempTerrainFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempTerrainFluxCreateInfo);
+	FUnorderedAccessViewRHIRef TempTerrainFluxUAVRef = RHICreateUnorderedAccessView(TempTerrainFluxRHIRef, true, false);
+	
 	FErosionShader::FParameters Parameters;
 	Parameters.Size = Size;
 	Parameters.NumIteration = NumIteration;
@@ -182,13 +197,14 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	Parameters.DepositionScale = DepositionScale;
 	Parameters.SedimentCapacityScale = SedimentCapacityScale;
 	Parameters.ThermalErosionScale = ThermalErosionScale;
-	Parameters.Height = HeightUAVRef;
-	Parameters.Water = WaterUAVRef;
-	Parameters.Sediment = SedimentUAVRef;
-	Parameters.Hardness = HardnessUAVRef;
+	Parameters.TerrainData = TerrainDataUAVRef;
 	Parameters.Flux = FluxUAVRef;
 	Parameters.TerrainFlux = TerrainFluxUAVRef;
 	Parameters.Velocity = VelocityUAVRef;
+	
+	Parameters.TempTerrainData = TempTerrainDataUAVRef;
+	Parameters.TempFlux = TempFluxUAVRef;
+	Parameters.TempTerrainFlux = TempTerrainFluxUAVRef;
 
 
 	
@@ -196,73 +212,51 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	// {
 	// 	FlushRenderingCommands();
 	// });
+	for(int32 i = 0; i < NumIteration; i++)
+	{
+		Parameters.CurrentIteration = i;
+		ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
+			[=](FRHICommandListImmediate& RHICmdList)
+			{
+				TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 32, Size / 32, 1));
+				
+				// AsyncTask(ENamedThreads::GameThread, []()
+				// {
+				// 	FlushRenderingCommands();
+				// });
+				
+			});
+	}		
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
-		[=](FRHICommandListImmediate& RHICmdList){
-			TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
-			FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, 
-								FIntVector(Size / 8,
-										Size / 8, 1));
-
+		[=](FRHICommandListImmediate& RHICmdList)
+		{
 			AsyncTask(ENamedThreads::GameThread, []()
 			{
 				FlushRenderingCommands();
 			});
 			
-			float* HeightSrc = (float*)RHICmdList.LockStructuredBuffer(HeightRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
-			float* WaterSrc = (float*)RHICmdList.LockStructuredBuffer(WaterRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
-			float* SedimentSrc = (float*)RHICmdList.LockStructuredBuffer(SedimentRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
-			float* HardnessSrc = (float*)RHICmdList.LockStructuredBuffer(HardnessRHIRef.GetReference(), 0, sizeof(float) * Size * Size, EResourceLockMode::RLM_ReadOnly);
+			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
-			TArray<float> ResultHeight;
-			ResultHeight.Reserve(Size * Size);
-			ResultHeight.AddUninitialized(Size * Size);
-			TArray<float> ResultWater;
-			ResultWater.Reserve(Size * Size);
-			ResultWater.AddUninitialized(Size * Size);
-			TArray<float> ResultSediment;
-			ResultSediment.Reserve(Size * Size);
-			ResultSediment.AddUninitialized(Size * Size);
-			TArray<float> ResultHardness;
-			ResultHardness.Reserve(Size * Size);
-			ResultHardness.AddUninitialized(Size * Size);
+			TArray<float> ResultTerrainData;
+			ResultTerrainData.Reserve(Size * Size * 4);
+			ResultTerrainData.AddUninitialized(Size * Size * 4);
 
-			FMemory::Memcpy(ResultHeight.GetData(), HeightSrc, sizeof(float) * Size * Size);
-			FMemory::Memcpy(ResultWater.GetData(), WaterSrc, sizeof(float) * Size * Size);
-			FMemory::Memcpy(ResultSediment.GetData(), SedimentSrc, sizeof(float) * Size * Size);
-			FMemory::Memcpy(ResultHardness.GetData(), HardnessSrc, sizeof(float) * Size * Size);
+			FMemory::Memcpy(ResultTerrainData.GetData(), TerrainDataSrc, sizeof(float) * Size * Size * 4);
 			
-			// for(int32 i = 0; i < Size; i++)
-			// {
-			// 	for(int32 j = 0; j < Size; j++)
-			// 	{
-			// 		ResultHeight.Add(*HeightSrc);
-			// 		ResultWater.Add(*WaterSrc);
-			// 		ResultSediment.Add(*SedimentSrc);
-			// 		ResultHardness.Add(*HardnessSrc);
-			// 		HeightSrc++;
-			// 		WaterSrc++;
-			// 		SedimentSrc++;
-			// 		HardnessSrc++;
-			// 	}
-			// }
-			RHICmdList.UnlockStructuredBuffer(HeightRHIRef.GetReference());
-			RHICmdList.UnlockStructuredBuffer(WaterRHIRef.GetReference());
-			RHICmdList.UnlockStructuredBuffer(SedimentRHIRef.GetReference());
-			RHICmdList.UnlockStructuredBuffer(HardnessRHIRef.GetReference());
+			RHICmdList.UnlockStructuredBuffer(TerrainDataRHIRef.GetReference());
 
 			for(int32 i = 0; i < Size; i++)
 			{
 				for(int32 j = 0; j < Size; j++)
 				{
-					int32 Index = i * Size + j;
-					Data->SetChannelValue("height", i, j, ResultHeight[Index]);
-					Data->SetChannelValue("water", i, j, ResultWater[Index]);
-					Data->SetChannelValue("sediment", i, j, ResultSediment[Index]);
-					Data->SetChannelValue("hardness", i, j, ResultHardness[Index]);
+					int32 Index = (i * Size + j) * 4;
+					Data->SetChannelValue("height", i, j, ResultTerrainData[Index]);
+					Data->SetChannelValue("water", i, j, ResultTerrainData[Index + 1]);
+					Data->SetChannelValue("sediment", i, j, ResultTerrainData[Index + 2]);
+					Data->SetChannelValue("hardness", i, j, ResultTerrainData[Index + 3]);
 				}
 			}
-		}
-	);
-	
+		});
 }

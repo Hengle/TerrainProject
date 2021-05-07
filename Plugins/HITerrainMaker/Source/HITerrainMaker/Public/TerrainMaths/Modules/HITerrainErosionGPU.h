@@ -17,6 +17,7 @@ public:
 	
 	SHADER_PARAMETER(int, Size)
 	SHADER_PARAMETER(int, NumIteration)
+	SHADER_PARAMETER(int, CurrentIteration)
 	SHADER_PARAMETER(float, DeltaTime)
 	SHADER_PARAMETER(int, GBEnableHydroErosion)
 	SHADER_PARAMETER(int, GBEnableThermalErosion)
@@ -28,13 +29,13 @@ public:
 	SHADER_PARAMETER(float, DepositionScale)
 	SHADER_PARAMETER(float, SedimentCapacityScale)
 	SHADER_PARAMETER(float, ThermalErosionScale)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, Height)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, Water)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, Sediment)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, Hardness)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainFlux)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, Velocity)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempFlux)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainFlux)
 	
 	END_SHADER_PARAMETER_STRUCT()
 
