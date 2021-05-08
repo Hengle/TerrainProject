@@ -12,6 +12,7 @@
 #define GRAVITY 9.8f
 #define FLUX_CONST 1.0f	// (2) Value of (A / l)
 #define GRID_DISTANCE_CONST 1.0f		// (4) Value of (lx * ly)
+// #define DELTA_WATER_SCALE 10.0f;
 
 int Size;
 
@@ -27,35 +28,32 @@ RWStructuredBuffer<float4> TempFlux;
 void ApplyFlowSimulation(uint3 id)
 {
 	float Value = TEMP_HEIGHT(INDEX) + TEMP_WATER(INDEX);
-	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + WATER(L_INDEX);
-	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
-	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
-	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + WATER(B_INDEX);
-	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST,
-							(Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST,
-							(Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST,
-							(Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
+	float4 FluxValue = float4((Value - LValue),
+							(Value - RValue),
+							(Value - TValue),
+							(Value - BValue));
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
-	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
-	K = max(0.0f, K);
-	TempFlux[INDEX] = FluxValue * K;
-}
-
-void ApplyWaterFlowSimulation(uint3 id)
-{
-	float OutValue = TempFlux[INDEX].x + TempFlux[INDEX].y + TempFlux[INDEX].z + TempFlux[INDEX].w;
-	float LInValue = id.x == 0? TempFlux[INDEX].x: TempFlux[L_INDEX].y;
-	float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: TempFlux[R_INDEX].x;
-	float TInValue = id.y == 0? TempFlux[INDEX].z: TempFlux[T_INDEX].w;
-	float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: TempFlux[B_INDEX].z;
-	TEMP_WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
+	float FluxScale = FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w;
+	float DeltaWater = max(max(FluxValue.x, FluxValue.y), max(FluxValue.z, FluxValue.w));
+	if(FluxScale > 0.1f)
+	{
+		TEMP_WATER(L_INDEX) += DeltaWater * FluxValue.x / FluxScale;
+		TEMP_WATER(R_INDEX) += DeltaWater * FluxValue.y / FluxScale;
+		TEMP_WATER(T_INDEX) += DeltaWater * FluxValue.z / FluxScale;
+		TEMP_WATER(B_INDEX) += DeltaWater * FluxValue.w / FluxScale;
+		TEMP_WATER(INDEX) -= DeltaWater;
+	}
 }
 
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
 	ApplyFlowSimulation(id);
-	ApplyWaterFlowSimulation(id);
+	// ApplyWaterFlowSimulation(id);
 	TerrainData[INDEX] = TempTerrainData[INDEX];
 	Flux[INDEX] = TempFlux[INDEX];
 }
