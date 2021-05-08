@@ -256,8 +256,8 @@ void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLev
 			float LocationX = Size * Step * Index.Key + RecentX;
 			float LocationY = Size * Step * Index.Value + RecentY;
 			// 这里在LOD下会有BUG，待解决
-			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j);
-			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j) - 0.1f;
+			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j);
+			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j) - 0.1f;
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}
