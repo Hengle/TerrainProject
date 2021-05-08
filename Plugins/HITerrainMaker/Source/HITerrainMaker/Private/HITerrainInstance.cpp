@@ -193,7 +193,9 @@ void AHITerrainInstance::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(bFirstTick)
 	{
-		FlushRenderingCommands();
+		FRenderCommandFence Fence;
+		Fence.BeginFence();
+		Fence.Wait();
 		bFirstTick = false;
 	}
 	ChunkTicker->TickChunks();

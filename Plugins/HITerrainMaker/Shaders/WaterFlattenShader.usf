@@ -26,15 +26,15 @@ RWStructuredBuffer<float4> TempFlux;
 
 void ApplyFlowSimulation(uint3 id)
 {
-	float Value = HEIGHT(INDEX) + WATER(INDEX);
-	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
-	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
-	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
-	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
+	float Value = TEMP_HEIGHT(INDEX) + TEMP_WATER(INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + WATER(L_INDEX);
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + WATER(B_INDEX);
 	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST,
-							  (Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST,
-							  (Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST,
-							  (Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST);
+							(Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST,
+							(Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST,
+							(Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST);
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
 	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
 	K = max(0.0f, K);

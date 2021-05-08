@@ -7,7 +7,7 @@
 
 IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader, "/TerrainShaders/WaterFlattenShader.usf", "Main", SF_Compute);
 
-FHITerrainWaterFlattenGPU::FHITerrainWaterFlattenGPU():NumIteration(600), DeltaTime(0.02)
+FHITerrainWaterFlattenGPU::FHITerrainWaterFlattenGPU():NumIteration(0), DeltaTime(0.02)
 {
 }
 
