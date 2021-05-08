@@ -1,6 +1,6 @@
 #include "/Engine/Public/Platform.ush"
 
-#define NUM_THREADS numthreads(32, 32, 1)
+#define NUM_THREADS numthreads(1, 1, 1)
 
 #define INDEX GetIndex(id.xy)
 #define L_INDEX GetIndex(id.xy + int2(-1, 0))
@@ -19,7 +19,9 @@
 #define TEMP_HARDNESS(Index) TempTerrainData[Index].w
 
 #define GRAVITY 9.8
-
+#define FLUX_CONST 1	// (2) Value of (A / l)
+#define GRID_DISTANCE_CONST 1		// (4) Value of (lx * ly)
+#define K_D_MAX 100
 
 /*
  * 输入通道
@@ -62,6 +64,12 @@ float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
 	return lerp(L1, L2, HA);
 }
 
+float LMax(float Water)
+{
+	if(Water <= 0.0f) return 0.0f;
+	else if(Water < K_D_MAX) return 1.0f - (K_D_MAX - Water) / K_D_MAX;
+	else return 1.0f;
+}
 
 void ApplyRainSimulation(uint3 id)
 {
@@ -70,17 +78,23 @@ void ApplyRainSimulation(uint3 id)
 
 void ApplyFlowSimulation(uint3 id)
 {
-	float LValue = id.x == 0? 0: HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
-	float RValue = id.x == (uint)Size - 1? 0: HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
-	float TValue = id.y == 0? 0: HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
-	float BValue = id.y == (uint)Size - 1? 0: HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
-	float Value = HEIGHT(INDEX) + TEMP_WATER(INDEX);
-	float4 FluxValue;
-	FluxValue.x = max(0.0f, (Value - LValue) * DeltaTime * GRAVITY + Flux[INDEX].x);
-	FluxValue.y = max(0.0f, (Value - RValue) * DeltaTime * GRAVITY + Flux[INDEX].y);
-	FluxValue.z = max(0.0f, (Value - TValue) * DeltaTime * GRAVITY + Flux[INDEX].z);
-	FluxValue.w = max(0.0f, (Value - BValue) * DeltaTime * GRAVITY + Flux[INDEX].w);
-	float K = min(1.0f, TEMP_WATER(INDEX) / ((FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) * DeltaTime));
+	float Value = TEMP_HEIGHT(INDEX) + TEMP_WATER(INDEX);
+	// float LValue = id.x == 0? Value: TEMP_HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
+	// float RValue = id.x == (uint)Size - 1? Value: TEMP_HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
+	// float TValue = id.y == 0? Value: TEMP_HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
+	// float BValue = id.y == (uint)Size - 1? Value: TEMP_HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + WATER(L_INDEX);
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + WATER(B_INDEX);
+	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].x,
+							  (Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].y,
+							  (Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].z,
+							  (Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].w);
+	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
+	// 这里做了改动，把分母的DeltaTime删了，水波会平稳一点
+	// float K = min(1.0f, TEMP_WATER(INDEX) / ((FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) * DeltaTime));
+	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
 	K = max(0.0f, K);
 	TempFlux[INDEX] = FluxValue * K;
 }
@@ -88,11 +102,15 @@ void ApplyFlowSimulation(uint3 id)
 void ApplyWaterFlowSimulation(uint3 id)
 {
 	float OutValue = TempFlux[INDEX].x + TempFlux[INDEX].y + TempFlux[INDEX].z + TempFlux[INDEX].w;
-	float LInValue = id.x == 0? 0: TempFlux[L_INDEX].y;
-	float RInValue = id.x == (uint)Size - 1? 0: TempFlux[R_INDEX].x;
-	float TInValue = id.y == 0? 0: TempFlux[T_INDEX].w;
-	float BInValue = id.y == (uint)Size - 1? 0: TempFlux[B_INDEX].z;
-	TEMP_WATER(INDEX) += LInValue + RInValue + TInValue + BInValue - OutValue;
+	float LInValue = id.x == 0? TempFlux[INDEX].x: TempFlux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: TempFlux[R_INDEX].x;
+	float TInValue = id.y == 0? TempFlux[INDEX].z: TempFlux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: TempFlux[B_INDEX].z;
+	// float LInValue = id.x == 0? TempFlux[INDEX].x: Flux[L_INDEX].y;
+	// float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: Flux[R_INDEX].x;
+	// float TInValue = id.y == 0? TempFlux[INDEX].z: Flux[T_INDEX].w;
+	// float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: Flux[B_INDEX].z;
+	TEMP_WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
 }
 
 void ApplyErosionDepositionSimulation(uint3 id)
@@ -101,6 +119,10 @@ void ApplyErosionDepositionSimulation(uint3 id)
 	float RInValue = id.x == (uint)Size - 1? 0: TempFlux[R_INDEX].x;
 	float TInValue = id.y == 0? 0: TempFlux[T_INDEX].w;
 	float BInValue = id.y == (uint)Size - 1? 0: TempFlux[B_INDEX].z;
+	// float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
+	// float RInValue = id.x == (uint)Size - 1? 0: Flux[R_INDEX].x;
+	// float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
+	// float BInValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
 	float3 NewVelocity;
 	NewVelocity.x = (LInValue - TempFlux[INDEX].x + TempFlux[INDEX].y - RInValue) / 2;
 	NewVelocity.y = (TInValue - TempFlux[INDEX].z + TempFlux[INDEX].w - BInValue) / 2;
@@ -111,9 +133,13 @@ void ApplyErosionDepositionSimulation(uint3 id)
 	float RHeight = id.x == (uint)Size - 1? HEIGHT(INDEX): TEMP_HEIGHT(R_INDEX);
 	float THeight = id.y == 0? HEIGHT(INDEX): TEMP_HEIGHT(T_INDEX);
 	float BHeight = id.y == (uint)Size - 1? HEIGHT(INDEX): TEMP_HEIGHT(B_INDEX);
-	float TiltAngle = sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
-	TiltAngle /= sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
-	float SedimentCapacity = TiltAngle * VelocityValue;
+	// float LHeight = id.x == 0? HEIGHT(INDEX): HEIGHT(L_INDEX);
+	// float RHeight = id.x == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(R_INDEX);
+	// float THeight = id.y == 0? HEIGHT(INDEX): HEIGHT(T_INDEX);
+	// float BHeight = id.y == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(B_INDEX);
+	float TiltAngle = sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
+	TiltAngle /= sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
+	float SedimentCapacity = TiltAngle * VelocityValue * LMax(TEMP_WATER(INDEX));
 	if(SEDIMENT(INDEX) > SedimentCapacity)
 	{
 		TEMP_HEIGHT(INDEX) += DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);

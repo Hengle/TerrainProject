@@ -14,7 +14,7 @@ IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Ma
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
 	HydroErosionScale(0), RainAmount(50.0f),
-	EvaporationAmount(0.1), ErosionScale(0.005), DepositionScale(0.005), SedimentCapacityScale(1),
+	EvaporationAmount(0.1), ErosionScale(0.008), DepositionScale(0.008), SedimentCapacityScale(1),
 	ThermalErosionScale(0)
 	
 {
@@ -214,7 +214,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			{
 				TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 32, Size / 32, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
 				
 				// AsyncTask(ENamedThreads::GameThread, []()
 				// {
