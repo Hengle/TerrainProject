@@ -1,23 +1,61 @@
 ﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
 
 #define NUM_THREADS numthreads(1, 1, 1)
 
-#define INDEX GetIndex(id.xy)
-#define L_INDEX GetIndex(id.xy + int2(-1, 0))
-#define R_INDEX GetIndex(id.xy + int2(1, 0))
-#define T_INDEX GetIndex(id.xy + int2(0, -1))
-#define B_INDEX GetIndex(id.xy + int2(0, 1))
+#define HEIGHT(Index) TerrainData[Index].x
+#define WATER(Index) TerrainData[Index].y
 
-RWStructuredBuffer<float> TerrainHeight;
-RWStructuredBuffer<float> TerrainWater;
+#define TEMP_HEIGHT(Index) TempTerrainData[Index].x
+#define TEMP_WATER(Index) TempTerrainData[Index].y
 
-int GetIndex(int2 id)
+#define GRAVITY 9.8f
+#define FLUX_CONST 1.0f	// (2) Value of (A / l)
+#define GRID_DISTANCE_CONST 1.0f		// (4) Value of (lx * ly)
+
+int Size;
+
+int NumIteration;
+float DeltaTime;
+
+RWStructuredBuffer<float2> TerrainData;
+RWStructuredBuffer<float4> Flux;
+
+RWStructuredBuffer<float2> TempTerrainData;
+RWStructuredBuffer<float4> TempFlux;
+
+void ApplyFlowSimulation(uint3 id)
 {
-	return id.x * Size + id.y;
-};
+	float Value = HEIGHT(INDEX) + WATER(INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
+	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST,
+							  (Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST,
+							  (Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST,
+							  (Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST);
+	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
+	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
+	K = max(0.0f, K);
+	TempFlux[INDEX] = FluxValue * K;
+}
+
+void ApplyWaterFlowSimulation(uint3 id)
+{
+	float OutValue = TempFlux[INDEX].x + TempFlux[INDEX].y + TempFlux[INDEX].z + TempFlux[INDEX].w;
+	float LInValue = id.x == 0? TempFlux[INDEX].x: TempFlux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: TempFlux[R_INDEX].x;
+	float TInValue = id.y == 0? TempFlux[INDEX].z: TempFlux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: TempFlux[B_INDEX].z;
+	TEMP_WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
+}
 
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	
+	ApplyFlowSimulation(id);
+	ApplyWaterFlowSimulation(id);
+	TerrainData[INDEX] = TempTerrainData[INDEX];
+	Flux[INDEX] = TempFlux[INDEX];
 }

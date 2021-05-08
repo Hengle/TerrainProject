@@ -94,5 +94,6 @@ private:
 	UPROPERTY()
 	class UHITerrainData* Data;
 
-	
+	bool bFirstTick = true;
+
 };

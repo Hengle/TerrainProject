@@ -8,6 +8,7 @@
 #include "TerrainMaths/Modules/HITerrainErosion.h"
 #include "TerrainMaths/Modules/HITerrainErosionGPU.h"
 #include "TerrainMaths/Modules/HITerrainPerlin.h"
+#include "TerrainMaths/Modules/HITerrainWaterFlattenGPU.h"
 #include "UObject/Object.h"
 #include "TestAlgorithm2.generated.h"
 
@@ -27,4 +28,5 @@ class HITERRAINMAKER_API UTestAlgorithm2 : public UHITerrainAlgorithm
 	private:
 	FHITerrainPerlin Perlin;
 	FHITerrainErosionGPU ErosionGPU;
+	FHITerrainWaterFlattenGPU WaterFlattenGPU;
 };

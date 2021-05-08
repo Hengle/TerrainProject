@@ -49,8 +49,6 @@ public:
 	{
 		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
 	}
-
-private:
 };
 
 class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
@@ -61,6 +59,7 @@ public:
 	
 	void SetNumIteration(int32 InNumIteration);
 	void SetDeltaTime(float InDeltaTime);
+	
 	void SetEnableHydroErosion(bool InBool);
 	void SetEnableThermalErosion(bool InBool);
 	

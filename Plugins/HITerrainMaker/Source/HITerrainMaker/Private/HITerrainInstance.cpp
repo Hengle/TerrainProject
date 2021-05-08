@@ -191,6 +191,11 @@ void AHITerrainInstance::OnDataGenerated()
 void AHITerrainInstance::Tick(float DeltaTime) 
 {
 	Super::Tick(DeltaTime);
+	if(bFirstTick)
+	{
+		FlushRenderingCommands();
+		bFirstTick = false;
+	}
 	ChunkTicker->TickChunks();
 }
 

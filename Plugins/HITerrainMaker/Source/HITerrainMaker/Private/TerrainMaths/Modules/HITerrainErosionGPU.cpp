@@ -208,12 +208,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	Parameters.TempFlux = TempFluxUAVRef;
 	Parameters.TempTerrainFlux = TempTerrainFluxUAVRef;
 
-
-	
-	// AsyncTask(ENamedThreads::GameThread, []()
-	// {
-	// 	FlushRenderingCommands();
-	// });
 	for(int32 i = 0; i < NumIteration; i++)
 	{
 		Parameters.CurrentIteration = i;
@@ -223,21 +217,18 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
-				
-				// AsyncTask(ENamedThreads::GameThread, []()
-				// {
-				// 	FlushRenderingCommands();
-				// });
-				
+				AsyncTask(ENamedThreads::GameThread, []()
+				{
+					FRenderCommandFence Fence;
+					Fence.BeginFence();
+					Fence.Wait();
+				});
 			});
-	}		
+	}
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
 		{
-			AsyncTask(ENamedThreads::GameThread, []()
-			{
-				FlushRenderingCommands();
-			});
+			
 			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
