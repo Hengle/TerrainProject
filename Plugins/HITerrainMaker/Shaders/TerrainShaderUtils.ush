@@ -1,0 +1,29 @@
+﻿#pragma once
+
+#define INDEX GetIndex(id.xy, Size)
+#define POINT_INDEX(x, y) GetIndex(x, y, Size)
+#define L_INDEX GetIndex(id.xy + int2(-1, 0), Size)
+#define R_INDEX GetIndex(id.xy + int2(1, 0), Size)
+#define T_INDEX GetIndex(id.xy + int2(0, -1), Size)
+#define B_INDEX GetIndex(id.xy + int2(0, 1), Size)
+#define LT_INDEX GetIndex(id.xy + int2(-1, -1), Size)
+#define LB_INDEX GetIndex(id.xy + int2(-1, 1), Size)
+#define RT_INDEX GetIndex(id.xy + int2(1, -1), Size)
+#define RB_INDEX GetIndex(id.xy + int2(1, 1), Size)
+
+int GetIndex(int idx, int idy, int Size)
+{
+	return idx * Size + idy;
+}
+
+int GetIndex(int2 id, int Size)
+{
+	return id.x * Size + id.y;
+};
+
+float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
+{
+	float L1 = lerp(LL, LH, LA);
+	float L2 = lerp(HL, HH, LA);
+	return lerp(L1, L2, HA);
+}

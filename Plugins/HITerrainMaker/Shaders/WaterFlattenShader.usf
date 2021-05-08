@@ -1,0 +1,23 @@
+﻿#include "/Engine/Public/Platform.ush"
+
+#define NUM_THREADS numthreads(1, 1, 1)
+
+#define INDEX GetIndex(id.xy)
+#define L_INDEX GetIndex(id.xy + int2(-1, 0))
+#define R_INDEX GetIndex(id.xy + int2(1, 0))
+#define T_INDEX GetIndex(id.xy + int2(0, -1))
+#define B_INDEX GetIndex(id.xy + int2(0, 1))
+
+RWStructuredBuffer<float> TerrainHeight;
+RWStructuredBuffer<float> TerrainWater;
+
+int GetIndex(int2 id)
+{
+	return id.x * Size + id.y;
+};
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	
+}

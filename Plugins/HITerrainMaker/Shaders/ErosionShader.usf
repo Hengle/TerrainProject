@@ -1,12 +1,7 @@
 #include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
 
 #define NUM_THREADS numthreads(1, 1, 1)
-
-#define INDEX GetIndex(id.xy)
-#define L_INDEX GetIndex(id.xy + int2(-1, 0))
-#define R_INDEX GetIndex(id.xy + int2(1, 0))
-#define T_INDEX GetIndex(id.xy + int2(0, -1))
-#define B_INDEX GetIndex(id.xy + int2(0, 1))
 
 #define HEIGHT(Index) TerrainData[Index].x
 #define WATER(Index) TerrainData[Index].y
@@ -18,10 +13,15 @@
 #define TEMP_SEDIMENT(Index) TempTerrainData[Index].z
 #define TEMP_HARDNESS(Index) TempTerrainData[Index].w
 
-#define GRAVITY 9.8
-#define FLUX_CONST 1	// (2) Value of (A / l)
-#define GRID_DISTANCE_CONST 1		// (4) Value of (lx * ly)
-#define K_D_MAX 100
+#define GRAVITY 9.8f
+#define FLUX_CONST 1.0f	// (2) Value of (A / l)
+#define GRID_DISTANCE_CONST 1.0f		// (4) Value of (lx * ly)
+#define K_D_MAX 100.0f
+#define K_H 5.0f
+#define R_MIN 0.1f
+#define R_MAX 1.0f
+#define K_A 0.8f
+#define K_I 0.1f
 
 /*
  * 输入通道
@@ -52,17 +52,6 @@ RWStructuredBuffer<float4> TempTerrainData;
 RWStructuredBuffer<float4> TempFlux;
 RWStructuredBuffer<float4> TempTerrainFlux;
 
-int GetIndex(int2 id)
-{
-	return id.x * Size + id.y;
-};
-
-float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
-{
-	float L1 = lerp(LL, LH, LA);
-	float L2 = lerp(HL, HH, LA);
-	return lerp(L1, L2, HA);
-}
 
 float LMax(float Water)
 {
@@ -92,7 +81,6 @@ void ApplyFlowSimulation(uint3 id)
 							  (Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].z,
 							  (Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].w);
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
-	// 这里做了改动，把分母的DeltaTime删了，水波会平稳一点
 	// float K = min(1.0f, TEMP_WATER(INDEX) / ((FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) * DeltaTime));
 	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
 	K = max(0.0f, K);
@@ -142,15 +130,19 @@ void ApplyErosionDepositionSimulation(uint3 id)
 	float SedimentCapacity = TiltAngle * VelocityValue * LMax(TEMP_WATER(INDEX));
 	if(SEDIMENT(INDEX) > SedimentCapacity)
 	{
-		TEMP_HEIGHT(INDEX) += DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);
-		TEMP_SEDIMENT(INDEX) -= DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);
-		TEMP_WATER(INDEX) -= DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);
+		float DepositionValue = DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);
+		TEMP_HEIGHT(INDEX) += DepositionValue;
+		TEMP_SEDIMENT(INDEX) -= DepositionValue;
+		TEMP_WATER(INDEX) -= DepositionValue;
+		TEMP_HARDNESS(INDEX) = max(R_MIN, HARDNESS(INDEX) - DeltaTime * K_H * DepositionValue);
 	}
 	else
 	{
-		TEMP_HEIGHT(INDEX) -= ErosionScale * (SedimentCapacity - SEDIMENT(INDEX));
-		TEMP_SEDIMENT(INDEX) += ErosionScale * (SedimentCapacity - SEDIMENT(INDEX));
-		TEMP_WATER(INDEX) += DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);
+		float ErosionValue = ErosionScale * (SedimentCapacity - SEDIMENT(INDEX));
+		TEMP_HEIGHT(INDEX) -= ErosionValue;
+		TEMP_SEDIMENT(INDEX) += ErosionValue;
+		TEMP_WATER(INDEX) += ErosionValue;
+		TEMP_HARDNESS(INDEX) = min(R_MAX, HARDNESS(INDEX) + DeltaTime * K_H * ErosionValue);
 	}
 }
 
@@ -166,10 +158,10 @@ void ApplySedimentSimulation(uint3 id)
 	Y0 = clamp(Y0, 0, Size - 1);
 	X1 = clamp(X1, 0, Size - 1);
 	Y1 = clamp(Y1, 0, Size - 1);
-	float S00 = TEMP_SEDIMENT(GetIndex(int2(X0, Y0)));
-	float S01 = TEMP_SEDIMENT(GetIndex(int2(X0, Y1)));
-	float S10 = TEMP_SEDIMENT(GetIndex(int2(X1, Y0)));
-	float S11 = TEMP_SEDIMENT(GetIndex(int2(X1, Y1)));
+	float S00 = TEMP_SEDIMENT(POINT_INDEX(X0, Y0));
+	float S01 = TEMP_SEDIMENT(POINT_INDEX(X0, Y1));
+	float S10 = TEMP_SEDIMENT(POINT_INDEX(X1, Y0));
+	float S11 = TEMP_SEDIMENT(POINT_INDEX(X1, Y1));
 	int AlphaX = FromPosX - floor(FromPosX);
 	int AlphaY = FromPosY - floor(FromPosY);
 	float NewSediment = Lerp2D(S00, S01, S10, S11, AlphaX, AlphaY);
@@ -178,7 +170,58 @@ void ApplySedimentSimulation(uint3 id)
 
 void ApplyThermalErosionSimulation(uint3 id)
 {
-	
+	float4 Neighbors = float4(id.x == 0? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(L_INDEX),
+							  id.x == (uint)Size - 1? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(R_INDEX),
+							  id.y == 0? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(T_INDEX),
+							  id.y == (uint)Size - 1? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(B_INDEX));
+	float4 DeltaHeight;
+	DeltaHeight.x = max(0.0f, TEMP_HEIGHT(INDEX) - Neighbors.x);
+	DeltaHeight.y = max(0.0f, TEMP_HEIGHT(INDEX) - Neighbors.y);
+	DeltaHeight.z = max(0.0f, TEMP_HEIGHT(INDEX) - Neighbors.z);
+	DeltaHeight.w = max(0.0f, TEMP_HEIGHT(INDEX) - Neighbors.w);
+	float4 MaxDeltaHeight=  max(max(DeltaHeight.x, DeltaHeight.y), max(DeltaHeight.z, DeltaHeight.w));
+	float DeltaMovedHeight = DeltaTime * ThermalErosionScale * TEMP_HARDNESS(INDEX) * MaxDeltaHeight / 2;
+	float4 TanAngle = DeltaHeight / 100.0f;
+	float Threshold = TEMP_HARDNESS(INDEX) * K_A + K_I;
+	float4 K = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	bool bKFlag = false;
+	if(TanAngle.x > Threshold)
+	{
+		K.x = DeltaHeight.x;
+		bKFlag = true;
+	}
+	if(TanAngle.y > Threshold)
+	{
+		K.y = DeltaHeight.y;
+		bKFlag = true;
+	}
+	if(TanAngle.z > Threshold)
+	{
+		K.z = DeltaHeight.z;
+		bKFlag = true;
+	}
+	if(TanAngle.w > Threshold)
+	{
+		K.w = DeltaHeight.w;
+		bKFlag = true;
+	}
+	float4 KScale = 0.0f;
+	if(bKFlag)
+	{
+		float KSum = K.x + K.y + K.z + K.w;
+		KScale = K / KSum;
+	}
+	TempTerrainFlux[INDEX] = DeltaMovedHeight * KScale;
+}
+
+void ApplyThermalErosionMove(uint3 id)
+{
+	float OutValue = TempTerrainFlux[INDEX].x + TempTerrainFlux[INDEX].y + TempTerrainFlux[INDEX].z + TempTerrainFlux[INDEX].w;
+	float LInValue = id.x == 0? TempTerrainFlux[INDEX].x: TempTerrainFlux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? TempTerrainFlux[INDEX].y: TempTerrainFlux[R_INDEX].x;
+	float TInValue = id.y == 0? TempTerrainFlux[INDEX].z: TempTerrainFlux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? TempTerrainFlux[INDEX].w: TempTerrainFlux[B_INDEX].z;
+	TEMP_HEIGHT(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
 }
 
 void ApplyEvaporationSimulation(uint3 id)
@@ -199,7 +242,8 @@ void Main(uint3 id : SV_DispatchThreadID)
 	ApplyErosionDepositionSimulation(id);
 	ApplySedimentSimulation(id);
 	ApplyEvaporationSimulation(id);
-	// ApplyThermalErosionSimulation(id);
+	ApplyThermalErosionSimulation(id);
+	ApplyThermalErosionMove(id);
 
 	TerrainData[INDEX] = TempTerrainData[INDEX];
 	Flux[INDEX] = TempFlux[INDEX];

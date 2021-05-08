@@ -13,9 +13,9 @@ IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Ma
 
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
-	HydroErosionScale(0), RainAmount(50.0f),
-	EvaporationAmount(0.1), ErosionScale(0.008), DepositionScale(0.008), SedimentCapacityScale(1),
-	ThermalErosionScale(0)
+	HydroErosionScale(0), RainAmount(20.0f),
+	EvaporationAmount(0.015), ErosionScale(0.008), DepositionScale(0.008), SedimentCapacityScale(1),
+	ThermalErosionScale(0.15)
 	
 {
 	
@@ -86,6 +86,13 @@ void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("hardness", ETerrainDataType::FLOAT);
+	// for(int32 i = 0; i < Data->Size(); i++)
+	// {
+	// 	for(int32 j = 0; j < Data->Size(); j++)
+	// 	{
+	// 		Data->SetChannelValue("hardness", i, j, 1.0f);
+	// 	}
+	// }
 	ApplyErosionShader(Data);
 }
 
@@ -112,7 +119,8 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			TerrainDataBuffer.Add(Data->GetChannel("height")->GetFloat(i, j));
 			TerrainDataBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
 			TerrainDataBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
-			TerrainDataBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
+			// TerrainDataBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
+			TerrainDataBuffer.Add(1.0f);
 
 			FluxBuffer.Add(0.0f);
 			FluxBuffer.Add(0.0f);
