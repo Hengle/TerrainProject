@@ -1,6 +1,10 @@
 #include "/Engine/Public/Platform.ush"
 #include "TerrainShaderUtils.ush"
 
+/*
+ * 侵蚀模块的 Compute Shader，包括水力、热力侵蚀
+ */
+
 #define NUM_THREADS numthreads(1, 1, 1)
 
 #define HEIGHT(Index) TerrainData[Index].x
@@ -233,7 +237,7 @@ void ApplyEvaporationSimulation(uint3 id)
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	if(CurrentIteration <= NumIteration / 2)
+	// if(CurrentIteration <= NumIteration / 2)
 	{
 		ApplyRainSimulation(id);
 	}

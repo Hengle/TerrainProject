@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+/*
+ * Shader的一些通用宏、函数
+ */
+
 #define INDEX GetIndex(id.xy, Size)
 #define POINT_INDEX(x, y) GetIndex(x, y, Size)
 #define L_INDEX GetIndex(id.xy + int2(-1, 0), Size)

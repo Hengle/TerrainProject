@@ -1,6 +1,10 @@
 ﻿#include "/Engine/Public/Platform.ush"
 #include "TerrainShaderUtils.ush"
 
+/*
+ * 平整水面模块的 Compute Shader
+ */
+
 #define NUM_THREADS numthreads(1, 1, 1)
 
 #define HEIGHT(Index) TerrainData[Index].x
@@ -40,7 +44,7 @@ void ApplyFlowSimulation(uint3 id)
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
 	float FluxScale = FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w;
 	float DeltaWater = max(max(FluxValue.x, FluxValue.y), max(FluxValue.z, FluxValue.w));
-	if(FluxScale > 0.1f)
+	if(FluxScale > 0.01f)
 	{
 		TEMP_WATER(L_INDEX) += DeltaWater * FluxValue.x / FluxScale;
 		TEMP_WATER(R_INDEX) += DeltaWater * FluxValue.y / FluxScale;

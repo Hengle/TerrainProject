@@ -5,8 +5,6 @@
 
 #include "RenderGraphUtils.h"
 #include "RenderTargetPool.h"
-#include "Engine/TextureRenderTarget2D.h"
-#include "Rendering/Texture2DResource.h"
 #include "Async/Async.h"
 
 IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Main", SF_Compute);
