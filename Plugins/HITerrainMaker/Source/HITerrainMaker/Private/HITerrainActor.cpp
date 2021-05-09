@@ -312,17 +312,39 @@ void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangent
 
 void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel)
 {
-	float UVStep = 1.0 / Size;
+	// float UVStep = 1.0 / Size;
+	// float RecentX = 0, RecentY = 0;
+	// for (int32 i = 0; i <= Size; i++)
+	// {
+	// 	for (int32 j = 0; j <= Size; j++)
+	// 	{
+	// 		TexCoords.Add(FVector2D(RecentX, RecentY));
+	// 		RecentY += UVStep;
+	// 	}
+	// 	RecentX += UVStep;
+	// 	RecentY = 0.0;
+	// }
+	// 1个格子一个uv的实现
+	bool bEvenX = false, bEvenY = false;
 	float RecentX = 0, RecentY = 0;
-	for (int32 i = 0; i <= Size; i++)
-	{
-		for (int32 j = 0; j <= Size; j++)
-		{
-			TexCoords.Add(FVector2D(RecentX, RecentY));
-			RecentY += UVStep;
+	for (int32 i = 0; i <= Size; i++) {
+		for (int32 j = 0; j <= Size; j++) {
+			if(bEvenX && bEvenY){
+				TexCoords.Add(FVector2D(1, 1));
+			}
+			if (bEvenX && !bEvenY) {
+				TexCoords.Add(FVector2D(1, 0));
+			}
+			if (!bEvenX && bEvenY) {
+				TexCoords.Add(FVector2D(0, 1));
+			}
+			if (!bEvenX && !bEvenY) {
+				TexCoords.Add(FVector2D(0, 0));
+			}
+			bEvenX = !bEvenX;
 		}
-		RecentX += UVStep;
-		RecentY = 0.0;
+		bEvenY = !bEvenY;
+		bEvenX = false;
 	}
 }
 

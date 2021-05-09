@@ -5,6 +5,7 @@
 
 #define HEIGHT(Index) TerrainData[Index].x
 #define WATER(Index) TerrainData[Index].y
+#define SEDIMENT(Index) TerrainData[Index].z
 
 #define TEMP_HEIGHT(Index) TempTerrainData[Index].x
 #define TEMP_WATER(Index) TempTerrainData[Index].y
@@ -19,19 +20,19 @@ int Size;
 int NumIteration;
 float DeltaTime;
 
-RWStructuredBuffer<float2> TerrainData;
+RWStructuredBuffer<float3> TerrainData;
 RWStructuredBuffer<float4> Flux;
 
-RWStructuredBuffer<float2> TempTerrainData;
+RWStructuredBuffer<float3> TempTerrainData;
 RWStructuredBuffer<float4> TempFlux;
 
 void ApplyFlowSimulation(uint3 id)
 {
-	float Value = TEMP_HEIGHT(INDEX) + TEMP_WATER(INDEX);
-	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
-	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
-	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
-	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
+	float Value = HEIGHT(INDEX) + SEDIMENT(INDEX) + TEMP_WATER(INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + SEDIMENT(L_INDEX) + TEMP_WATER(L_INDEX);
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + TEMP_WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + TEMP_WATER(T_INDEX);
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + TEMP_WATER(B_INDEX);
 	float4 FluxValue = float4((Value - LValue),
 							(Value - RValue),
 							(Value - TValue),

@@ -14,7 +14,7 @@ IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Ma
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
 	HydroErosionScale(0), RainAmount(10.0f),
-	EvaporationAmount(0.05), ErosionScale(0.016), DepositionScale(0.016), SedimentCapacityScale(1),
+	EvaporationAmount(0.05), ErosionScale(0.008), DepositionScale(0.016), SedimentCapacityScale(1),
 	ThermalErosionScale(0.3)
 	
 {
