@@ -25,18 +25,6 @@ public:
 
 	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLevel);
 
-	void GeneratePositions(TArray<FVector>& Positions, ELODLevel LODLevel);
-
-	void GenerateTriangles(TArray<int32>& Triangles, ELODLevel LODLevel);
-
-	void GenerateNormals(TArray<FVector>& Normals, ELODLevel LODLevel);
-
-	void GenerateTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel);
-
-	void GenerateTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel);
-
-	void GenerateColors(TArray<FColor>& Colors, ELODLevel LODLevel);
-
 	void GenerateWater(ELODLevel LODLevel);
 
 	void GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel LODLevel);
