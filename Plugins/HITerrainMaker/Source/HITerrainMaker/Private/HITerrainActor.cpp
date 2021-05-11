@@ -525,14 +525,14 @@ void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLeve
 			}
 			if(i == MediumSize - 1)
 			{
-				for(int32 k = 0; k < OuterScale / 2; k++)
+				for(int32 k = 0; k < (OuterScale - 1) / 2 + 1; k++)
 				{
-					Triangles.Add(Vertice1);	Triangles.Add(Vertice3);	Triangles.Add(Vertice4);
-					Vertice3++;	Vertice4++;
 					if(Vertice4 >= MediumSize * MediumSize + (OuterSize - 1) * 4)
 					{
 						Vertice4 = InnerSize * InnerSize + (InnerSize + 1) * 4;;
 					}
+					Triangles.Add(Vertice1);	Triangles.Add(Vertice3);	Triangles.Add(Vertice4);
+					Vertice3++;	Vertice4++;
 				}
 			}
 			else
