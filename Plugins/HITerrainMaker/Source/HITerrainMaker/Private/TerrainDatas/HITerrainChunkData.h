@@ -20,7 +20,18 @@ struct FHITerrainChunkData
 	float GetHeightValue(float X, float Y);
 
 	float GetChannelFloatValue(FString ChannelName, int32 X, int32 Y);
-	// float GetChannelFloatValue(FString ChannelName, float X, float Y);
+	float GetChannelFloatValue(FString ChannelName, float X, float Y);
+
+	FVector2D GetUV(float X, float Y);
+
+	float GetChunkSize();
+
+	int32 GetInnerPointSize(const ELODLevel& LODLevel);
+	int32 GetMediumPointSize(const ELODLevel& LODLevel);
+	int32 GetOuterPointSize(const ELODLevel& LODLevel);
+	int32 GetOuterPointScale(const ELODLevel& LODLevel);
+	
+	float GetStepOfLODLevel(const ELODLevel& LODLevel);
 };
 
 typedef TSharedPtr<FHITerrainChunkData, ESPMode::ThreadSafe> FChunkDataPtr;

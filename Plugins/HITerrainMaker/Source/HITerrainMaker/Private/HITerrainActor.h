@@ -19,6 +19,12 @@ public:
 
 	bool IsGenerated();
 
+	void GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, ELODLevel LODLevel);
+
+	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FColor>& Colors, ELODLevel LODLevel);
+
+	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLevel);
+
 	void GeneratePositions(TArray<FVector>& Positions, ELODLevel LODLevel);
 
 	void GenerateTriangles(TArray<int32>& Triangles, ELODLevel LODLevel);
@@ -53,7 +59,7 @@ public:
 	UMaterialInterface* WaterMaterial;
 
 	int32 Size;
-	float Step;
+	// float Step;
 	TPair<int32, int32> Index;
 
 private:

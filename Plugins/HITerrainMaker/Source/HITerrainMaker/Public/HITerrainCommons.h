@@ -63,10 +63,10 @@ struct HITERRAINMAKER_API FTerrainInformation
 	FVector Position = FVector(0.0, 0.0, 0.0); // 地形位置（左下角点）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 ChunkNum = 20; // 地形长宽（区块个数）
+	int32 ChunkNum = 10; // 地形长宽（区块个数）
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	float ChunkSize = 5000; // 区块大小
+	float ChunkSize = 10000; // 区块大小
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 11111; // 地形随机数种子
@@ -200,7 +200,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	float LODMediumQuality = 200; // LOD中质量
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODLowQuality = 500; // LOD低质量
+	float LODLowQuality = 400; // LOD低质量
 
 	/*
 	 * 测试信息

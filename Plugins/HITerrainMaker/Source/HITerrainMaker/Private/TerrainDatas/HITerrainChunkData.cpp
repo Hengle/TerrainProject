@@ -28,3 +28,93 @@ float FHITerrainChunkData::GetChannelFloatValue(FString ChannelName, int32 X, in
 	auto Channel = Data->GetChannel(ChannelName);
 	return Channel->GetFloat(Index.Key * ChunkSize + X, Index.Value * ChunkSize + Y);
 }
+
+float FHITerrainChunkData::GetChannelFloatValue(FString ChannelName, float X, float Y)
+{
+	float Value;
+	Data->GetChannelValue(ChannelName, X / 100.0f, Y / 100.0f, Value);
+	return Value;
+}
+
+FVector2D FHITerrainChunkData::GetUV(float X, float Y)
+{
+	FVector2D UV;
+	UV.X = (X - Index.Key * ChunkSize * 100.0f) / (ChunkSize * 100.0f);
+	UV.Y = (Y - Index.Value * ChunkSize * 100.0f) / (ChunkSize * 100.0f);
+	return UV;
+}
+
+float FHITerrainChunkData::GetChunkSize()
+{
+	return ChunkSize * 100.0f;
+}
+
+int32 FHITerrainChunkData::GetInnerPointSize(const ELODLevel& LODLevel)
+{
+	if(LODLevel == ELODLevel::LOD_LOW)
+	{
+		return ChunkSize / 4 - 3;
+	}
+	else if(LODLevel == ELODLevel::LOD_MEDIUM)
+	{
+		return ChunkSize / 2 - 3;
+	}
+	else if(LODLevel == ELODLevel::LOD_HIGH)
+	{
+		return ChunkSize - 3;
+	}
+	else // ELODLevel::None
+	{
+		return ChunkSize - 3;
+	}
+}
+
+int32 FHITerrainChunkData::GetMediumPointSize(const ELODLevel& LODLevel)
+{
+	return GetInnerPointSize(LODLevel) + 2;
+}
+
+int32 FHITerrainChunkData::GetOuterPointSize(const ELODLevel& LODLevel)
+{
+	return GetMediumPointSize(ELODLevel::LOD_HIGH) + 2;
+}
+
+int32 FHITerrainChunkData::GetOuterPointScale(const ELODLevel& LODLevel)
+{
+	if(LODLevel == ELODLevel::LOD_LOW)
+	{
+		return 4;
+	}
+	else if(LODLevel == ELODLevel::LOD_MEDIUM)
+	{
+		return 2;
+	}
+	else if(LODLevel == ELODLevel::LOD_HIGH)
+	{
+		return 1;
+	}
+	else // ELODLevel::None
+	{
+		return 1;
+	}
+}
+
+float FHITerrainChunkData::GetStepOfLODLevel(const ELODLevel& LODLevel)
+{
+	if(LODLevel == ELODLevel::LOD_LOW)
+	{
+		return 400.0f;
+	}
+	else if(LODLevel == ELODLevel::LOD_MEDIUM)
+	{
+		return 200.0f;
+	}
+	else if(LODLevel == ELODLevel::LOD_HIGH)
+	{
+		return 100.0f;
+	}
+	else // ELODLevel::None
+	{
+		return 100.0f;
+	}
+}
