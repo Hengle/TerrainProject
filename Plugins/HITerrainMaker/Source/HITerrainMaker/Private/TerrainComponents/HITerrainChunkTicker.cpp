@@ -78,23 +78,27 @@ void UHITerrainChunkTicker::ProcessQueue()
 			}
 		}
 	}
-	// 更新一个区块
-	if (!UpdateChunkQueue.IsEmpty()) 
+	if(ProcessTime % 10 == 0)
 	{
-		TPair<int32, int32> Index;
-		bool bUpdated = false;
-		while (!bUpdated)
+		// 更新一个区块
+		if (!UpdateChunkQueue.IsEmpty()) 
 		{
-			bool bSuccess = UpdateChunkQueue.Dequeue(Index);
-			if (bSuccess)
+			TPair<int32, int32> Index;
+			bool bUpdated = false;
+			while (!bUpdated)
 			{
-				bUpdated = TerrainInstance->UpdateChunk(Index);
-			}
-			else
-			{
-				break;
+				bool bSuccess = UpdateChunkQueue.Dequeue(Index);
+				if (bSuccess)
+				{
+					bUpdated = TerrainInstance->UpdateChunk(Index);
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
 	}
+	ProcessTime ++;
 }
 

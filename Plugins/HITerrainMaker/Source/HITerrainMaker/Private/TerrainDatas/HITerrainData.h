@@ -18,10 +18,9 @@ DECLARE_DELEGATE(OnDataGeneratedEvent)
 struct FTerrainSample
 {
 public:
-	FTerrainSample():Value(0.0f), Type(ESampleType::NONE){}
+	FTerrainSample():Value(0.0f){}
 	
 	float Value;	// 采样点高度
-	ESampleType Type;	// 采样点类型（uint8） 要不要用采样点类型这样的设计，还是别的方法，目前还没想好。。。
 };
 
 /*

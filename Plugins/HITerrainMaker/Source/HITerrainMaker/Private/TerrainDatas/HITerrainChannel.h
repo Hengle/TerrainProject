@@ -67,9 +67,9 @@ protected:
 class FHITerrainFloatChannel: public FHITerrainChannel
 {
 public:
-	FHITerrainFloatChannel(int32 InSizeX, int32 InSizeY)
+	FHITerrainFloatChannel(int32 InSizeX, int32 InSizeY): Data(TFixed2DArray<float>(InSizeX, InSizeY, 0.0f))
 	{
-		Data = TFixed2DArray<float>(InSizeX, InSizeY, 0.0f);
+		// Data = TFixed2DArray<float>(InSizeX, InSizeY, 0.0f);
 	}
 	
 	virtual FString GetTypeName() override
@@ -114,9 +114,9 @@ private:
 class FHITerrainBoolChannel: public FHITerrainChannel
 {
 public:
-	FHITerrainBoolChannel(int32 InSizeX, int32 InSizeY)
+	FHITerrainBoolChannel(int32 InSizeX, int32 InSizeY): Data(TFixed2DArray<bool>(InSizeX, InSizeY, false))
 	{
-		Data = TFixed2DArray<bool>(InSizeX, InSizeY, false);
+
 	}
 	
 	virtual FString GetTypeName() override
@@ -157,9 +157,9 @@ private:
 class FHITerrainFVectorChannel: public FHITerrainChannel
 {
 public:
-	FHITerrainFVectorChannel(int32 InSizeX, int32 InSizeY)
+	FHITerrainFVectorChannel(int32 InSizeX, int32 InSizeY): Data(TFixed2DArray<FVector>(InSizeX, InSizeY, FVector(0.0f, 0.0f, 0.0f)))
 	{
-		Data = TFixed2DArray<FVector>(InSizeX, InSizeY, FVector(0.0f, 0.0f, 0.0f));
+
 	}
 	
 	virtual FString GetTypeName() override
@@ -204,9 +204,9 @@ private:
 class FHITerrainFQuatChannel: public FHITerrainChannel
 {
 public:
-	FHITerrainFQuatChannel(int32 InSizeX, int32 InSizeY)
+	FHITerrainFQuatChannel(int32 InSizeX, int32 InSizeY): Data(TFixed2DArray<FQuat>(InSizeX, InSizeY, FQuat(0.0f, 0.0f, 0.0f, 0.0f)))
 	{
-		Data = TFixed2DArray<FQuat>(InSizeX, InSizeY, FQuat(0.0f, 0.0f, 0.0f, 0.0f));
+		
 	}
 	
 	virtual FString GetTypeName() override

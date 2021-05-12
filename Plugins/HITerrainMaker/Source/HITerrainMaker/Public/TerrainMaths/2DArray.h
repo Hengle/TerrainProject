@@ -9,15 +9,14 @@
  * 定长2D数组结构。
  * 实际上是对一个一维数组的封装，只是存取值的时候进行一个转换。
  * 因此需要在初始化的时候设定二维的长宽和默认值，之后也无法改变数组的长宽。
- * UE不能TArray套TArray是这样的。
  */
 template<typename InElementType>
 struct TFixed2DArray
 {
 	/*
-	 * 默认的构造函数，没啥用
+	 * 默认的构造函数，没啥用，因此删掉
 	 */
-	TFixed2DArray(){};
+	// TFixed2DArray(){};
 
 	/*
 	 * 构造函数，指定长宽和默认值，初始化的时候所有位置都以默认值填充。
@@ -30,6 +29,40 @@ struct TFixed2DArray
 		for(int32 i = 0; i < SizeX * SizeY; i++)
 		{
 			RawArray.Add(DefaultValue);
+		}
+	}
+
+	/*
+	 * 拷贝构造函数，简单地拷贝另一个TFixed2DArray的值
+	 */
+	TFixed2DArray(const TFixed2DArray& Another2DArray)
+	{
+		SizeX = Another2DArray.SizeX;
+		SizeY = Another2DArray.SizeY;
+		RawArray.Reserve(SizeX * SizeY);
+		for(int32 i = 0; i < SizeX; i++)
+		{
+			for(int32 j = 0; j < SizeY; j++)
+			{
+				RawArray.Add(Another2DArray.GetValue(i, j));
+			}
+		}
+	}
+
+	/*
+	 * 赋值运算符，也是简单地拷贝每一个值
+	 */
+	void operator= (const TFixed2DArray& Another2DArray)
+	{
+		SizeX = Another2DArray.SizeX;
+		SizeY = Another2DArray.SizeY;
+		RawArray.Reserve(SizeX * SizeY);
+		for(int32 i = 0; i < SizeX; i++)
+		{
+			for(int32 j = 0; j < SizeY; j++)
+			{
+				RawArray.Add(Another2DArray.GetValue(i, j));
+			}
 		}
 	}
 

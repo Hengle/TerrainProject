@@ -26,5 +26,4 @@ private:
 
 private:
 	TArray<FVoronoiCellInfo> AllCells;
-	TMap<int32, ESampleType> CellTypes;
 };

@@ -25,25 +25,6 @@ enum class ELODLevel: uint8
 	LOD_HIGH,
 };
 
-const int32 LOD_LOW_DISTANCE = 2;
-const int32 LOD_MEDIUM_DISTANCE = 6;
-const int32 LOD_HIGH_DISTANCE = 10;
-
-UENUM()
-enum class ESampleType: uint8
-{
-	NONE = 0,
-	MARK_GROUND,
-	MARK_WATER,
-	MARK_NEARWATER,
-	BEACH,
-	GRASS,
-	MOUNTAIN,
-	OCEAN,
-	LAKE,
-	SNOWY,
-};
-
 /**
  * 用于生成特定地形的信息。
  * 目标是通过这个地形信息，可以唯一地确定一个地形，不需要通过其他参数来调整地形。
@@ -67,6 +48,9 @@ struct HITERRAINMAKER_API FTerrainInformation
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	float ChunkSize = 10000; // 区块大小
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
+	float RealTotalSize = 102400; // 实际大小，填充到一个比较好的2的倍数
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 11111; // 地形随机数种子
@@ -94,70 +78,6 @@ struct HITERRAINMAKER_API FTerrainInformation
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
 	int32 BG_LandscapeOctaveCount = 14; // 地形噪声间隔次数
-
-
-	/*
-	 * 样例生成信息
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_ContinentFrequency = 1.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_ContinentLacunarity = 2.208984375;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_SeaLevel = 0.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_TerrainOffset = 1.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_ShelfLevel = -0.375;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_MountainLacunarity = 2.142578125;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_MountainsTwist = 1.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_MountainGlaciation = 1.375;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_HillsLacunarity = 2.162109375;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_HillsTwist = 1.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_PlainsLacunarity = 2.314453125;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_BadLandsLacunarity = 2.212890625;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_BadLandsTwist = 1.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_ContinentHeightScale = 0.25;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_HillsAmount = 0.75;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_MountainsAmount = 0.5;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_BadlandsAmount = 0.03125;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_RiverDepth = 0.0234375;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_MaxElev = 8192.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sample Generate Information")
-	float SG_MinElev = -8192.0;
 
 	/*
 	 * 岛屿生成算法信息
@@ -216,12 +136,3 @@ struct HITERRAINMAKER_API FTerrainInformation
 };
 
 typedef TSharedPtr<FTerrainInformation, ESPMode::ThreadSafe> FTerrainInformationPtr;
-
-UCLASS()
-class UHITerrainCommon : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	
-};

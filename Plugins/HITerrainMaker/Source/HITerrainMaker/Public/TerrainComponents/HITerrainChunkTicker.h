@@ -22,12 +22,22 @@ public:
 	virtual void BeginPlay() override;
 
 public:
+	/*
+	 * [主线程] 对每个区块判断是否需要创建、更新、销毁
+	 * 在ATerrainInstance的Tick中调用
+	 */
 	void TickChunks();
 	
 private:
+	/*
+	 * [主线程] 处理生成队列与更新队列
+	 * 这里是使用Timer做的异步
+	 */
 	void ProcessQueue();
 	
 private:
+	int32 ProcessTime = 0;
+	
 	// 所属的AHITerrainInstance
 	UPROPERTY()
 	AHITerrainInstance* TerrainInstance;
@@ -38,8 +48,9 @@ private:
 	// 区块生成队列
 	TQueue<TPair<int32, int32>> CreateChunkQueue;
 
+	// 区块更新队列
 	TQueue<TPair<int32, int32>> UpdateChunkQueue;
-	
+
 	float RenderDistance;
 	float ProcessQueueInterval;
 	FTimerHandle TimerHandle;

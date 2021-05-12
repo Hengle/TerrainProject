@@ -12,6 +12,3 @@ FHITerrainModule::~FHITerrainModule()
 {
 }
 
-void FHITerrainModule::ApplyModule(UHITerrainData* Data)
-{
-}
