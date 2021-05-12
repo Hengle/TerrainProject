@@ -18,13 +18,7 @@ void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr In
 	}
 	if(TerrainInformation->bEnableLOD)
 	{
-		Size = TerrainInformation->ChunkSize / TerrainInformation->LODHighQuality;
-		// Step = TerrainInformation->LODHighQuality;
-	}
-	else
-	{
-		Size = TerrainInformation->ChunkSize / TerrainInformation->LODLowQuality;
-		// Step = TerrainInformation->LODLowQuality;
+	
 	}
 }
 
@@ -33,14 +27,16 @@ void AHITerrainActor::DeleteChunk()
 	if(StaticProvider)
 	{
 		StaticProvider->ClearSection(0, 0);
+		StaticProvider->ClearSection(0, 1);
 		bGenerated = false;
 		bWaterGenerated = false;
 	}
 }
 
-void AHITerrainActor::GenerateChunk(ELODLevel LODLevel)
+void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 {
 	if (StaticProvider){
+		LODLevel = InLODLevel;
 		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
 		TArray<FVector> Positions;
 		TArray<FColor> Colors;
@@ -49,15 +45,9 @@ void AHITerrainActor::GenerateChunk(ELODLevel LODLevel)
 		TArray<FVector2D> TexCoords;
 		TArray<FRuntimeMeshTangent> Tangents;
 
-		// GeneratePositions(Positions, LODLevel);
-		// GenerateTriangles(Triangles, LODLevel);
-		// GenerateNormals(Normals, LODLevel);
-		// GenerateTexCoords(TexCoords, LODLevel);
-		// GenerateTangents(Tangents, LODLevel);
-		// GenerateColors(Colors, LODLevel);
-		GenerateChunk1(Positions, TexCoords, Colors, LODLevel);
-		GenerateChunk2(Normals, Tangents, Colors, LODLevel);
-		GenerateChunk3(Triangles, LODLevel);
+		GenerateChunk1(Positions, TexCoords, Colors, InLODLevel);
+		GenerateChunk2(Normals, Tangents, Colors, InLODLevel);
+		GenerateChunk3(Triangles, InLODLevel);
 		if(bGenerated)
 		{
 			StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
@@ -70,9 +60,14 @@ void AHITerrainActor::GenerateChunk(ELODLevel LODLevel)
 
 		if(ChunkData->Data->ContainsChannel("water"))
 		{
-			GenerateWater(LODLevel);
+			GenerateWater(InLODLevel);
 		}
 	}
+}
+
+const ELODLevel& AHITerrainActor::GetLODLevel()
+{
+	return LODLevel;
 }
 
 bool AHITerrainActor::IsGenerated()
@@ -81,15 +76,15 @@ bool AHITerrainActor::IsGenerated()
 }
 
 void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors,
-	ELODLevel LODLevel)
+	ELODLevel InLODLevel)
 {
-	int32 InnerSize = ChunkData->GetInnerPointSize(LODLevel);
-	int32 MediumSize = ChunkData->GetMediumPointSize(LODLevel);
-	int32 OuterSize = ChunkData->GetOuterPointSize(LODLevel);
+	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
+	int32 MediumSize = ChunkData->GetMediumPointSize(InLODLevel);
+	int32 OuterSize = ChunkData->GetOuterPointSize(InLODLevel);
 	bool bContainSediment = ChunkData->Data->ContainsChannel("sediment");
 	FColor BasicColor(127, 127, 127, 255);
 	FColor SedimentColor(0, 255, 0, 255);
-	float Step = ChunkData->GetStepOfLODLevel(LODLevel);
+	float Step = ChunkData->GetStepOfLODLevel(InLODLevel);
 	/*
 	 * 内部的点
 	 */
@@ -379,11 +374,11 @@ void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2
 }
 
 void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents,
-	TArray<FColor>& Colors, ELODLevel LODLevel)
+	TArray<FColor>& Colors, ELODLevel InLODLevel)
 {
-	int32 InnerSize = ChunkData->GetInnerPointSize(LODLevel);
-	int32 MediumSize = ChunkData->GetMediumPointSize(LODLevel);
-	int32 OuterSize = ChunkData->GetOuterPointSize(LODLevel);
+	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
+	int32 MediumSize = ChunkData->GetMediumPointSize(InLODLevel);
+	int32 OuterSize = ChunkData->GetOuterPointSize(InLODLevel);
 	bool bContainSediment = ChunkData->Data->ContainsChannel("sediment");
 	/*
 	 * 内部的点
@@ -424,13 +419,14 @@ void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	}
 }
 
-void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLevel)
+void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLevel)
 {
-	int32 InnerSize = ChunkData->GetInnerPointSize(LODLevel);
-	int32 MediumSize = ChunkData->GetMediumPointSize(LODLevel);
-	int32 OuterSize = ChunkData->GetOuterPointSize(LODLevel);
+	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
+	int32 MediumSize = ChunkData->GetMediumPointSize(InLODLevel);
+	int32 OuterSize = ChunkData->GetOuterPointSize(InLODLevel);
 	/*
 	 * 内部的三角面
+	 * 这一部分比较单纯，就是内圈的方形区域。
 	 */
 	int32 Vertice1 = 0;
 	int32 Vertice2 = 1;
@@ -446,6 +442,8 @@ void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLeve
 	}
 	/*
 	* 中圈的三角面
+	* 这一部分比较麻烦，因为外圈始终是最高LOD等级的，因此做一个中圈方便外圈那边写代码。
+	* for循环是在四个方向依次连三角形，for循环外面的是单独补的缺失的部分。
 	*/
 	Vertice1 = 0;
 	Vertice2 = 1;
@@ -495,8 +493,9 @@ void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLeve
 	Triangles.Add(Vertice3);	Triangles.Add(Vertice4);	Triangles.Add(Vertice1);
 	/*
 	 * 外圈的三角面
+	 * 有了中圈的部分，这一部分就好写很多了。
 	 */
-	int32 OuterScale = ChunkData->GetOuterPointScale(LODLevel);
+	int32 OuterScale = ChunkData->GetOuterPointScale(InLODLevel);
 	Vertice1 = InnerSize * InnerSize;
 	Vertice2 = InnerSize * InnerSize + 1;
 	Vertice3 = InnerSize * InnerSize + (InnerSize + 1) * 4;
@@ -544,7 +543,7 @@ void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLeve
 	}
 }
 
-void AHITerrainActor::GenerateWater(ELODLevel LODLevel)
+void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 {
 	if (StaticProvider){
 		StaticProvider->SetupMaterialSlot(1, TEXT("Material"), WaterMaterial);
@@ -555,15 +554,15 @@ void AHITerrainActor::GenerateWater(ELODLevel LODLevel)
 		TArray<FVector2D> TexCoords;
 		TArray<FRuntimeMeshTangent> Tangents;
 
-		GenerateWaterPositions(Positions, LODLevel);
-		GenerateWaterTriangles(Triangles, LODLevel);
-		GenerateWaterNormals(Normals, LODLevel);
-		GenerateWaterTexCoords(TexCoords, LODLevel);
-		GenerateWaterTangents(Tangents, LODLevel);
-		GenerateWaterColors(Colors, LODLevel);
+		GenerateWaterPositions(Positions, InLODLevel);
+		GenerateWaterTriangles(Triangles, InLODLevel);
+		GenerateWaterNormals(Normals, InLODLevel);
+		GenerateWaterTexCoords(TexCoords, InLODLevel);
+		GenerateWaterTangents(Tangents, InLODLevel);
+		GenerateWaterColors(Colors, InLODLevel);
 		if(bWaterGenerated)
 		{
-			StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+			// StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
 		}
 		else
 		{
@@ -574,9 +573,10 @@ void AHITerrainActor::GenerateWater(ELODLevel LODLevel)
 	}
 }
 
-void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel LODLevel)
+void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel InLODLevel)
 {
 	float RecentX = 0, RecentY = 0;
+	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	// TODO 陆地那边测试完再改水
 	float Step = ChunkData->GetStepOfLODLevel(ELODLevel::NONE);
 	for (int32 i = 0; i <= Size; i++) {
@@ -594,8 +594,9 @@ void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLev
 	}
 }
 
-void AHITerrainActor::GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel LODLevel)
+void AHITerrainActor::GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel InLODLevel)
 {
+	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	int32 Vertice1 = 0;
 	int32 Vertice2 = 1;
 	int32 Vertice3 = Size + 1;
@@ -620,8 +621,9 @@ void AHITerrainActor::GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel
 	}
 }
 
-void AHITerrainActor::GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel LODLevel)
+void AHITerrainActor::GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel InLODLevel)
 {
+	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
 			Normals.Add(FVector(0, 0, 1));
@@ -629,8 +631,9 @@ void AHITerrainActor::GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel L
 	}
 }
 
-void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel)
+void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel InLODLevel)
 {
+	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
 			Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
@@ -638,8 +641,9 @@ void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangent
 	}
 }
 
-void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel)
+void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel InLODLevel)
 {
+	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	// float UVStep = 1.0 / Size;
 	// float RecentX = 0, RecentY = 0;
 	// for (int32 i = 0; i <= Size; i++)
@@ -676,8 +680,9 @@ void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODL
 	}
 }
 
-void AHITerrainActor::GenerateWaterColors(TArray<FColor>& Colors, ELODLevel LODLevel)
+void AHITerrainActor::GenerateWaterColors(TArray<FColor>& Colors, ELODLevel InLODLevel)
 {
+	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
 			Colors.Add(FColor(212, 241, 249, 127));

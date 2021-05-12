@@ -15,29 +15,31 @@ public:
 
 	void DeleteChunk();
 	
-	void GenerateChunk(ELODLevel LODLevel);
+	void GenerateChunk(ELODLevel InLODLevel);
+
+	const ELODLevel& GetLODLevel();
 
 	bool IsGenerated();
 
-	void GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, ELODLevel LODLevel);
+	void GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, ELODLevel InLODLevel);
 
-	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FColor>& Colors, ELODLevel LODLevel);
+	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FColor>& Colors, ELODLevel InLODLevel);
 
-	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel LODLevel);
+	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLevel);
 
-	void GenerateWater(ELODLevel LODLevel);
+	void GenerateWater(ELODLevel InLODLevel);
 
-	void GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel LODLevel);
+	void GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel InLODLevel);
 
-	void GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel LODLevel);
+	void GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel InLODLevel);
 
-	void GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel LODLevel);
+	void GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel InLODLevel);
 
-	void GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel LODLevel);
+	void GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel InLODLevel);
 
-	void GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel LODLevel);
+	void GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel InLODLevel);
 
-	void GenerateWaterColors(TArray<FColor>& Colors, ELODLevel LODLevel);
+	void GenerateWaterColors(TArray<FColor>& Colors, ELODLevel InLODLevel);
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -46,13 +48,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* WaterMaterial;
 
-	int32 Size;
-	// float Step;
 	TPair<int32, int32> Index;
 
 private:
 	bool bGenerated = false;
 	bool bWaterGenerated = false;
+
+	ELODLevel LODLevel;
 	
 	URuntimeMeshProviderStatic* StaticProvider;
 	

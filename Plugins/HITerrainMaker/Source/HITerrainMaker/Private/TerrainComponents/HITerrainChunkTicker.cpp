@@ -43,10 +43,7 @@ void UHITerrainChunkTicker::TickChunks()
 			// Chunk在合法区域内，且已经生成
 			if (TerrainInstance->IsChunkGenerated(Index)) 
 			{
-				// 更新逻辑需要放这里写还是放队列里我暂且蒙古
-				// LOD中期后再写，很复杂反正
-				// UpdateChunkQueue.Enqueue(Index);
-				
+				UpdateChunkQueue.Enqueue(Index);
 			}
 			// Chunk在合法区域内，且未生成
 			else 
@@ -63,6 +60,7 @@ void UHITerrainChunkTicker::TickChunks()
 
 void UHITerrainChunkTicker::ProcessQueue() 
 {
+	// 生成一个区块
 	if (!CreateChunkQueue.IsEmpty()) 
 	{
 		TPair<int32, int32> Index;
@@ -80,22 +78,23 @@ void UHITerrainChunkTicker::ProcessQueue()
 			}
 		}
 	}
-	// if (!UpdateChunkQueue.IsEmpty()) 
-	// {
-	// 	TPair<int32, int32> Index;
-	// 	bool bUpdated = false;
-	// 	while (!bUpdated)
-	// 	{
-	// 		bool bSuccess = UpdateChunkQueue.Dequeue(Index);
-	// 		if (bSuccess)
-	// 		{
-	// 			bUpdated = TerrainInstance->UpdateChunk(Index);
-	// 		}
-	// 		else
-	// 		{
-	// 			break;
-	// 		}
-	// 	}
-	// }
+	// 更新一个区块
+	if (!UpdateChunkQueue.IsEmpty()) 
+	{
+		TPair<int32, int32> Index;
+		bool bUpdated = false;
+		while (!bUpdated)
+		{
+			bool bSuccess = UpdateChunkQueue.Dequeue(Index);
+			if (bSuccess)
+			{
+				bUpdated = TerrainInstance->UpdateChunk(Index);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
 }
 

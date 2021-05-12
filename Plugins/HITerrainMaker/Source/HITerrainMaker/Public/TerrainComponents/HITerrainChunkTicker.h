@@ -38,7 +38,7 @@ private:
 	// 区块生成队列
 	TQueue<TPair<int32, int32>> CreateChunkQueue;
 
-	// TQueue<TPair<int32, int32>> UpdateChunkQueue;
+	TQueue<TPair<int32, int32>> UpdateChunkQueue;
 	
 	float RenderDistance;
 	float ProcessQueueInterval;

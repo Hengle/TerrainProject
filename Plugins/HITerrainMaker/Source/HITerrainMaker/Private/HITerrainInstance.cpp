@@ -79,8 +79,7 @@ bool AHITerrainInstance::GenerateChunkTerrain(TPair<int32, int32> Index)
 		{
 			TerrainActor->Material = Material;
 			TerrainActor->WaterMaterial = WaterMaterial;
-			//TODO 初始的LODLevel
-			TerrainActor->GenerateChunk(ELODLevel::LOD_MEDIUM);
+			TerrainActor->GenerateChunk(GetLODLevel(Index));
 			UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::GenerateChunkTerrain [%d, %d]"), Index.Key, Index.Value)
 			return true;
 		}
@@ -90,6 +89,26 @@ bool AHITerrainInstance::GenerateChunkTerrain(TPair<int32, int32> Index)
 
 bool AHITerrainInstance::UpdateChunk(TPair<int32, int32> Index)
 {
+	if(Chunks.Contains(Index))
+	{
+		AHITerrainActor* TerrainActor = Chunks[Index];
+		TPair<int32, int32> PlayerIndex = GetPlayerPositionIndex();
+		int32 OffSetX = FMath::Abs(PlayerIndex.Key - Index.Key);
+		int32 OffSetY = FMath::Abs(PlayerIndex.Value - Index.Value);
+		if(OffSetX > TerrainInformation->RenderDistance || OffSetY > TerrainInformation->RenderDistance)
+		{
+			return false;
+		}
+		else
+		{
+			if(GetLODLevel(Index) != TerrainActor->GetLODLevel())
+			{
+				TerrainActor->GenerateChunk(GetLODLevel(Index));
+				UE_LOG(LogHITerrain, Log, TEXT("AHITerrainInstance::UpdateChunk [%d, %d]"), Index.Key, Index.Value)
+				return true;
+			}
+		}
+	}
 	return false;
 }
 
@@ -105,7 +124,18 @@ ELODLevel AHITerrainInstance::GetLODLevel(TPair<int32, int32> Index)
 	TPair<int32, int32> PlayerIndex = GetPlayerPositionIndex();
 	// 用曼哈顿距离来计算LODLevel
 	int32 Distance = FMath::Abs(Index.Key - PlayerIndex.Key) + FMath::Abs(Index.Value - PlayerIndex.Value);
-	//TODO 计算LODLevel
+	if(Distance > 6)
+	{
+		return ELODLevel::LOD_LOW;
+	}
+	else if(Distance > 2)
+	{
+		return ELODLevel::LOD_MEDIUM;
+	}
+	else
+	{
+		return ELODLevel::LOD_HIGH;
+	}
 	return ELODLevel::NONE;
 }
 
