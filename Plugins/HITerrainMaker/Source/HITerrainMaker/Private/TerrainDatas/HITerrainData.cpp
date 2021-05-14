@@ -8,7 +8,8 @@
 
 uint32 UHITerrainData::Run()
 {
-	int32 TotalSize = Size();
+	TotalSize = ChunkSize * ChunkNums + 1;
+	RealTotalSize = Information->RealTotalSize;
 	// TerrainData = TFixed2DArray<FTerrainSample>(TotalSize, TotalSize, FTerrainSample());
 	AddChannel("height", ETerrainDataType::FLOAT);
 	bIsGenerated = true;
@@ -54,9 +55,9 @@ void UHITerrainData::SetChunkSize(int32 InChunkSize)
 	ChunkSize = InChunkSize;
 }
 
-int32 UHITerrainData::GetIndex(int32 X, int32 Y, int32 TotalSize)
+int32 UHITerrainData::GetIndex(int32 X, int32 Y, int32 InTotalSize)
 {
-	return X * TotalSize + Y;
+	return X * InTotalSize + Y;
 }
 
 void UHITerrainData::ApplyAlgorithm(UHITerrainAlgorithm* Algorithm)
@@ -93,7 +94,7 @@ void UHITerrainData::SetHeightValue(int32 X, int32 Y, float Value)
 
 float UHITerrainData::GetHeightValue(float X, float Y)
 {
-	// TODO: 现在其实不用插值了。。。
+	// 现在其实不用插值了，但这样也没有什么大问题
 	if (!bIsGenerated)
 	{
 		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
@@ -124,8 +125,7 @@ void UHITerrainData::AddChannel(FString ChannelName, ETerrainDataType Type)
 {
 	if(!TerrainDataChannels.Contains(ChannelName))
 	{
-		int32 TotalSize = Size();
-		TerrainDataChannels.Add(ChannelName, FHITerrainChannel::CreateChannelByType(ChannelName, TotalSize, TotalSize, Type));
+		TerrainDataChannels.Add(ChannelName, FHITerrainChannel::CreateChannelByType(ChannelName, RealTotalSize, RealTotalSize, Type));
 	}
 	else if(TerrainDataChannels[ChannelName]->GetType() != Type)
 	{
@@ -371,7 +371,12 @@ void UHITerrainData::SetInformation(FTerrainInformationPtr InInformation)
 
 int32 UHITerrainData::Size()
 {
-	return ChunkNums * ChunkSize + 1;
+	return TotalSize;
+}
+
+int32 UHITerrainData::RealSize()
+{
+	return RealTotalSize;
 }
 
 FVector2D UHITerrainData::GetCenterPoint()

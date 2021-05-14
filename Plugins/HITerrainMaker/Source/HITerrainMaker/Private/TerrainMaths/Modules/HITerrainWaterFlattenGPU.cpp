@@ -38,7 +38,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 		{
 			
 			TShaderMapRef<FWaterFlattenShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
-			int32 Size = Data->Size();
+			int32 Size = Data->RealSize();
 		
 			TResourceArray<float> TerrainDataBuffer;
 			TResourceArray<float> FluxBuffer;
@@ -105,7 +105,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 						
 					AsyncTask(ENamedThreads::GameThread, []()
 					{

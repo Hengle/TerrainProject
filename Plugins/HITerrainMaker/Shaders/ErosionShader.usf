@@ -5,8 +5,6 @@
  * 侵蚀模块的 Compute Shader，包括水力、热力侵蚀
  */
 
-#define NUM_THREADS numthreads(1, 1, 1)
-
 #define HEIGHT(Index) TerrainData[Index].x
 #define WATER(Index) TerrainData[Index].y
 #define SEDIMENT(Index) TerrainData[Index].z

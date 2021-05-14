@@ -577,7 +577,6 @@ void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLev
 {
 	float RecentX = 0, RecentY = 0;
 	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
-	// TODO 陆地那边测试完再改水
 	float Step = ChunkData->GetStepOfLODLevel(ELODLevel::NONE);
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {

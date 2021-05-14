@@ -47,6 +47,8 @@ public:
 	 */
 	int32 Size();
 
+	int32 RealSize();
+
 	/*
 	 * 获取地形的中心点
 	 */
@@ -123,7 +125,7 @@ public:
 	void SetInformation(FTerrainInformationPtr InInformation);
 
 protected:
-	int32 GetIndex(int32 X, int32 Y, int32 TotalSize);
+	int32 GetIndex(int32 X, int32 Y, int32 InTotalSize);
 
 	void ApplyAlgorithm(UHITerrainAlgorithm* Algorithm);
 
@@ -131,6 +133,9 @@ protected:
 	bool bIsGenerated = false;
 	int32 ChunkNums;
 	int32 ChunkSize;
+
+	int32 TotalSize;
+	int32 RealTotalSize;
 	
 	TMap<FString, TSharedPtr<FHITerrainChannel>> TerrainDataChannels;
 	

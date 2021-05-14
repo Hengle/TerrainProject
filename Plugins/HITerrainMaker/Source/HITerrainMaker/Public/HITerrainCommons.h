@@ -50,7 +50,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	float ChunkSize = 10000; // 区块大小
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	float RealTotalSize = 102400; // 实际大小，填充到一个比较好的2的倍数
+	int32 RealTotalSize = 1024; // 实际大小，填充到一个比较好的2的倍数
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 11111; // 地形随机数种子

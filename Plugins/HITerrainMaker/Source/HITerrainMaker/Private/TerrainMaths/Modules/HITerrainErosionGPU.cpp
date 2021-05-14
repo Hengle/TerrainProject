@@ -84,9 +84,9 @@ void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("hardness", ETerrainDataType::FLOAT);
-	for(int32 i = 0; i < Data->Size(); i++)
+	for(int32 i = 0; i < Data->RealSize(); i++)
 	{
-		for(int32 j = 0; j < Data->Size(); j++)
+		for(int32 j = 0; j < Data->RealSize(); j++)
 		{
 			Data->SetChannelValue("hardness", i, j, 1.0f);
 		}
@@ -102,7 +102,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
 		{
-			int32 Size = Data->Size();
+			int32 Size = Data->RealSize();
 			
 			TResourceArray<float> TerrainDataBuffer;
 			TResourceArray<float> FluxBuffer;
@@ -215,7 +215,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				Parameters.CurrentIteration = i;
 					TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 
-					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 					AsyncTask(ENamedThreads::GameThread, []()
 					{
 						FRenderCommandFence Fence;
