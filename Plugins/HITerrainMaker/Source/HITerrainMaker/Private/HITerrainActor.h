@@ -23,6 +23,8 @@ public:
 
 	void GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, ELODLevel InLODLevel);
 
+	void GeneratePointData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, float RecentX, float RecentY);
+
 	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FColor>& Colors, ELODLevel InLODLevel);
 
 	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLevel);

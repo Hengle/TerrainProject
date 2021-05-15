@@ -81,9 +81,6 @@ void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2
 	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
 	int32 MediumSize = ChunkData->GetMediumPointSize(InLODLevel);
 	int32 OuterSize = ChunkData->GetOuterPointSize(InLODLevel);
-	bool bContainSediment = ChunkData->Data->ContainsChannel("sediment");
-	FColor BasicColor(127, 127, 127, 255);
-	FColor SedimentColor(0, 255, 0, 255);
 	float Step = ChunkData->GetStepOfLODLevel(InLODLevel);
 	/*
 	 * 内部的点
@@ -91,32 +88,7 @@ void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2
 	float RecentX = 2 * Step, RecentY = 2 * Step;
 	for (int32 i = 0; i < InnerSize; i++) {
 		for (int32 j = 0; j < InnerSize; j++) {
-			float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-			float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-			float LocationZ = 0.0f;
-			if(bContainSediment)
-			{
-				LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			}
-			else
-			{
-				LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-			}
-			Positions.Add(FVector(LocationX, LocationY, LocationZ));
-			FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-			TexCoords.Add(UV);
-			if(bContainSediment)
-			{
-				float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-				if(SedimentValue > 1.0f)
-				{
-					Colors.Add(SedimentColor);
-				}
-				else
-				{
-					Colors.Add(BasicColor);
-				}
-			}
+			GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 			RecentY += Step;
 		}
 		RecentX += Step;
@@ -128,122 +100,22 @@ void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2
 	RecentX = Step, RecentY = Step;
 	for(int32 i = 0; i < MediumSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentY += Step;
 	}
 	for(int32 i = 0; i < MediumSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentX += Step;
 	}
 	for(int32 i = 0; i < MediumSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentY -= Step;
 	}
 	for(int32 i = 0; i < MediumSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentX -= Step;
 	}
 	/*
@@ -253,128 +125,62 @@ void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2
 	RecentX = 0, RecentY = 0;
 	for(int32 i = 0; i < OuterSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentY += Step;
 	}
 	for(int32 i = 0; i < OuterSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentX += Step;
 	}
 	for(int32 i = 0; i < OuterSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentY -= Step;
 	}
 	for(int32 i = 0; i < OuterSize - 1; i++)
 	{
-		float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
-		float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-		float LocationZ = 0.0f;
-		if(bContainSediment)
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		}
-		else
-		{
-			LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
-		}
-		Positions.Add(FVector(LocationX, LocationY, LocationZ));
-		FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
-		TexCoords.Add(UV);
-		if(bContainSediment)
-		{
-			float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-			if(SedimentValue > 1.0f)
-			{
-				Colors.Add(SedimentColor);
-			}
-			else
-			{
-				Colors.Add(BasicColor);
-			}
-		}
+		GeneratePointData(Positions, TexCoords, Colors, RecentX, RecentY);
 		RecentX -= Step;
 	}
 }
 
+void AHITerrainActor::GeneratePointData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords,
+	TArray<FColor>& Colors, float RecentX, float RecentY)
+{
+	bool bContainSediment = ChunkData->Data->ContainsChannel("sediment");
+	FColor BasicColor(255, 0, 0, 0);
+	FColor SedimentColor(0, 255, 0, 0);
+	float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
+	float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
+	float LocationZ = 0.0f;
+	if(bContainSediment)
+	{
+		LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
+	}
+	else
+	{
+		LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
+	}
+	Positions.Add(FVector(LocationX, LocationY, LocationZ));
+	FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
+	TexCoords.Add(UV);
+	if(bContainSediment)
+	{
+		float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
+		if(SedimentValue > 1.0f)
+		{
+			Colors.Add(SedimentColor);
+		}
+		else
+		{
+			Colors.Add(BasicColor);
+		}
+	}
+}
+
 void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents,
-	TArray<FColor>& Colors, ELODLevel InLODLevel)
+                                     TArray<FColor>& Colors, ELODLevel InLODLevel)
 {
 	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
 	int32 MediumSize = ChunkData->GetMediumPointSize(InLODLevel);
