@@ -8,7 +8,7 @@
 #include "Async/Async.h"
 
 IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Main", SF_Compute);
-
+IMPLEMENT_GLOBAL_SHADER(FErosionShader2, "/TerrainShaders/ErosionShader2.usf", "Main", SF_Compute);
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
 	HydroErosionScale(0), RainAmount(10.0f),
@@ -97,7 +97,7 @@ void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 {
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
-	Data->Mutex.Lock();
+	// Data->Mutex.Lock();
 	
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
@@ -211,18 +211,32 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			Parameters.TempFlux = TempFluxUAVRef;
 			Parameters.TempTerrainFlux = TempTerrainFluxUAVRef;
 
+			FErosionShader2::FParameters Parameters2;
+			Parameters2.Size = Size;
+			Parameters2.DeltaTime = DeltaTime;
+			Parameters2.TerrainData = TerrainDataUAVRef;
+			Parameters2.Flux = FluxUAVRef;
+			Parameters2.TerrainFlux = TerrainFluxUAVRef;
+			Parameters2.Velocity = VelocityUAVRef;
+			
+			Parameters2.TempTerrainData = TempTerrainDataUAVRef;
+			Parameters2.TempFlux = TempFluxUAVRef;
+			Parameters2.TempTerrainFlux = TempTerrainFluxUAVRef;
+
 			for(int32 i = 0; i < NumIteration; i++)
 			{
 				Parameters.CurrentIteration = i;
-					TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+				TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+				TShaderMapRef<FErosionShader2> ComputeShader2(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 
-					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
-					AsyncTask(ENamedThreads::GameThread, []()
-					{
-						FRenderCommandFence Fence;
-						Fence.BeginFence();
-						Fence.Wait();
-					});
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 32, Size / 32, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 32, Size / 32, 1));
+				// AsyncTask(ENamedThreads::GameThread, []()
+				// {
+				// 	FRenderCommandFence Fence;
+				// 	Fence.BeginFence();
+				// 	Fence.Wait();
+				// });
 			}
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
@@ -245,7 +259,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					Data->SetChannelValue("hardness", i, j, ResultTerrainData[Index + 3]);
 				}
 			}
-			Data->Mutex.Unlock();
+			// Data->Mutex.Unlock();
 		});
 	// ENQUEUE_RENDER_COMMAND(ErosionModuleCommand1)(
 	// 	[=](FRHICommandListImmediate& RHICmdList)

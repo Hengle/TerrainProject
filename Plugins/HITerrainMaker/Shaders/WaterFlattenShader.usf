@@ -52,7 +52,7 @@ void ApplyFlowSimulation(uint3 id)
 	}
 }
 
-[NUM_THREADS]
+[numthreads(1, 1, 1)]
 void Main(uint3 id : SV_DispatchThreadID)
 {
 	ApplyFlowSimulation(id);

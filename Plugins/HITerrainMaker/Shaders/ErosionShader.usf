@@ -70,10 +70,6 @@ void ApplyRainSimulation(uint3 id)
 void ApplyFlowSimulation(uint3 id)
 {
 	float Value = TEMP_HEIGHT(INDEX) + TEMP_WATER(INDEX);
-	// float LValue = id.x == 0? Value: TEMP_HEIGHT(L_INDEX) + TEMP_WATER(L_INDEX);
-	// float RValue = id.x == (uint)Size - 1? Value: TEMP_HEIGHT(R_INDEX) + TEMP_WATER(R_INDEX);
-	// float TValue = id.y == 0? Value: TEMP_HEIGHT(T_INDEX) + TEMP_WATER(T_INDEX);
-	// float BValue = id.y == (uint)Size - 1? Value: TEMP_HEIGHT(B_INDEX) + TEMP_WATER(B_INDEX);
 	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + WATER(L_INDEX);
 	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
 	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
@@ -83,7 +79,6 @@ void ApplyFlowSimulation(uint3 id)
 							  (Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].z,
 							  (Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].w);
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
-	// float K = min(1.0f, TEMP_WATER(INDEX) / ((FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) * DeltaTime));
 	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
 	K = max(0.0f, K);
 	TempFlux[INDEX] = FluxValue * K;
@@ -92,23 +87,19 @@ void ApplyFlowSimulation(uint3 id)
 void ApplyWaterFlowSimulation(uint3 id)
 {
 	float OutValue = TempFlux[INDEX].x + TempFlux[INDEX].y + TempFlux[INDEX].z + TempFlux[INDEX].w;
-	float LInValue = id.x == 0? TempFlux[INDEX].x: TempFlux[L_INDEX].y;
-	float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: TempFlux[R_INDEX].x;
-	float TInValue = id.y == 0? TempFlux[INDEX].z: TempFlux[T_INDEX].w;
-	float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: TempFlux[B_INDEX].z;
-	// float LInValue = id.x == 0? TempFlux[INDEX].x: Flux[L_INDEX].y;
-	// float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: Flux[R_INDEX].x;
-	// float TInValue = id.y == 0? TempFlux[INDEX].z: Flux[T_INDEX].w;
-	// float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: Flux[B_INDEX].z;
+	float LInValue = id.x == 0? TempFlux[INDEX].x: Flux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? TempFlux[INDEX].z: Flux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: Flux[B_INDEX].z;
 	TEMP_WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
 }
 
 void ApplyErosionDepositionSimulation(uint3 id)
 {
-	float LInValue = id.x == 0? 0: TempFlux[L_INDEX].y;
-	float RInValue = id.x == (uint)Size - 1? 0: TempFlux[R_INDEX].x;
-	float TInValue = id.y == 0? 0: TempFlux[T_INDEX].w;
-	float BInValue = id.y == (uint)Size - 1? 0: TempFlux[B_INDEX].z;
+	float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? 0: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
 	// float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
 	// float RInValue = id.x == (uint)Size - 1? 0: Flux[R_INDEX].x;
 	// float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
@@ -119,10 +110,10 @@ void ApplyErosionDepositionSimulation(uint3 id)
 	NewVelocity.z = 0.0f;
 	Velocity[INDEX] = NewVelocity;
 	float VelocityValue = sqrt(Velocity[INDEX].x * Velocity[INDEX].x + Velocity[INDEX].y * Velocity[INDEX].y);
-	float LHeight = id.x == 0? HEIGHT(INDEX): TEMP_HEIGHT(L_INDEX);
-	float RHeight = id.x == (uint)Size - 1? HEIGHT(INDEX): TEMP_HEIGHT(R_INDEX);
-	float THeight = id.y == 0? HEIGHT(INDEX): TEMP_HEIGHT(T_INDEX);
-	float BHeight = id.y == (uint)Size - 1? HEIGHT(INDEX): TEMP_HEIGHT(B_INDEX);
+	float LHeight = id.x == 0? HEIGHT(INDEX): HEIGHT(L_INDEX);
+	float RHeight = id.x == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(R_INDEX);
+	float THeight = id.y == 0? HEIGHT(INDEX): HEIGHT(T_INDEX);
+	float BHeight = id.y == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(B_INDEX);
 	// float LHeight = id.x == 0? HEIGHT(INDEX): HEIGHT(L_INDEX);
 	// float RHeight = id.x == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(R_INDEX);
 	// float THeight = id.y == 0? HEIGHT(INDEX): HEIGHT(T_INDEX);
@@ -160,10 +151,10 @@ void ApplySedimentSimulation(uint3 id)
 	Y0 = clamp(Y0, 0, Size - 1);
 	X1 = clamp(X1, 0, Size - 1);
 	Y1 = clamp(Y1, 0, Size - 1);
-	float S00 = TEMP_SEDIMENT(POINT_INDEX(X0, Y0));
-	float S01 = TEMP_SEDIMENT(POINT_INDEX(X0, Y1));
-	float S10 = TEMP_SEDIMENT(POINT_INDEX(X1, Y0));
-	float S11 = TEMP_SEDIMENT(POINT_INDEX(X1, Y1));
+	float S00 = SEDIMENT(POINT_INDEX(X0, Y0));
+	float S01 = SEDIMENT(POINT_INDEX(X0, Y1));
+	float S10 = SEDIMENT(POINT_INDEX(X1, Y0));
+	float S11 = SEDIMENT(POINT_INDEX(X1, Y1));
 	int AlphaX = FromPosX - floor(FromPosX);
 	int AlphaY = FromPosY - floor(FromPosY);
 	float NewSediment = Lerp2D(S00, S01, S10, S11, AlphaX, AlphaY);
@@ -172,10 +163,10 @@ void ApplySedimentSimulation(uint3 id)
 
 void ApplyThermalErosionSimulation(uint3 id)
 {
-	float4 Neighbors = float4(id.x == 0? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(L_INDEX),
-							  id.x == (uint)Size - 1? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(R_INDEX),
-							  id.y == 0? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(T_INDEX),
-							  id.y == (uint)Size - 1? TEMP_HEIGHT(INDEX): TEMP_HEIGHT(B_INDEX));
+	float4 Neighbors = float4(id.x == 0? TEMP_HEIGHT(INDEX): HEIGHT(L_INDEX),
+							  id.x == (uint)Size - 1? TEMP_HEIGHT(INDEX): HEIGHT(R_INDEX),
+							  id.y == 0? TEMP_HEIGHT(INDEX): HEIGHT(T_INDEX),
+							  id.y == (uint)Size - 1? TEMP_HEIGHT(INDEX): HEIGHT(B_INDEX));
 	float4 DeltaHeight;
 	DeltaHeight.x = max(0.0f, TEMP_HEIGHT(INDEX) - Neighbors.x);
 	DeltaHeight.y = max(0.0f, TEMP_HEIGHT(INDEX) - Neighbors.y);
@@ -219,10 +210,10 @@ void ApplyThermalErosionSimulation(uint3 id)
 void ApplyThermalErosionMove(uint3 id)
 {
 	float OutValue = TempTerrainFlux[INDEX].x + TempTerrainFlux[INDEX].y + TempTerrainFlux[INDEX].z + TempTerrainFlux[INDEX].w;
-	float LInValue = id.x == 0? TempTerrainFlux[INDEX].x: TempTerrainFlux[L_INDEX].y;
-	float RInValue = id.x == (uint)Size - 1? TempTerrainFlux[INDEX].y: TempTerrainFlux[R_INDEX].x;
-	float TInValue = id.y == 0? TempTerrainFlux[INDEX].z: TempTerrainFlux[T_INDEX].w;
-	float BInValue = id.y == (uint)Size - 1? TempTerrainFlux[INDEX].w: TempTerrainFlux[B_INDEX].z;
+	float LInValue = id.x == 0? TempTerrainFlux[INDEX].x: TerrainFlux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? TempTerrainFlux[INDEX].y: TerrainFlux[R_INDEX].x;
+	float TInValue = id.y == 0? TempTerrainFlux[INDEX].z: TerrainFlux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? TempTerrainFlux[INDEX].w: TerrainFlux[B_INDEX].z;
 	TEMP_HEIGHT(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
 }
 
@@ -235,19 +226,16 @@ void ApplyEvaporationSimulation(uint3 id)
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	// if(CurrentIteration <= NumIteration / 2)
-	{
-		ApplyRainSimulation(id);
-	}
+	ApplyRainSimulation(id);
 	ApplyFlowSimulation(id);
 	ApplyWaterFlowSimulation(id);
 	ApplyErosionDepositionSimulation(id);
-	ApplySedimentSimulation(id);
+	// ApplySedimentSimulation(id);
 	ApplyEvaporationSimulation(id);
 	ApplyThermalErosionSimulation(id);
 	ApplyThermalErosionMove(id);
 
-	TerrainData[INDEX] = TempTerrainData[INDEX];
-	Flux[INDEX] = TempFlux[INDEX];
-	TerrainFlux[INDEX] = TempTerrainFlux[INDEX] ;
+	// TerrainData[INDEX] = TempTerrainData[INDEX];
+	// Flux[INDEX] = TempFlux[INDEX];
+	// TerrainFlux[INDEX] = TempTerrainFlux[INDEX] ;
 }

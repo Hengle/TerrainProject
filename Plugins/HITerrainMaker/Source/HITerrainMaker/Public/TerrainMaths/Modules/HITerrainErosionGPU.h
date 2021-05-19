@@ -37,9 +37,38 @@ public:
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainFlux)
 	
 	END_SHADER_PARAMETER_STRUCT()
-
 	
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+	}
 
+	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+};
+
+class HITERRAINMAKER_API FErosionShader2: public FGlobalShader
+{
+	DECLARE_GLOBAL_SHADER(FErosionShader2);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShader2, FGlobalShader);
+
+	public:
+	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
+
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER(float, DeltaTime)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainFlux)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, Velocity)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempFlux)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainFlux)
+	
+	END_SHADER_PARAMETER_STRUCT()
+	
 	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
 	{
 		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
