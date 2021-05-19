@@ -31,15 +31,15 @@ void UVegetationAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
 	Data->Mutex.Lock();
 	Super::DebugAlgorithm(Data);
-	int32 ChunkNum = Information->ChunkNum;
-	for(int32 i = 0; i < ChunkNum; i++)
-	{
-		for(int32 j = 0; j < ChunkNum; j++)
-		{
-			TPair<int32, int32> Index(i, j);
-			GenerateChunkGrassData(Data, Index);
-		}
-	}
+	// int32 ChunkNum = Information->ChunkNum;
+	// for(int32 i = 0; i < ChunkNum; i++)
+	// {
+	// 	for(int32 j = 0; j < ChunkNum; j++)
+	// 	{
+	// 		TPair<int32, int32> Index(i, j);
+	// 		GenerateChunkGrassData(Data, Index);
+	// 	}
+	// }
 	Data->Mutex.Unlock();
 }
 
