@@ -11,6 +11,7 @@
 #include "TerrainAlgorithms/MidtermAlgorithms/VoronoiAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm2.h"
+#include "TerrainAlgorithms/VegetationAlgorithms/VegetationAlgorithm.h"
 #include "TerrainComponents/HITerrainChunkTicker.h"
 
 FTerrainInformationPtr AHITerrainInstance::GetTerrainInformation() const
@@ -202,12 +203,20 @@ void AHITerrainInstance::InitAlgorithms()
 		UTestAlgorithm* Algorithm = NewObject<UTestAlgorithm>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
+		
+		UVegetationAlgorithm* VegetationAlgorithm = NewObject<UVegetationAlgorithm>(this);
+		VegetationAlgorithm->Init(TerrainInformation);
+		Algorithms.Add(VegetationAlgorithm);
 	}
 	else if (TerrainInformation->TerrainType == ETerrainType::TEST2)
 	{
 		UTestAlgorithm2* Algorithm = NewObject<UTestAlgorithm2>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
+		
+		UVegetationAlgorithm* VegetationAlgorithm = NewObject<UVegetationAlgorithm>(this);
+		VegetationAlgorithm->Init(TerrainInformation);
+		Algorithms.Add(VegetationAlgorithm);
 	}
 }
 

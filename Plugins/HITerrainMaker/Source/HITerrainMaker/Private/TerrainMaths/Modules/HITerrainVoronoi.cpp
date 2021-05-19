@@ -7,11 +7,6 @@
 
 #include "TerrainMaths/Modules/HITerrainVoronoi.h"
 
-void FHITerrainVoronoi::SetTargetChannel(const FString& InChannelName)
-{
-	ChannelName = InChannelName;
-}
-
 void FHITerrainVoronoi::SetSeed(int32 InSeed)
 {
 	Seed = InSeed;
@@ -27,15 +22,23 @@ void FHITerrainVoronoi::SetAmplitude(float InAmplitude)
 	Amplitude = InAmplitude;
 }
 
+void FHITerrainVoronoi::SetSizeX(int32 InSizeX)
+{
+	SizeX = InSizeX;
+}
+
+void FHITerrainVoronoi::SetSizeY(int32 InSizeY)
+{
+	SizeY = InSizeY;
+}
+
 void FHITerrainVoronoi::ApplyModule(UHITerrainData* Data)
 {
-	Data->AddChannel(ChannelName, ETerrainDataType::FLOAT);
-	auto Channel = Data->GetChannel(ChannelName);
-	Bounds = FBox(FVector(0.0f, 0.0f, 0.0f), FVector(Channel->GetSizeX(), Channel->GetSizeY(), 0.0f));
+	Bounds = FBox(FVector(0.0f, 0.0f, 0.0f), FVector(SizeX, SizeY, 0.0f));
 	FRandomStream RandomStream(Seed);
 	for(int i = 0; i < NumSites; i++)
 	{
-		Sites.Add(FVector(RandomStream.FRandRange(0.0f, Channel->GetSizeX()), RandomStream.FRandRange(0.0f, Channel->GetSizeY()), 0.0f));
+		Sites.Add(FVector(RandomStream.FRandRange(0.0f, SizeX), RandomStream.FRandRange(0.0f, SizeY), 0.0f));
 	}
 	VoronoiDiagram = new FVoronoiDiagram(Sites, Bounds, 0.0f);
 	VoronoiDiagram->ComputeAllCells(AllCells);
@@ -58,15 +61,6 @@ void FHITerrainVoronoi::ApplyModule(UHITerrainData* Data)
 	delete VoronoiDiagram;
 	VoronoiDiagram = new FVoronoiDiagram(Sites, Bounds, 0.0f);
 	VoronoiDiagram->ComputeAllCells(AllCells);
-
-	for(int32 i = 0; i < Channel->GetSizeX(); i++)
-	{
-		for(int32 j = 0; j < Channel->GetSizeY(); j++)
-		{
-			float Value = GetCellValue(i, j) * Amplitude;
-			Channel->SetFloat(i, j, Value);
-		}
-	}
 }
 
 float FHITerrainVoronoi::GetCellValue(float X, float Y)

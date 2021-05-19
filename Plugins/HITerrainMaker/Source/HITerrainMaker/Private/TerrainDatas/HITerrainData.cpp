@@ -13,6 +13,16 @@ uint32 UHITerrainData::Run()
 	// TerrainData = TFixed2DArray<FTerrainSample>(TotalSize, TotalSize, FTerrainSample());
 	AddChannel("height", ETerrainDataType::FLOAT);
 	bIsGenerated = true;
+
+	for(int32 i = 0; i < ChunkNums; i++)
+	{
+		for(int32 j = 0; j < ChunkNums; j++)
+		{
+			TPair<int32, int32> Index(i, j);
+			GrassData.Add(Index, TArray<FVector>());
+		}
+	}
+	
 	for(UHITerrainAlgorithm* Algorithm: Algorithms)
 	{
 		if(Information->bEnableDebugAlgorithm)
@@ -116,7 +126,40 @@ float UHITerrainData::GetHeightValue(float X, float Y)
 		float Value01 = GetHeightValue(FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100));
 		float Value10 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100));
 		float Value11 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100));
-		float Value = FHITerrainMathMisc::Lerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
+		float Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
+		return Value;
+	}
+}
+
+float UHITerrainData::GetSedimentValue(float X, float Y)
+{
+	if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return 0.0f;
+	}
+	else
+	{
+		float XFloor = FMath::FloorToInt(X / 100);
+		float YFloor = FMath::FloorToInt(Y / 100);
+		float XCeil = FMath::CeilToInt(X / 100);
+		float YCeil = FMath::CeilToInt(Y / 100);
+		float Alpha0 = X / 100 - FMath::FloorToInt(X / 100);
+		float Alpha1 = Y / 100 - FMath::FloorToInt(Y / 100);
+		// if(Alpha0 == 0 && Alpha1 == 0)
+		// {
+		// 	return TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
+		// }
+		float Value00;
+		float Value01;
+		float Value10;
+		float Value11;
+		GetChannelValue("sediment", FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100), Value00);
+		GetChannelValue("sediment", FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100), Value01);
+		GetChannelValue("sediment", FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100), Value10);
+		GetChannelValue("sediment", FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100), Value11);
+		
+		float Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
 		return Value;
 	}
 }
@@ -392,4 +435,14 @@ int32 UHITerrainData::GetChunkNums()
 int32 UHITerrainData::GetChunkSize()
 {
 	return ChunkSize;
+}
+
+void UHITerrainData::AddChunkGrass(TPair<int32, int32>& Index, FVector& GrassPosition)
+{
+	GrassData[Index].Add(GrassPosition);
+}
+
+TArray<FVector>& UHITerrainData::GetChunkGrass(TPair<int32, int32>& Index)
+{
+	return GrassData[Index];
 }

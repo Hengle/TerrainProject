@@ -3,6 +3,8 @@
 * PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 */
 #include "HITerrainActor.h"
+
+#include "Engine/StaticMeshActor.h"
 #include "Providers/RuntimeMeshProviderStatic.h"
 #include "TerrainDatas/HITerrainChunkData.h"
 
@@ -39,7 +41,7 @@ void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 		LODLevel = InLODLevel;
 		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
 		TArray<FVector> Positions;
-		TArray<FColor> Colors;
+		TArray<FLinearColor> Colors;
 		TArray<int32> Triangles;
 		TArray<FVector> Normals;
 		TArray<FVector2D> TexCoords;
@@ -48,7 +50,7 @@ void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 		GenerateChunk1(Positions, TexCoords, Colors, InLODLevel);
 		GenerateChunk2(Normals, Tangents, Colors, InLODLevel);
 		GenerateChunk3(Triangles, InLODLevel);
-		if(bGenerated)
+		if(bGenerated) 
 		{
 			StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
 		}
@@ -62,6 +64,7 @@ void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 		{
 			GenerateWater(InLODLevel);
 		}
+		GenerateVegetation(InLODLevel);
 	}
 }
 
@@ -75,7 +78,7 @@ bool AHITerrainActor::IsGenerated()
 	return bGenerated;
 }
 
-void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors,
+void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors,
 	ELODLevel InLODLevel)
 {
 	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
@@ -146,11 +149,10 @@ void AHITerrainActor::GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2
 }
 
 void AHITerrainActor::GeneratePointData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords,
-	TArray<FColor>& Colors, float RecentX, float RecentY)
+	TArray<FLinearColor>& Colors, float RecentX, float RecentY)
 {
 	bool bContainSediment = ChunkData->Data->ContainsChannel("sediment");
-	FColor BasicColor(255, 0, 0, 0);
-	FColor SedimentColor(0, 255, 0, 0);
+	FLinearColor PointColor;
 	float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
 	float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
 	float LocationZ = 0.0f;
@@ -162,25 +164,21 @@ void AHITerrainActor::GeneratePointData(TArray<FVector>& Positions, TArray<FVect
 	{
 		LocationZ = ChunkData->GetHeightValue(LocationX, LocationY);
 	}
-	Positions.Add(FVector(LocationX, LocationY, LocationZ));
-	FVector2D UV = ChunkData->GetUV(LocationX, LocationY);
+	FVector Location(LocationX, LocationY, LocationZ);
+	Positions.Add(Location);
+	FVector2D UV = ChunkData->GetUV(LocationX, LocationY, 3);
 	TexCoords.Add(UV);
 	if(bContainSediment)
 	{
 		float SedimentValue = ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
-		if(SedimentValue > 1.0f)
-		{
-			Colors.Add(SedimentColor);
-		}
-		else
-		{
-			Colors.Add(BasicColor);
-		}
+		PointColor.G = FMath::Clamp(SedimentValue, 0.0f, 1.0f);
+		
 	}
+	Colors.Add(PointColor);
 }
 
 void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents,
-                                     TArray<FColor>& Colors, ELODLevel InLODLevel)
+                                     TArray<FLinearColor>& Colors, ELODLevel InLODLevel)
 {
 	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
 	int32 MediumSize = ChunkData->GetMediumPointSize(InLODLevel);
@@ -354,7 +352,7 @@ void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 	if (StaticProvider){
 		StaticProvider->SetupMaterialSlot(1, TEXT("Material"), WaterMaterial);
 		TArray<FVector> Positions;
-		TArray<FColor> Colors;
+		TArray<FLinearColor> Colors;
 		TArray<int32> Triangles;
 		TArray<FVector> Normals;
 		TArray<FVector2D> TexCoords;
@@ -485,12 +483,40 @@ void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODL
 	}
 }
 
-void AHITerrainActor::GenerateWaterColors(TArray<FColor>& Colors, ELODLevel InLODLevel)
+void AHITerrainActor::GenerateWaterColors(TArray<FLinearColor>& Colors, ELODLevel InLODLevel)
 {
 	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
 	for (int32 i = 0; i <= Size; i++) {
 		for (int32 j = 0; j <= Size; j++) {
 			Colors.Add(FColor(212, 241, 249, 127));
+		}
+	}
+}
+
+void AHITerrainActor::GenerateVegetation(ELODLevel InLODLevel)
+{
+	if(InLODLevel == ELODLevel::NONE || InLODLevel == ELODLevel::LOD_LOW)
+	{
+		for(AStaticMeshActor* StaticMeshActor: StaticMeshActors)
+		{
+			StaticMeshActor->Destroy();
+		}
+		StaticMeshActors.Empty();
+		return;
+	}
+	else
+	{
+		if(StaticMeshActors.Num() == 0)
+		{
+			TArray<FVector> GrassLocations = ChunkData->GetChunkGrass();
+			for(const FVector& Location: GrassLocations)
+			{
+				AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location);
+				GrassActor->SetMobility(EComponentMobility::Movable);
+				GrassActor->GetStaticMeshComponent()->SetStaticMesh(GrassStaticMesh);
+				GrassActor->SetMobility(EComponentMobility::Static);
+				StaticMeshActors.Add(GrassActor);
+			}
 		}
 	}
 }

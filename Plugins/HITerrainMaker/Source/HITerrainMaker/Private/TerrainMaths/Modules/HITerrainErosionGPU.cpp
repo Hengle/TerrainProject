@@ -97,11 +97,12 @@ void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 {
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
-	
+	Data->Mutex.Lock();
 	
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
 		{
+			
 			int32 Size = Data->RealSize();
 			
 			TResourceArray<float> TerrainDataBuffer;
@@ -244,6 +245,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					Data->SetChannelValue("hardness", i, j, ResultTerrainData[Index + 3]);
 				}
 			}
+			Data->Mutex.Unlock();
 		});
 	// ENQUEUE_RENDER_COMMAND(ErosionModuleCommand1)(
 	// 	[=](FRHICommandListImmediate& RHICmdList)

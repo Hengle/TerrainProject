@@ -12,7 +12,6 @@ void UVoronoiAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Voronoi.SetSeed(Information->Seed);
 	Voronoi.SetAmplitude(1000);
 	Voronoi.SetNumSites(200);
-	Voronoi.SetTargetChannel("height");
 }
 
 void UVoronoiAlgorithm::ApplyAlgorithm(UHITerrainData* Data)

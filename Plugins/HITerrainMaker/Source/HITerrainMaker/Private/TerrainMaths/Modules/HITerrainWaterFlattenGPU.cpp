@@ -31,12 +31,11 @@ void FHITerrainWaterFlattenGPU::ApplyModule(UHITerrainData* Data)
 void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 {
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
-	
+	Data->Mutex.Lock();
 	
 	ENQUEUE_RENDER_COMMAND(WaterFlattenModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
 		{
-			
 			TShaderMapRef<FWaterFlattenShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			int32 Size = Data->RealSize();
 		
@@ -133,6 +132,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 					Data->SetChannelValue("water", i, j, ResultTerrainData[Index + 1]);
 				}
 			}
+			Data->Mutex.Unlock();
 		});
 
 }

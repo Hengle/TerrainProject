@@ -36,12 +36,12 @@ float FHITerrainChunkData::GetChannelFloatValue(FString ChannelName, float X, fl
 	return Value;
 }
 
-FVector2D FHITerrainChunkData::GetUV(float X, float Y)
+FVector2D FHITerrainChunkData::GetUV(float X, float Y, float Tile)
 {
 	FVector2D UV;
 	UV.X = (X - Index.Key * ChunkSize * 100.0f) / (ChunkSize * 100.0f);
 	UV.Y = (Y - Index.Value * ChunkSize * 100.0f) / (ChunkSize * 100.0f);
-	return UV;
+	return UV * Tile;
 }
 
 float FHITerrainChunkData::GetChunkSize()
@@ -117,4 +117,9 @@ float FHITerrainChunkData::GetStepOfLODLevel(const ELODLevel& LODLevel)
 	{
 		return 100.0f;
 	}
+}
+
+TArray<FVector>& FHITerrainChunkData::GetChunkGrass()
+{
+	return Data->GetChunkGrass(Index);
 }

@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
 #include "RuntimeMeshActor.h"
+#include "Engine/StaticMeshActor.h"
 #include "TerrainDatas/HITerrainData.h"
 #include "HITerrainActor.generated.h"
 
@@ -21,11 +22,11 @@ public:
 
 	bool IsGenerated();
 
-	void GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, ELODLevel InLODLevel);
+	void GenerateChunk1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
 
-	void GeneratePointData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FColor>& Colors, float RecentX, float RecentY);
+	void GeneratePointData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors, float RecentX, float RecentY);
 
-	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FColor>& Colors, ELODLevel InLODLevel);
+	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
 
 	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLevel);
 
@@ -41,7 +42,9 @@ public:
 
 	void GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel InLODLevel);
 
-	void GenerateWaterColors(TArray<FColor>& Colors, ELODLevel InLODLevel);
+	void GenerateWaterColors(TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
+
+	void GenerateVegetation(ELODLevel InLODLevel);
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -64,4 +67,9 @@ private:
 
 	FTerrainInformationPtr TerrainInformation;
 
+	UPROPERTY()
+	UStaticMesh* GrassStaticMesh = LoadObject<UStaticMesh>(this,TEXT("/Game/KiteDemo/Environments/Foliage/Grass/FieldGrass/SM_FieldGrass_01"));
+
+	UPROPERTY()
+	TArray<AStaticMeshActor*> StaticMeshActors;
 };

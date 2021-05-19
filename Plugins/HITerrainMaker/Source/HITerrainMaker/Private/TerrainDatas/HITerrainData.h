@@ -63,6 +63,8 @@ public:
 	void SetHeightValue(int32 X, int32 Y, float Value);
 	float GetHeightValue(float X, float Y);
 
+	float GetSedimentValue(float X, float Y);
+
 	/*
 	 * 添加指定名称、类型的通道。
 	 */
@@ -107,6 +109,10 @@ public:
 	 * 获取区块大小（长宽）
 	 */
 	int32 GetChunkSize();
+
+	void AddChunkGrass(TPair<int32, int32>& Index, FVector& GrassPosition);
+
+	TArray<FVector>& GetChunkGrass(TPair<int32, int32>& Index);
 	
 /*
  * 内部用public
@@ -123,6 +129,8 @@ public:
 	void SetAlgorithms(const TArray<UHITerrainAlgorithm*>& InAlgorithms);
 	
 	void SetInformation(FTerrainInformationPtr InInformation);
+
+	FCriticalSection Mutex;
 
 protected:
 	int32 GetIndex(int32 X, int32 Y, int32 InTotalSize);
@@ -143,4 +151,6 @@ protected:
 	TArray<UHITerrainAlgorithm*> Algorithms;
 
 	FTerrainInformationPtr Information;
+
+	TMap<TPair<int32, int32>, TArray<FVector>> GrassData;
 };

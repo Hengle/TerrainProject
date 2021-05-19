@@ -11,12 +11,11 @@
 class HITERRAINMAKER_API FHITerrainVoronoi: public FHITerrainModule
 {
 public:
-	void Init(int32 InSeed, float InSizeX, float InSizeY, int32 InNumSites);
-
-	void SetTargetChannel(const FString& InChannelName);
 	void SetSeed(int32 InSeed);
 	void SetNumSites(int32 InNumSites);
 	void SetAmplitude(float InAmplitude);
+	void SetSizeX(int32 InSizeX);
+	void SetSizeY(int32 InSizeY);
 
 	virtual void ApplyModule(UHITerrainData* Data) override;
 	 
@@ -33,10 +32,11 @@ public:
 	 ~FHITerrainVoronoi();
 	
 private:
-	FString ChannelName;
 	int32 Seed;
 	float NumSites;
 	float Amplitude;
+	int32 SizeX;
+	int32 SizeY;
 	FBox Bounds;
 	TArray<FVector> Sites;
 	TArray<FVoronoiCellInfo> AllCells;
