@@ -226,7 +226,10 @@ void ApplyEvaporationSimulation(uint3 id)
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	ApplyRainSimulation(id);
+	if(CurrentIteration < NumIteration / 2)
+	{
+		ApplyRainSimulation(id);
+	}
 	ApplyFlowSimulation(id);
 	ApplyWaterFlowSimulation(id);
 	ApplyErosionDepositionSimulation(id);

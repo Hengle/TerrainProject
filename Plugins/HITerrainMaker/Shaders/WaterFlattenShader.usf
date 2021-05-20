@@ -29,7 +29,15 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + SEDIMENT(L_INDEX) + WATER(L_INDEX);
 	if(Value > LValue)
 	{
-		float FlowValue = min(Value - LValue, WATER(INDEX)) / 2;
+		float FlowValue = 0.0f;
+		if(Value - LValue > WATER(INDEX))
+		{
+			FlowValue = WATER(INDEX);
+		}
+		else
+		{
+			FlowValue = min(Value - LValue, WATER(INDEX)) / 2;
+		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
 		WATER(L_INDEX) += FlowValue;
@@ -37,7 +45,15 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + WATER(R_INDEX);
 	if(Value > RValue)
 	{
-		float FlowValue = min(Value - RValue, WATER(INDEX)) / 2;
+		float FlowValue = 0.0f;
+		if(Value - RValue > WATER(INDEX))
+		{
+			FlowValue = WATER(INDEX);
+		}
+		else
+		{
+			FlowValue = min(Value - RValue, WATER(INDEX)) / 2;
+		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
 		WATER(R_INDEX) += FlowValue;
@@ -45,7 +61,15 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + WATER(T_INDEX);
 	if(Value > TValue)
 	{
-		float FlowValue = min(Value - TValue, WATER(INDEX)) / 2;
+		float FlowValue = 0.0f;
+		if(Value - TValue > WATER(INDEX))
+		{
+			FlowValue = WATER(INDEX);
+		}
+		else
+		{
+			FlowValue = min(Value - TValue, WATER(INDEX)) / 2;
+		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
 		WATER(T_INDEX) += FlowValue;
@@ -53,7 +77,15 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + WATER(B_INDEX);
 	if(Value > BValue)
 	{
-		float FlowValue = min(Value - BValue, WATER(INDEX)) / 2;
+		float FlowValue = 0.0f;
+		if(Value - BValue > WATER(INDEX))
+		{
+			FlowValue = WATER(INDEX);
+		}
+		else
+		{
+			FlowValue = min(Value - BValue, WATER(INDEX)) / 2;
+		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
 		WATER(B_INDEX) += FlowValue;
