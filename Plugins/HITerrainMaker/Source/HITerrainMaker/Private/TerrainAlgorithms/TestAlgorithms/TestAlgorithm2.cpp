@@ -7,8 +7,8 @@ void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	Perlin.SetSeed(Information->Seed);
-	Perlin.SetAmplitude(2000);
-	Perlin.SetScale(0.005);
+	Perlin.SetAmplitude(5000);
+	Perlin.SetScale(0.002);
 	Perlin.SetTargetChannel("height");
 	ErosionGPU.SetNumIteration(Information->Erosion_IterationNum);
 	ErosionGPU.SetDeltaTime(Information->Erosion_DeltaTime);

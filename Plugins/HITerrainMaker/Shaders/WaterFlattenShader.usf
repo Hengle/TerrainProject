@@ -36,7 +36,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 		}
 		else
 		{
-			FlowValue = min(Value - LValue, WATER(INDEX)) / 2;
+			FlowValue = (Value - LValue) / 2;
 		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
@@ -52,7 +52,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 		}
 		else
 		{
-			FlowValue = min(Value - RValue, WATER(INDEX)) / 2;
+			FlowValue = (Value - RValue) / 2;
 		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
@@ -68,7 +68,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 		}
 		else
 		{
-			FlowValue = min(Value - TValue, WATER(INDEX)) / 2;
+			FlowValue = (Value - TValue) / 2;
 		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
@@ -84,7 +84,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 		}
 		else
 		{
-			FlowValue = min(Value - BValue, WATER(INDEX)) / 2;
+			FlowValue = (Value - BValue) / 2;
 		}
 		WATER(INDEX) -= FlowValue;
 		Value -= FlowValue;
