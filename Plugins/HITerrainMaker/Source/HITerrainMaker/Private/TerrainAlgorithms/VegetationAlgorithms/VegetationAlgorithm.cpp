@@ -29,8 +29,8 @@ void UVegetationAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 
 void UVegetationAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
-	Data->Mutex.Lock();
 	Super::DebugAlgorithm(Data);
+	// Data->Mutex.Lock();
 	// int32 ChunkNum = Information->ChunkNum;
 	// for(int32 i = 0; i < ChunkNum; i++)
 	// {
@@ -40,7 +40,11 @@ void UVegetationAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	// 		GenerateChunkGrassData(Data, Index);
 	// 	}
 	// }
-	Data->Mutex.Unlock();
+	// Data->Mutex.Unlock();
+	Data->AddChannel("R", ETerrainDataType::FLOAT);
+	Data->AddChannel("G", ETerrainDataType::FLOAT);
+	Data->AddChannel("B", ETerrainDataType::FLOAT);
+	Data->AddChannel("A", ETerrainDataType::FLOAT);
 }
 
 void UVegetationAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)

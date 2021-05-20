@@ -366,7 +366,7 @@ void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 		GenerateWaterColors(Colors, InLODLevel);
 		if(bWaterGenerated)
 		{
-			// StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+			StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
 		}
 		else
 		{
@@ -380,15 +380,17 @@ void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel InLODLevel)
 {
 	float RecentX = 0, RecentY = 0;
-	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
-	float Step = ChunkData->GetStepOfLODLevel(ELODLevel::NONE);
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
+	int32 Size = ChunkData->GetPointSize(InLODLevel);
+	float Step = ChunkData->GetStepOfLODLevel(InLODLevel);
+	for (int32 i = 0; i < Size; i++) {
+		for (int32 j = 0; j < Size; j++) {
 			float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
 			float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-			// 这里在LOD下会有BUG，待解决
 			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j);
-			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j) - 0.1f;
+			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j) - 0.1f;
+			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY)
+							+ ChunkData->Data->GetSedimentValue(LocationX, LocationY)
+							+ ChunkData->Data->GetWaterValue(LocationX, LocationY) - 0.1f;
 			Positions.Add(FVector(LocationX, LocationY, LocationZ));
 			RecentY += Step;
 		}
@@ -399,7 +401,7 @@ void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLev
 
 void AHITerrainActor::GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel InLODLevel)
 {
-	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
+	int32 Size = ChunkData->GetPointSize(InLODLevel) - 1;
 	int32 Vertice1 = 0;
 	int32 Vertice2 = 1;
 	int32 Vertice3 = Size + 1;
@@ -426,9 +428,9 @@ void AHITerrainActor::GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel
 
 void AHITerrainActor::GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel InLODLevel)
 {
-	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
+	int32 Size = ChunkData->GetPointSize(InLODLevel);
+	for (int32 i = 0; i < Size; i++) {
+		for (int32 j = 0; j < Size; j++) {
 			Normals.Add(FVector(0, 0, 1));
 		}
 	}
@@ -436,9 +438,9 @@ void AHITerrainActor::GenerateWaterNormals(TArray<FVector>& Normals, ELODLevel I
 
 void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangents, ELODLevel InLODLevel)
 {
-	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
+	int32 Size = ChunkData->GetPointSize(InLODLevel);
+	for (int32 i = 0; i < Size; i++) {
+		for (int32 j = 0; j < Size; j++) {
 			Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
 		}
 	}
@@ -446,7 +448,7 @@ void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangent
 
 void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel InLODLevel)
 {
-	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
+	int32 Size = ChunkData->GetPointSize(InLODLevel);
 	// float UVStep = 1.0 / Size;
 	// float RecentX = 0, RecentY = 0;
 	// for (int32 i = 0; i <= Size; i++)
@@ -462,8 +464,8 @@ void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODL
 	// 1个格子一个uv的实现
 	bool bEvenX = false, bEvenY = false;
 	float RecentX = 0, RecentY = 0;
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
+	for (int32 i = 0; i < Size; i++) {
+		for (int32 j = 0; j < Size; j++) {
 			if(bEvenX && bEvenY){
 				TexCoords.Add(FVector2D(1, 1));
 			}
@@ -485,9 +487,9 @@ void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODL
 
 void AHITerrainActor::GenerateWaterColors(TArray<FLinearColor>& Colors, ELODLevel InLODLevel)
 {
-	int32 Size = ChunkData->GetOuterPointSize(InLODLevel) - 1;
-	for (int32 i = 0; i <= Size; i++) {
-		for (int32 j = 0; j <= Size; j++) {
+	int32 Size = ChunkData->GetPointSize(InLODLevel);
+	for (int32 i = 0; i < Size; i++) {
+		for (int32 j = 0; j < Size; j++) {
 			Colors.Add(FColor(212, 241, 249, 127));
 		}
 	}

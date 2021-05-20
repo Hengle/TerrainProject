@@ -112,20 +112,16 @@ float UHITerrainData::GetHeightValue(float X, float Y)
 	}
 	else
 	{
-		float XFloor = FMath::FloorToInt(X / 100);
-		float YFloor = FMath::FloorToInt(Y / 100);
-		float XCeil = FMath::CeilToInt(X / 100);
-		float YCeil = FMath::CeilToInt(Y / 100);
-		float Alpha0 = X / 100 - FMath::FloorToInt(X / 100);
-		float Alpha1 = Y / 100 - FMath::FloorToInt(Y / 100);
-		// if(Alpha0 == 0 && Alpha1 == 0)
-		// {
-		// 	return TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
-		// }
-		float Value00 = GetHeightValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100));
-		float Value01 = GetHeightValue(FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100));
-		float Value10 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100));
-		float Value11 = GetHeightValue(FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100));
+		int32 XFloor = FMath::FloorToInt(X / 100);
+		int32 YFloor = FMath::FloorToInt(Y / 100);
+		int32 XCeil = FMath::CeilToInt(X / 100);
+		int32 YCeil = FMath::CeilToInt(Y / 100);
+		float Alpha0 = X / 100 - XFloor;
+		float Alpha1 = Y / 100 - YFloor;
+		float Value00 = GetHeightValue(XFloor, YFloor);
+		float Value01 = GetHeightValue(XFloor, YCeil);
+		float Value10 = GetHeightValue(XCeil, YFloor);
+		float Value11 = GetHeightValue(XCeil, YCeil);
 		float Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
 		return Value;
 	}
@@ -144,20 +140,45 @@ float UHITerrainData::GetSedimentValue(float X, float Y)
 		float YFloor = FMath::FloorToInt(Y / 100);
 		float XCeil = FMath::CeilToInt(X / 100);
 		float YCeil = FMath::CeilToInt(Y / 100);
-		float Alpha0 = X / 100 - FMath::FloorToInt(X / 100);
-		float Alpha1 = Y / 100 - FMath::FloorToInt(Y / 100);
-		// if(Alpha0 == 0 && Alpha1 == 0)
-		// {
-		// 	return TerrainData.GetValue(FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100)).Value;
-		// }
+		float Alpha0 = X / 100 - XFloor;
+		float Alpha1 = Y / 100 - YFloor;
 		float Value00;
 		float Value01;
 		float Value10;
 		float Value11;
-		GetChannelValue("sediment", FMath::FloorToInt(X / 100), FMath::FloorToInt(Y / 100), Value00);
-		GetChannelValue("sediment", FMath::FloorToInt(X / 100), FMath::CeilToInt(Y / 100), Value01);
-		GetChannelValue("sediment", FMath::CeilToInt(X / 100), FMath::FloorToInt(Y / 100), Value10);
-		GetChannelValue("sediment", FMath::CeilToInt(X / 100), FMath::CeilToInt(Y / 100), Value11);
+		GetChannelValue("sediment", XFloor, YFloor, Value00);
+		GetChannelValue("sediment", XFloor, YCeil, Value01);
+		GetChannelValue("sediment", XCeil, YFloor, Value10);
+		GetChannelValue("sediment", XCeil, YCeil, Value11);
+		
+		float Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
+		return Value;
+	}
+}
+
+float UHITerrainData::GetWaterValue(float X, float Y)
+{
+	if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return 0.0f;
+	}
+	else
+	{
+		float XFloor = FMath::FloorToInt(X / 100);
+		float YFloor = FMath::FloorToInt(Y / 100);
+		float XCeil = FMath::CeilToInt(X / 100);
+		float YCeil = FMath::CeilToInt(Y / 100);
+		float Alpha0 = X / 100 - XFloor;
+		float Alpha1 = Y / 100 - YFloor;
+		float Value00;
+		float Value01;
+		float Value10;
+		float Value11;
+		GetChannelValue("water", XFloor, YFloor, Value00);
+		GetChannelValue("water", XFloor, YCeil, Value01);
+		GetChannelValue("water", XCeil, YFloor, Value10);
+		GetChannelValue("water", XCeil, YCeil, Value11);
 		
 		float Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
 		return Value;

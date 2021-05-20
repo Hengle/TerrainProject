@@ -30,6 +30,7 @@ struct FHITerrainChunkData
 	int32 GetMediumPointSize(const ELODLevel& LODLevel);
 	int32 GetOuterPointSize(const ELODLevel& LODLevel);
 	int32 GetOuterPointScale(const ELODLevel& LODLevel);
+	int32 GetPointSize(const ELODLevel& LODLevel);
 	
 	float GetStepOfLODLevel(const ELODLevel& LODLevel);
 

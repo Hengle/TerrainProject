@@ -99,6 +99,26 @@ int32 FHITerrainChunkData::GetOuterPointScale(const ELODLevel& LODLevel)
 	}
 }
 
+int32 FHITerrainChunkData::GetPointSize(const ELODLevel& LODLevel)
+{
+	if(LODLevel == ELODLevel::LOD_LOW)
+	{
+		return ChunkSize / 4 + 1;
+	}
+	else if(LODLevel == ELODLevel::LOD_MEDIUM)
+	{
+		return ChunkSize / 2 + 1;
+	}
+	else if(LODLevel == ELODLevel::LOD_HIGH)
+	{
+		return ChunkSize + 1;
+	}
+	else // ELODLevel::None
+	{
+	return ChunkSize + 1;
+	}
+}
+
 float FHITerrainChunkData::GetStepOfLODLevel(const ELODLevel& LODLevel)
 {
 	if(LODLevel == ELODLevel::LOD_LOW)
