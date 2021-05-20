@@ -10,6 +10,15 @@ void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
 	Perlin.SetAmplitude(2000);
 	Perlin.SetScale(0.005);
 	Perlin.SetTargetChannel("height");
+	ErosionGPU.SetNumIteration(Information->Erosion_IterationNum);
+	ErosionGPU.SetDeltaTime(Information->Erosion_DeltaTime);
+	ErosionGPU.SetEnableHydroErosion(Information->Erosion_EnableHydroErosion);
+	ErosionGPU.SetEnableThermalErosion(Information->Erosion_EnableThermalErosion);
+	ErosionGPU.SetRainAmount(Information->Erosion_RainScale);
+	ErosionGPU.SetEvaporationAmount(Information->Erosion_EvaporationScale);
+	ErosionGPU.SetErosionScale(Information->Erosion_HydroErosionScale);
+	ErosionGPU.SetDepositionScale(Information->Erosion_HydroDepositionScale);
+	ErosionGPU.SetThermalErosionScale(Information->Erosion_ThermalErosionScale);
 }
 
 void UTestAlgorithm2::ApplyAlgorithm(UHITerrainData* Data)

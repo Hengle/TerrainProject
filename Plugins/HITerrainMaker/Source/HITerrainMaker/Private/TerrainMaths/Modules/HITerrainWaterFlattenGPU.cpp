@@ -104,7 +104,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 32, Size / 32, 1));
 						
 					AsyncTask(ENamedThreads::GameThread, []()
 					{

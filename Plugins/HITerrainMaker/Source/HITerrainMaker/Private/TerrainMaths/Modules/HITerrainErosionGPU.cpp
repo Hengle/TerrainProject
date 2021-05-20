@@ -229,8 +229,8 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 				TShaderMapRef<FErosionShader2> ComputeShader2(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 32, Size / 32, 1));
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 32, Size / 32, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));
 				// AsyncTask(ENamedThreads::GameThread, []()
 				// {
 				// 	FRenderCommandFence Fence;

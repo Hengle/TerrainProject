@@ -1,0 +1,16 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+
+RWStructuredBuffer<float3> TerrainData;
+RWStructuredBuffer<float3> TempTerrainData;
+
+[numthreads(32, 32, 1)]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	// ApplyFlowSimulation(id);
+	// ApplyWaterFlowSimulation(id);
+	TerrainData[INDEX] = TempTerrainData[INDEX];
+	Flux[INDEX] = TempFlux[INDEX];
+}

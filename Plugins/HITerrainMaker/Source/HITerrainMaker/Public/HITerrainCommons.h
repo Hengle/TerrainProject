@@ -104,6 +104,36 @@ struct HITERRAINMAKER_API FTerrainInformation
 	int32 IG_MainlandOctave = 14;
 
 
+	/*
+	 * 侵蚀算法参数
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	int32 Erosion_IterationNum = 1200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	float Erosion_DeltaTime = 0.02f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	bool Erosion_EnableHydroErosion = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	bool Erosion_EnableThermalErosion = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	float Erosion_RainScale = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	float Erosion_EvaporationScale = 0.05f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	float Erosion_HydroErosionScale = 0.008f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	float Erosion_HydroDepositionScale = 0.016f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
+	float Erosion_ThermalErosionScale = 0.03f;
+
 	/************************************************************************/
 	/* 渲染信息                                                               */
 	/************************************************************************/

@@ -23,10 +23,8 @@ int NumIteration;
 float DeltaTime;
 
 RWStructuredBuffer<float3> TerrainData;
-RWStructuredBuffer<float4> Flux;
 
 RWStructuredBuffer<float3> TempTerrainData;
-RWStructuredBuffer<float4> TempFlux;
 
 void ApplyFlowSimulation(uint3 id)
 {
@@ -41,7 +39,7 @@ void ApplyFlowSimulation(uint3 id)
 							(Value - BValue));
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
 	float FluxScale = FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w;
-	float DeltaWater = max(max(FluxValue.x, FluxValue.y), max(FluxValue.z, FluxValue.w));
+	float DeltaWater = min(max(max(FluxValue.x, FluxValue.y), max(FluxValue.z, FluxValue.w)), TEMP_WATER(INDEX));
 	if(FluxScale > 0.01f)
 	{
 		TEMP_WATER(L_INDEX) += DeltaWater * FluxValue.x / FluxScale;
@@ -52,7 +50,7 @@ void ApplyFlowSimulation(uint3 id)
 	}
 }
 
-[numthreads(1, 1, 1)]
+[numthreads(32, 32, 1)]
 void Main(uint3 id : SV_DispatchThreadID)
 {
 	ApplyFlowSimulation(id);
