@@ -7,13 +7,13 @@
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/Modules/HITerrainVoronoi.h"
 #include "UObject/Object.h"
-#include "VegetationAlgorithm.generated.h"
+#include "EcoSystemAlgorithm.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HITERRAINMAKER_API UVegetationAlgorithm : public UHITerrainAlgorithm
+class HITERRAINMAKER_API UEcoSystemAlgorithm : public UHITerrainAlgorithm
 {
 	GENERATED_BODY()
 

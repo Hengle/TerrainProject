@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TerrainAlgorithms/VegetationAlgorithms/VegetationAlgorithm.h"
+#include "TerrainAlgorithms/EcoSystemAlgorithms/EcoSystemAlgorithm.h"
 
-void UVegetationAlgorithm::Init(FTerrainInformationPtr InInformation)
+void UEcoSystemAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	Voronoi.SetSizeX(InInformation->ChunkSize);
@@ -11,7 +11,7 @@ void UVegetationAlgorithm::Init(FTerrainInformationPtr InInformation)
 	Voronoi.SetNumSites(1000);
 }
 
-void UVegetationAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
+void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
 	Data->Mutex.Lock();
 	Super::ApplyAlgorithm(Data);
@@ -27,7 +27,7 @@ void UVegetationAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 	Data->Mutex.Unlock();
 }
 
-void UVegetationAlgorithm::DebugAlgorithm(UHITerrainData* Data)
+void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::DebugAlgorithm(Data);
 	// Data->Mutex.Lock();
@@ -47,7 +47,7 @@ void UVegetationAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	Data->AddChannel("A", ETerrainDataType::FLOAT);
 }
 
-void UVegetationAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)
+void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)
 {
 	Voronoi.SetSeed(Information->Seed + Information->ChunkNum * Index.Key + Index.Value);
 	Voronoi.ApplyModule(Data);

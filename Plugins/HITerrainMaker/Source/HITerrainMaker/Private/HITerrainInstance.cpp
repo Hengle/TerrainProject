@@ -11,7 +11,7 @@
 #include "TerrainAlgorithms/MidtermAlgorithms/VoronoiAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm2.h"
-#include "TerrainAlgorithms/VegetationAlgorithms/VegetationAlgorithm.h"
+#include "TerrainAlgorithms/EcoSystemAlgorithms/EcoSystemAlgorithm.h"
 #include "TerrainComponents/HITerrainChunkTicker.h"
 
 FTerrainInformationPtr AHITerrainInstance::GetTerrainInformation() const
@@ -204,9 +204,9 @@ void AHITerrainInstance::InitAlgorithms()
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
 		
-		UVegetationAlgorithm* VegetationAlgorithm = NewObject<UVegetationAlgorithm>(this);
-		VegetationAlgorithm->Init(TerrainInformation);
-		Algorithms.Add(VegetationAlgorithm);
+		UEcoSystemAlgorithm* EcoSystemAlgorithm = NewObject<UEcoSystemAlgorithm>(this);
+		EcoSystemAlgorithm->Init(TerrainInformation);
+		Algorithms.Add(EcoSystemAlgorithm);
 	}
 	else if (TerrainInformation->TerrainType == ETerrainType::TEST2)
 	{
@@ -214,9 +214,9 @@ void AHITerrainInstance::InitAlgorithms()
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
 		
-		UVegetationAlgorithm* VegetationAlgorithm = NewObject<UVegetationAlgorithm>(this);
-		VegetationAlgorithm->Init(TerrainInformation);
-		Algorithms.Add(VegetationAlgorithm);
+		UEcoSystemAlgorithm* EcoSystemAlgorithm = NewObject<UEcoSystemAlgorithm>(this);
+		EcoSystemAlgorithm->Init(TerrainInformation);
+		Algorithms.Add(EcoSystemAlgorithm);
 	}
 }
 
