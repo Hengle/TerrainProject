@@ -32,6 +32,14 @@ public:
 
 	void GenerateWater(ELODLevel InLODLevel);
 
+	void GenerateWater1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
+
+	void GeneratePointWaterData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors, float RecentX, float RecentY);
+
+	void GenerateWater2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
+
+	void GenerateWater3(TArray<int32>& Triangles, ELODLevel InLODLevel);
+
 	void GenerateWaterPositions(TArray<FVector>& Positions, ELODLevel InLODLevel);
 
 	void GenerateWaterTriangles(TArray<int32>& Triangles, ELODLevel InLODLevel);
