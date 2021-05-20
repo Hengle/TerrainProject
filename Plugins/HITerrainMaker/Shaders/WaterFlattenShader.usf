@@ -9,9 +9,6 @@
 #define WATER(Index) TerrainData[Index].y
 #define SEDIMENT(Index) TerrainData[Index].z
 
-#define TEMP_HEIGHT(Index) TempTerrainData[Index].x
-#define TEMP_WATER(Index) TempTerrainData[Index].y
-
 #define GRAVITY 9.8f
 #define FLUX_CONST 1.0f	// (2) Value of (A / l)
 #define GRID_DISTANCE_CONST 1.0f		// (4) Value of (lx * ly)
@@ -23,38 +20,42 @@ int NumIteration;
 float DeltaTime;
 
 RWStructuredBuffer<float3> TerrainData;
+RWStructuredBuffer<float4> Flux;
 
-RWStructuredBuffer<float3> TempTerrainData;
-
-void ApplyFlowSimulation(uint3 id)
-{
-	float Value = HEIGHT(INDEX) + SEDIMENT(INDEX) + TEMP_WATER(INDEX);
-	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + SEDIMENT(L_INDEX) + TEMP_WATER(L_INDEX);
-	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + TEMP_WATER(R_INDEX);
-	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + TEMP_WATER(T_INDEX);
-	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + TEMP_WATER(B_INDEX);
-	float4 FluxValue = float4((Value - LValue),
-							(Value - RValue),
-							(Value - TValue),
-							(Value - BValue));
-	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
-	float FluxScale = FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w;
-	float DeltaWater = min(max(max(FluxValue.x, FluxValue.y), max(FluxValue.z, FluxValue.w)), TEMP_WATER(INDEX));
-	if(FluxScale > 0.01f)
-	{
-		TEMP_WATER(L_INDEX) += DeltaWater * FluxValue.x / FluxScale;
-		TEMP_WATER(R_INDEX) += DeltaWater * FluxValue.y / FluxScale;
-		TEMP_WATER(T_INDEX) += DeltaWater * FluxValue.z / FluxScale;
-		TEMP_WATER(B_INDEX) += DeltaWater * FluxValue.w / FluxScale;
-		TEMP_WATER(INDEX) -= DeltaWater;
-	}
-}
-
-[numthreads(32, 32, 1)]
+[numthreads(1, 1, 1)]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	ApplyFlowSimulation(id);
-	// ApplyWaterFlowSimulation(id);
-	TerrainData[INDEX] = TempTerrainData[INDEX];
-	Flux[INDEX] = TempFlux[INDEX];
+	float Value = HEIGHT(INDEX) + SEDIMENT(INDEX) + WATER(INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + SEDIMENT(L_INDEX) + WATER(L_INDEX);
+	if(Value > LValue)
+	{
+		float FlowValue = min(Value - LValue, WATER(INDEX)) / 2;
+		WATER(INDEX) -= FlowValue;
+		Value -= FlowValue;
+		WATER(L_INDEX) += FlowValue;
+	}
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + WATER(R_INDEX);
+	if(Value > RValue)
+	{
+		float FlowValue = min(Value - RValue, WATER(INDEX)) / 2;
+		WATER(INDEX) -= FlowValue;
+		Value -= FlowValue;
+		WATER(R_INDEX) += FlowValue;
+	}
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + WATER(T_INDEX);
+	if(Value > TValue)
+	{
+		float FlowValue = min(Value - TValue, WATER(INDEX)) / 2;
+		WATER(INDEX) -= FlowValue;
+		Value -= FlowValue;
+		WATER(T_INDEX) += FlowValue;
+	}
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + WATER(B_INDEX);
+	if(Value > BValue)
+	{
+		float FlowValue = min(Value - BValue, WATER(INDEX)) / 2;
+		WATER(INDEX) -= FlowValue;
+		Value -= FlowValue;
+		WATER(B_INDEX) += FlowValue;
+	}
 }

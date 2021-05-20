@@ -219,8 +219,8 @@ void ApplyThermalErosionMove(uint3 id)
 
 void ApplyEvaporationSimulation(uint3 id)
 {
-	// TEMP_WATER(INDEX) = max(0.0f, TEMP_WATER(INDEX) * (1 - EvaporationAmount * DeltaTime));
-	TEMP_WATER(INDEX) = TEMP_WATER(INDEX) * (1 - EvaporationAmount * DeltaTime);
+	TEMP_WATER(INDEX) = max(0.0f, TEMP_WATER(INDEX) * (1 - EvaporationAmount * DeltaTime));
+	// TEMP_WATER(INDEX) = TEMP_WATER(INDEX) * (1 - EvaporationAmount * DeltaTime);
 }
 
 [NUM_THREADS]
