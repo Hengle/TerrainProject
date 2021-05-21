@@ -5,18 +5,8 @@
  * 平整水面模块的 Compute Shader
  */
 
-#define HEIGHT(Index) TerrainData[Index].x
-#define WATER(Index) TerrainData[Index].y
-#define SEDIMENT(Index) TerrainData[Index].z
-
-#define GRAVITY 9.8f
-#define FLUX_CONST 1.0f	// (2) Value of (A / l)
-#define GRID_DISTANCE_CONST 1.0f		// (4) Value of (lx * ly)
-// #define DELTA_WATER_SCALE 10.0f;
-
 int Size;
 
-int NumIteration;
 float DeltaTime;
 
 RWStructuredBuffer<float3> TerrainData;
@@ -30,16 +20,22 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + WATER(R_INDEX);
 	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + WATER(T_INDEX);
 	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + WATER(B_INDEX);
-	Flux[INDEX] = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].x,
-							(Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].y,
-							(Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].z,
-							(Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].w);
-	Flux[INDEX] = max(0.0f, Flux[INDEX]);
-	float FluxValue = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
-	if(FluxValue > 0.0f)
+	Flux[INDEX] = float4((Value - LValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].x,
+							(Value - RValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].y,
+							(Value - TValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].z,
+							(Value - BValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].w);
+	// float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH,
+	// 						(Value - RValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH,
+	// 						(Value - TValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH,
+	// 						(Value - BValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH);
+	Flux[INDEX] = max(float4(0.0f, 0.0f, 0.0f, 0.0f), Flux[INDEX]);
+	if(Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w > 0.1f)
 	{
-		float K = min(1.0f, WATER(INDEX) / FluxValue);
-		K = max(0.0f, K);
-		Flux[INDEX] = FluxValue * K;
+		float K = min(1.0f, WATER(INDEX) * GRID_X_DISTANCE * GRID_Y_DISTANCE / (Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w) / DeltaTime);
+		Flux[INDEX] = Flux[INDEX] * K;
+	}
+	else
+	{
+		Flux[INDEX] = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 }

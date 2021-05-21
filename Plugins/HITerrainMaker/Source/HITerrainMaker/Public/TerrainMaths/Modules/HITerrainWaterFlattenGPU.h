@@ -15,9 +15,8 @@ class HITERRAINMAKER_API FWaterFlattenShader: public FGlobalShader
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 	
 	SHADER_PARAMETER(int, Size)
-	SHADER_PARAMETER(int, NumIteration)
 	SHADER_PARAMETER(float, DeltaTime)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, TerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
 	
 	END_SHADER_PARAMETER_STRUCT()
@@ -43,7 +42,8 @@ class HITERRAINMAKER_API FWaterFlattenShader2: public FGlobalShader
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 	
 	SHADER_PARAMETER(int, Size)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, TerrainData)
+	SHADER_PARAMETER(float, DeltaTime)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
 	
 	END_SHADER_PARAMETER_STRUCT()

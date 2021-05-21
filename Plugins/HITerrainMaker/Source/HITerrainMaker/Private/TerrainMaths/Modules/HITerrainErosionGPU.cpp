@@ -218,7 +218,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
-				if(i < NumIteration / 2)
+				// if(i < NumIteration / 2)
 				{
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader1_Rain, Parameters1, FIntVector(Size / 8, Size / 8, 1));
 				}
@@ -226,8 +226,15 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader4_ErosionDeposition, Parameters4, FIntVector(Size / 8, Size / 8, 1));
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader4_ErosionDeposition2, Parameters4_2, FIntVector(Size / 8, Size / 8, 1));
-				// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader5_SedimentFlow, Parameters5, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader5_SedimentFlow, Parameters5, FIntVector(Size / 8, Size / 8, 1));
+				
 			}
+			for(int32 i = 0; i < NumIteration * 2; i++)
+			{
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
+			}
+			RHICmdList.SubmitCommandsAndFlushGPU();
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
 			TArray<float> ResultTerrainData;
@@ -249,6 +256,17 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					Data->SetChannelValue("hardness", i, j, ResultTerrainData[Index + 3]);
 				}
 			}
+			TerrainDataRHIRef.SafeRelease();
+			TerrainDataUAVRef.SafeRelease();
+			FluxRHIRef.SafeRelease();
+			FluxUAVRef.SafeRelease();
+			TerrainFluxRHIRef.SafeRelease();
+			TerrainFluxUAVRef.SafeRelease();
+			VelocityRHIRef.SafeRelease();
+			VelocityUAVRef.SafeRelease();
+			TempTerrainDataRHIRef.SafeRelease();
+			TempTerrainDataUAVRef.SafeRelease();
+			
 			// Data->Mutex.Unlock();
 		});
 }

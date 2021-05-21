@@ -5,10 +5,10 @@
 #include "Async/Async.h"
 #include "RenderGraphUtils.h"
 
-IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader, "/TerrainShaders/WaterFlattenShader.usf", "Main", SF_Compute);
-IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader2, "/TerrainShaders/WaterFlattenShader2.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader, "/TerrainShaders/ErosionShader2_CalcFlow.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader2, "/TerrainShaders/ErosionShader3_ApplyFlow.usf", "Main", SF_Compute);
 
-FHITerrainWaterFlattenGPU::FHITerrainWaterFlattenGPU():NumIteration(500), DeltaTime(0.02)
+FHITerrainWaterFlattenGPU::FHITerrainWaterFlattenGPU():NumIteration(1000), DeltaTime(0.02)
 {
 }
 
@@ -51,6 +51,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 					TerrainDataBuffer.Add(Data->GetChannel("height")->GetFloat(i, j));
 					TerrainDataBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
 					TerrainDataBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
+					TerrainDataBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
 
 					FluxBuffer.Add(0.0f);
 					FluxBuffer.Add(0.0f);
@@ -65,20 +66,20 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			FRHIResourceCreateInfo FluxCreateInfo;
 			FluxCreateInfo.ResourceArray = &FluxBuffer;
 			
-			FStructuredBufferRHIRef TerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, TerrainDataCreateInfo);
+			FStructuredBufferRHIRef TerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainDataCreateInfo);
 			FUnorderedAccessViewRHIRef TerrainDataUAVRef = RHICreateUnorderedAccessView(TerrainDataRHIRef, true, false);
 			FStructuredBufferRHIRef FluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, FluxCreateInfo);
 			FUnorderedAccessViewRHIRef FluxUAVRef = RHICreateUnorderedAccessView(FluxRHIRef, true, false);
 			
 			FWaterFlattenShader::FParameters Parameters;
 			Parameters.Size = Size;
-			Parameters.NumIteration = NumIteration;
 			Parameters.DeltaTime = DeltaTime;
 			Parameters.TerrainData = TerrainDataUAVRef;
 			Parameters.Flux = FluxUAVRef;
 
 			FWaterFlattenShader2::FParameters Parameters2;
 			Parameters2.Size = Size;
+			Parameters2.DeltaTime = DeltaTime;
 			Parameters2.TerrainData = TerrainDataUAVRef;
 			Parameters2.Flux = FluxUAVRef;
 
@@ -86,21 +87,16 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			for(int32 i = 0; i < NumIteration; i++)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));	
-					// AsyncTask(ENamedThreads::GameThread, []()
-					// {
-					// 	FRenderCommandFence Fence;
-					// 	Fence.BeginFence();
-					// 	Fence.Wait();
-					// });
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));
+				RHICmdList.SubmitCommandsAndFlushGPU();
 			}
-			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 3, EResourceLockMode::RLM_ReadOnly);
+			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 		
 			TArray<float> ResultTerrainData;
-			ResultTerrainData.Reserve(Size * Size * 3);
-			ResultTerrainData.AddUninitialized(Size * Size * 3);
+			ResultTerrainData.Reserve(Size * Size * 4);
+			ResultTerrainData.AddUninitialized(Size * Size * 4);
 			
-			FMemory::Memcpy(ResultTerrainData.GetData(), TerrainDataSrc, sizeof(float) * Size * Size * 3);
+			FMemory::Memcpy(ResultTerrainData.GetData(), TerrainDataSrc, sizeof(float) * Size * Size * 4);
 			
 			RHICmdList.UnlockStructuredBuffer(TerrainDataRHIRef.GetReference());
 			
@@ -108,7 +104,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			{
 				for(int32 j = 0; j < Size; j++)
 				{
-					int32 Index = (i * Size + j) * 3;
+					int32 Index = (i * Size + j) * 4;
 					Data->SetChannelValue("water", i, j, ResultTerrainData[Index + 1]);
 				}
 			}
