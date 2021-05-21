@@ -7,34 +7,18 @@
 #include "HITerrainModule.h"
 #include "ShaderParameterStruct.h"
 
-class HITERRAINMAKER_API FErosionShader: public FGlobalShader
+class HITERRAINMAKER_API FErosionShaderRain: public FGlobalShader
 {
-	DECLARE_GLOBAL_SHADER(FErosionShader);
-	SHADER_USE_PARAMETER_STRUCT(FErosionShader, FGlobalShader);
+	DECLARE_GLOBAL_SHADER(FErosionShaderRain);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderRain, FGlobalShader);
 
-public:
+	public:
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 	
 	SHADER_PARAMETER(int, Size)
-	SHADER_PARAMETER(int, NumIteration)
-	SHADER_PARAMETER(int, CurrentIteration)
 	SHADER_PARAMETER(float, DeltaTime)
-	SHADER_PARAMETER(int, GBEnableHydroErosion)
-	SHADER_PARAMETER(int, GBEnableThermalErosion)
-	SHADER_PARAMETER(float, HydroErosionScale)
 	SHADER_PARAMETER(float, RainAmount)
-	SHADER_PARAMETER(float, EvaporationAmount)
-	SHADER_PARAMETER(float, ErosionScale)
-	SHADER_PARAMETER(float, DepositionScale)
-	SHADER_PARAMETER(float, SedimentCapacityScale)
-	SHADER_PARAMETER(float, ThermalErosionScale)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainFlux)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, Velocity)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainData)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempFlux)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainFlux)
 	
 	END_SHADER_PARAMETER_STRUCT()
 	
@@ -49,23 +33,125 @@ public:
 	}
 };
 
-class HITERRAINMAKER_API FErosionShader2: public FGlobalShader
+class HITERRAINMAKER_API FErosionShaderCalcFlow: public FGlobalShader
 {
-	DECLARE_GLOBAL_SHADER(FErosionShader2);
-	SHADER_USE_PARAMETER_STRUCT(FErosionShader2, FGlobalShader);
+	DECLARE_GLOBAL_SHADER(FErosionShaderCalcFlow);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderCalcFlow, FGlobalShader);
 
 	public:
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
-
+	
 	SHADER_PARAMETER(int, Size)
 	SHADER_PARAMETER(float, DeltaTime)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainFlux)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, Velocity)
+	
+	END_SHADER_PARAMETER_STRUCT()
+	
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+	}
+
+	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+};
+
+class HITERRAINMAKER_API FErosionShaderApplyFlow: public FGlobalShader
+{
+	DECLARE_GLOBAL_SHADER(FErosionShaderApplyFlow);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderApplyFlow, FGlobalShader);
+
+	public:
+	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
+	
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER(float, DeltaTime)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
+	
+	END_SHADER_PARAMETER_STRUCT()
+	
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+	}
+
+	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+};
+
+class HITERRAINMAKER_API FErosionShaderErosionDeposition: public FGlobalShader
+{
+	DECLARE_GLOBAL_SHADER(FErosionShaderErosionDeposition);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderErosionDeposition, FGlobalShader);
+
+	public:
+	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
+	
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER(float, DeltaTime)
+	SHADER_PARAMETER(float, ErosionScale)
+	SHADER_PARAMETER(float, DepositionScale)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float2>, Velocity)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainData)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempFlux)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainFlux)
+	
+	END_SHADER_PARAMETER_STRUCT()
+	
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+	}
+
+	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+};
+
+class HITERRAINMAKER_API FErosionShaderErosionDeposition2: public FGlobalShader
+{
+	DECLARE_GLOBAL_SHADER(FErosionShaderErosionDeposition2);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderErosionDeposition2, FGlobalShader);
+
+	public:
+	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
+	
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TempTerrainData)
+	
+	END_SHADER_PARAMETER_STRUCT()
+	
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+	}
+
+	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+};
+
+class HITERRAINMAKER_API FErosionShaderSedimentFlow: public FGlobalShader
+{
+	DECLARE_GLOBAL_SHADER(FErosionShaderSedimentFlow);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderSedimentFlow, FGlobalShader);
+
+	public:
+	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
+	
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER(float, DeltaTime)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, TerrainData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float2>, Velocity)
 	
 	END_SHADER_PARAMETER_STRUCT()
 	

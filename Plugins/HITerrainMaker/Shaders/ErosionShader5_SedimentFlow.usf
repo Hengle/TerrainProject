@@ -1,0 +1,31 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+float DeltaTime;
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float2> Velocity;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	float FromPosX = id.x - Velocity[INDEX].x * DeltaTime;
+	float FromPosY = id.y - Velocity[INDEX].y * DeltaTime;
+	int X0 = floor(FromPosX);
+	int Y0 = floor(FromPosY);
+	int X1 = X0 + 1;
+	int Y1 = Y0 + 1;
+	X0 = clamp(X0, 0, Size - 1);
+	Y0 = clamp(Y0, 0, Size - 1);
+	X1 = clamp(X1, 0, Size - 1);
+	Y1 = clamp(Y1, 0, Size - 1);
+	float S00 = SEDIMENT(POINT_INDEX(X0, Y0));
+	float S01 = SEDIMENT(POINT_INDEX(X0, Y1));
+	float S10 = SEDIMENT(POINT_INDEX(X1, Y0));
+	float S11 = SEDIMENT(POINT_INDEX(X1, Y1));
+	int AlphaX = FromPosX - floor(FromPosX);
+	int AlphaY = FromPosY - floor(FromPosY);
+	float NewSediment = Lerp2D(S00, S01, S10, S11, AlphaX, AlphaY);
+	SEDIMENT(INDEX) = NewSediment;
+}

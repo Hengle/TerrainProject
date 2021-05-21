@@ -158,7 +158,8 @@ void AHITerrainActor::GeneratePointData(TArray<FVector>& Positions, TArray<FVect
 	float LocationZ = 0.0f;
 	if(bContainSediment)
 	{
-		LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
+		LocationZ = ChunkData->GetHeightValue(LocationX, LocationY)
+				  + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY);
 	}
 	else
 	{
@@ -458,8 +459,8 @@ void AHITerrainActor::GeneratePointWaterData(TArray<FVector>& Positions, TArray<
 	float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
 	float LocationZ = 0.0f;
 	LocationZ = ChunkData->GetHeightValue(LocationX, LocationY)
-			  + ChunkData->Data->GetSedimentValue(LocationX, LocationY)
-			  + ChunkData->Data->GetWaterValue(LocationX, LocationY) - 1.0f;
+			  + ChunkData->GetChannelFloatValue("sediment", LocationX, LocationY)
+			  + ChunkData->GetChannelFloatValue("water", LocationX, LocationY) - 1.0f;
 	FVector Location(LocationX, LocationY, LocationZ);
 	Positions.Add(Location);
 	FVector2D UV = ChunkData->GetUV(LocationX, LocationY, 3);

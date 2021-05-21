@@ -7,8 +7,12 @@
 #include "RenderTargetPool.h"
 #include "Async/Async.h"
 
-IMPLEMENT_GLOBAL_SHADER(FErosionShader, "/TerrainShaders/ErosionShader.usf", "Main", SF_Compute);
-IMPLEMENT_GLOBAL_SHADER(FErosionShader2, "/TerrainShaders/ErosionShader2.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderRain, "/TerrainShaders/ErosionShader1_Rain.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderCalcFlow, "/TerrainShaders/ErosionShader2_CalcFlow.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderApplyFlow, "/TerrainShaders/ErosionShader3_ApplyFlow.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderErosionDeposition, "/TerrainShaders/ErosionShader4_ErosionDeposition.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderErosionDeposition2, "/TerrainShaders/ErosionShader4_ErosionDeposition2.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderSedimentFlow, "/TerrainShaders/ErosionShader5_SedimentFlow.usf", "Main", SF_Compute);
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
 	HydroErosionScale(0), RainAmount(10.0f),
@@ -110,8 +114,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			TResourceArray<float> TerrainFluxBuffer;
 			TResourceArray<float> VelocityBuffer;
 
-			TResourceArray<float> TempFluxBuffer;
-			TResourceArray<float> TempTerrainFluxBuffer;
 			TResourceArray<float> TempTerrainDataBuffer;
 
 			
@@ -123,7 +125,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					TerrainDataBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
 					TerrainDataBuffer.Add(Data->GetChannel("sediment")->GetFloat(i, j));
 					TerrainDataBuffer.Add(Data->GetChannel("hardness")->GetFloat(i, j));
-					// TerrainDataBuffer.Add(1.0f);
 
 					FluxBuffer.Add(0.0f);
 					FluxBuffer.Add(0.0f);
@@ -137,17 +138,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 
 					VelocityBuffer.Add(0.0f);
 					VelocityBuffer.Add(0.0f);
-					VelocityBuffer.Add(0.0f);
-
-					TempFluxBuffer.Add(0.0f);
-					TempFluxBuffer.Add(0.0f);
-					TempFluxBuffer.Add(0.0f);
-					TempFluxBuffer.Add(0.0f);
-
-					TempTerrainFluxBuffer.Add(0.0f);
-					TempTerrainFluxBuffer.Add(0.0f);
-					TempTerrainFluxBuffer.Add(0.0f);
-					TempTerrainFluxBuffer.Add(0.0f);
 
 					TempTerrainDataBuffer.Add(Data->GetChannel("height")->GetFloat(i, j));
 					TempTerrainDataBuffer.Add(Data->GetChannel("water")->GetFloat(i, j));
@@ -168,10 +158,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 
 			FRHIResourceCreateInfo TempTerrainDataCreateInfo;
 			TempTerrainDataCreateInfo.ResourceArray = &TempTerrainDataBuffer;
-			FRHIResourceCreateInfo TempFluxCreateInfo;
-			TempFluxCreateInfo.ResourceArray = &TempFluxBuffer;
-			FRHIResourceCreateInfo TempTerrainFluxCreateInfo;
-			TempTerrainFluxCreateInfo.ResourceArray = &TempTerrainFluxBuffer;
 			
 			FStructuredBufferRHIRef TerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainDataCreateInfo);
 			FUnorderedAccessViewRHIRef TerrainDataUAVRef = RHICreateUnorderedAccessView(TerrainDataRHIRef, true, false);
@@ -179,64 +165,68 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			FUnorderedAccessViewRHIRef FluxUAVRef = RHICreateUnorderedAccessView(FluxRHIRef, true, false);
 			FStructuredBufferRHIRef TerrainFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainFluxCreateInfo);
 			FUnorderedAccessViewRHIRef TerrainFluxUAVRef = RHICreateUnorderedAccessView(TerrainFluxRHIRef, true, false);
-			FStructuredBufferRHIRef VelocityRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, VelocityCreateInfo);
+			FStructuredBufferRHIRef VelocityRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 2, BUF_UnorderedAccess | BUF_ShaderResource, VelocityCreateInfo);
 			FUnorderedAccessViewRHIRef VelocityUAVRef = RHICreateUnorderedAccessView(VelocityRHIRef, true, false);
-			
+
 			FStructuredBufferRHIRef TempTerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempTerrainDataCreateInfo);
 			FUnorderedAccessViewRHIRef TempTerrainDataUAVRef = RHICreateUnorderedAccessView(TempTerrainDataRHIRef, true, false);
-			FStructuredBufferRHIRef TempFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempFluxCreateInfo);
-			FUnorderedAccessViewRHIRef TempFluxUAVRef = RHICreateUnorderedAccessView(TempFluxRHIRef, true, false);
-			FStructuredBufferRHIRef TempTerrainFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempTerrainFluxCreateInfo);
-			FUnorderedAccessViewRHIRef TempTerrainFluxUAVRef = RHICreateUnorderedAccessView(TempTerrainFluxRHIRef, true, false);
-			
-			FErosionShader::FParameters Parameters;
-			Parameters.Size = Size;
-			Parameters.NumIteration = NumIteration;
-			Parameters.DeltaTime = DeltaTime;
-			Parameters.GBEnableHydroErosion = bEnableHydroErosion;
-			Parameters.GBEnableThermalErosion = bEnableThermalErosion;
-			Parameters.HydroErosionScale = HydroErosionScale;
-			Parameters.RainAmount = RainAmount;
-			Parameters.EvaporationAmount = EvaporationAmount;
-			Parameters.ErosionScale = ErosionScale;
-			Parameters.DepositionScale = DepositionScale;
-			Parameters.SedimentCapacityScale = SedimentCapacityScale;
-			Parameters.ThermalErosionScale = ThermalErosionScale;
-			Parameters.TerrainData = TerrainDataUAVRef;
-			Parameters.Flux = FluxUAVRef;
-			Parameters.TerrainFlux = TerrainFluxUAVRef;
-			Parameters.Velocity = VelocityUAVRef;
-			
-			Parameters.TempTerrainData = TempTerrainDataUAVRef;
-			Parameters.TempFlux = TempFluxUAVRef;
-			Parameters.TempTerrainFlux = TempTerrainFluxUAVRef;
+		
+			TShaderMapRef<FErosionShaderRain> ComputeShader1_Rain(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderRain::FParameters Parameters1;
+			Parameters1.Size = Size;
+			Parameters1.DeltaTime = DeltaTime;
+			Parameters1.RainAmount = RainAmount;
+			Parameters1.TerrainData = TerrainDataUAVRef;
 
-			FErosionShader2::FParameters Parameters2;
+			TShaderMapRef<FErosionShaderCalcFlow> ComputeShader2_CalcFlow(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderCalcFlow::FParameters Parameters2;
 			Parameters2.Size = Size;
 			Parameters2.DeltaTime = DeltaTime;
 			Parameters2.TerrainData = TerrainDataUAVRef;
 			Parameters2.Flux = FluxUAVRef;
-			Parameters2.TerrainFlux = TerrainFluxUAVRef;
-			Parameters2.Velocity = VelocityUAVRef;
 			
-			Parameters2.TempTerrainData = TempTerrainDataUAVRef;
-			Parameters2.TempFlux = TempFluxUAVRef;
-			Parameters2.TempTerrainFlux = TempTerrainFluxUAVRef;
+			TShaderMapRef<FErosionShaderApplyFlow> ComputeShader3_ApplyFlow(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderApplyFlow::FParameters Parameters3;
+			Parameters3.Size = Size;
+			Parameters3.DeltaTime = DeltaTime;
+			Parameters3.TerrainData = TerrainDataUAVRef;
+			Parameters3.Flux = FluxUAVRef;
+			
+			TShaderMapRef<FErosionShaderErosionDeposition> ComputeShader4_ErosionDeposition(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderErosionDeposition::FParameters Parameters4;
+			Parameters4.Size = Size;
+			Parameters4.DeltaTime = DeltaTime;
+			Parameters4.ErosionScale = ErosionScale;
+			Parameters4.DepositionScale = DepositionScale;
+			Parameters4.TerrainData = TerrainDataUAVRef;
+			Parameters4.Flux = FluxUAVRef;
+			Parameters4.Velocity = VelocityUAVRef;
+			Parameters4.TempTerrainData = TempTerrainDataUAVRef;
+
+			TShaderMapRef<FErosionShaderErosionDeposition2> ComputeShader4_ErosionDeposition2(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderErosionDeposition2::FParameters Parameters4_2;
+			Parameters4_2.Size = Size;
+			Parameters4_2.TerrainData = TerrainDataUAVRef;
+			Parameters4_2.TempTerrainData = TempTerrainDataUAVRef;
+
+			TShaderMapRef<FErosionShaderSedimentFlow> ComputeShader5_SedimentFlow(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderSedimentFlow::FParameters Parameters5;
+			Parameters5.Size = Size;
+			Parameters5.DeltaTime = DeltaTime;
+			Parameters5.TerrainData = TerrainDataUAVRef;
+			Parameters5.Velocity = VelocityUAVRef;
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
-				Parameters.CurrentIteration = i;
-				TShaderMapRef<FErosionShader> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
-				TShaderMapRef<FErosionShader2> ComputeShader2(GetGlobalShaderMap(GMaxRHIFeatureLevel));
-
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));
-				// AsyncTask(ENamedThreads::GameThread, []()
-				// {
-				// 	FRenderCommandFence Fence;
-				// 	Fence.BeginFence();
-				// 	Fence.Wait();
-				// });
+				if(i < NumIteration / 2)
+				{
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader1_Rain, Parameters1, FIntVector(Size / 8, Size / 8, 1));
+				}
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader4_ErosionDeposition, Parameters4, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader4_ErosionDeposition2, Parameters4_2, FIntVector(Size / 8, Size / 8, 1));
+				// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader5_SedimentFlow, Parameters5, FIntVector(Size / 8, Size / 8, 1));
 			}
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
@@ -261,11 +251,4 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			}
 			// Data->Mutex.Unlock();
 		});
-	// ENQUEUE_RENDER_COMMAND(ErosionModuleCommand1)(
-	// 	[=](FRHICommandListImmediate& RHICmdList)
-	// 	{
-	// 		
-	// 		
-	// 		
-	// 	});
 }

@@ -1,0 +1,25 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+float DeltaTime;
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float4> Flux;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	float Value = HEIGHT(INDEX) + WATER(INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + WATER(L_INDEX);
+	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
+	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + WATER(B_INDEX);
+	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].x,
+							(Value - RValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].y,
+							(Value - TValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].z,
+							(Value - BValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].w);
+	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
+	float K = min(1.0f, WATER(INDEX) * GRID_X_DISTANCE * GRID_Y_DISTANCE / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) / DeltaTime);
+	Flux[INDEX] = FluxValue * K;
+}

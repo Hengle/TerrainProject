@@ -1,0 +1,91 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+float DeltaTime;
+float ErosionScale;
+float DepositionScale;
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float4> Flux;
+RWStructuredBuffer<float2> Velocity;
+
+RWStructuredBuffer<float4> TempTerrainData;
+
+float LMax(float Water)
+{
+	if(Water <= 0.0f) return 0.0f;
+	else if(Water < MAX_EROSION_DEPTH) return 1.0f - (MAX_EROSION_DEPTH - Water) / MAX_EROSION_DEPTH;
+	else return 1.0f;
+}
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	TEMP_HEIGHT(INDEX) = HEIGHT(INDEX);
+	TEMP_SEDIMENT(INDEX) = SEDIMENT(INDEX);
+	
+	float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? 0: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
+	Velocity[INDEX].x = (LInValue - Flux[INDEX].x + Flux[INDEX].y - RInValue) / 2;
+	Velocity[INDEX].y = (TInValue - Flux[INDEX].z + Flux[INDEX].w - BInValue) / 2;
+	float LHeight = id.x == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(L_INDEX) + SEDIMENT(L_INDEX);
+	float RHeight = id.x == (uint)Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(R_INDEX) + SEDIMENT(R_INDEX);
+	float THeight = id.y == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(T_INDEX) + SEDIMENT(T_INDEX);
+	float BHeight = id.y == (uint)Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(B_INDEX) + SEDIMENT(B_INDEX);
+
+	float VelocityValue = sqrt(Velocity[INDEX].x * Velocity[INDEX].x + Velocity[INDEX].y * Velocity[INDEX].y);
+	
+	float SinTiltAngle = sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
+	SinTiltAngle /= sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
+	float LMaxValue = LMax(WATER(INDEX));
+	float SedimentCapacity = SinTiltAngle * length(Velocity[INDEX]) * LMaxValue * SEDIMENT_CAPACITY_SCALE;
+	// float SedimentCapacity = SinTiltAngle * LMaxValue * SEDIMENT_CAPACITY_SCALE;
+	if(SedimentCapacity > SEDIMENT(INDEX))
+	{
+		float ErosionValue = (SedimentCapacity - SEDIMENT(INDEX)) * ErosionScale * DeltaTime;
+		// float ErosionValue = (SedimentCapacity - SEDIMENT(INDEX)) * ErosionScale;
+		ErosionValue = clamp(ErosionValue, 0.0f, 1.0f);
+		TEMP_HEIGHT(INDEX) -= ErosionValue;
+		TEMP_SEDIMENT(INDEX) += ErosionValue;
+	}
+	else
+	{
+		float DepositionValue = (SEDIMENT(INDEX) - SedimentCapacity) * DepositionScale * DeltaTime;
+		// float DepositionValue = (SEDIMENT(INDEX) - SedimentCapacity) * DepositionScale;
+		DepositionValue = clamp(DepositionValue, 0.0f, 1.0f);
+		TEMP_HEIGHT(INDEX) += DepositionValue;
+		TEMP_SEDIMENT(INDEX) -= DepositionValue;
+	}
+	
+	
+	
+ //
+	// float3 dhdx = float3(2 * GRID_X_DISTANCE, 0, LHeight - RHeight);
+	// float3 dhdy = float3(0, 2 * GRID_Y_DISTANCE, THeight - BHeight);
+	// float3 normal = cross(dhdx, dhdy);
+ //
+	// float sinTiltAngle = abs(normal.z) / length(normal);
+ //
+	//
+	// 
+	// if(SEDIMENT(INDEX) > SedimentCapacity)
+	// {
+	// 	float DepositionValue = DepositionScale * (SEDIMENT(INDEX) - SedimentCapacity);
+	// 	TEMP_HEIGHT(INDEX) += DepositionValue;
+	// 	TEMP_SEDIMENT(INDEX) -= DepositionValue;
+	// 	TEMP_WATER(INDEX) -= DepositionValue;
+	// 	TEMP_HARDNESS(INDEX) = max(HARDNESS_LOW_LIMIT, HARDNESS(INDEX) - DeltaTime * SEDIMENT_SOFTEN_COEFFICIENT * DepositionValue);
+	// }
+	// else
+	// {
+	// 	float ErosionValue = ErosionScale * (SedimentCapacity - SEDIMENT(INDEX));
+	// 	TEMP_HEIGHT(INDEX) -= ErosionValue;
+	// 	TEMP_SEDIMENT(INDEX) += ErosionValue;
+	// 	TEMP_WATER(INDEX) += ErosionValue;
+	// 	TEMP_HARDNESS(INDEX) = min(HARDNESS_HIGH_LIMIT, HARDNESS(INDEX) + DeltaTime * SEDIMENT_SOFTEN_COEFFICIENT * ErosionValue);
+	// }
+	// // WATER(INDEX) = max(0.0f, WATER(INDEX));
+}

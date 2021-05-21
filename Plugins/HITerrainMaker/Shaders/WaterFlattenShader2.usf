@@ -17,6 +17,6 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float BValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
 	float DeltaWater = LValue + RValue + TValue + BValue - Flux[INDEX].x - Flux[INDEX].y - Flux[INDEX].z - Flux[INDEX].w;
 	WATER(INDEX) += DeltaWater;
-	WATER(INDEX) = max(WATER(INDEX), 0.0f);
-	Flux[INDEX] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	// WATER(INDEX) = max(WATER(INDEX), 0.0f);
+	// Flux[INDEX] = float4(0.0f, 0.0f, 0.0f, 0.0f);
 }

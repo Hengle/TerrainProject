@@ -1,0 +1,14 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float4> TempTerrainData;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	HEIGHT(INDEX) = TEMP_HEIGHT(INDEX);
+	SEDIMENT(INDEX) = TEMP_SEDIMENT(INDEX);
+}

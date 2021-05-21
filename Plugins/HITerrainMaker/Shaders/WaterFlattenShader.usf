@@ -30,15 +30,16 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + WATER(R_INDEX);
 	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + WATER(T_INDEX);
 	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + WATER(B_INDEX);
-	Flux[INDEX] = float4(Value - LValue, Value - RValue, Value - TValue, Value - BValue);
-	Flux[INDEX] = max(Flux[INDEX], 0.0f);
-	float FluxSum = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
-	if(FluxSum > 0.1f)
+	Flux[INDEX] = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].x,
+							(Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].y,
+							(Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].z,
+							(Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].w);
+	Flux[INDEX] = max(0.0f, Flux[INDEX]);
+	float FluxValue = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
+	if(FluxValue > 0.0f)
 	{
-		Flux[INDEX] *= (WATER(INDEX) / FluxSum);
-	}
-	else
-	{
-		Flux[INDEX] = 0.0f;
+		float K = min(1.0f, WATER(INDEX) / FluxValue);
+		K = max(0.0f, K);
+		Flux[INDEX] = FluxValue * K;
 	}
 }

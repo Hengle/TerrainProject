@@ -1,0 +1,19 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+float DeltaTime;
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float4> Flux;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	float OutValue = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
+	float LInValue = id.x == 0? Flux[INDEX].x: Flux[L_INDEX].y;
+	float RInValue = id.x == (uint)Size - 1? Flux[INDEX].y: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? Flux[INDEX].z: Flux[T_INDEX].w;
+	float BInValue = id.y == (uint)Size - 1? Flux[INDEX].w: Flux[B_INDEX].z;
+	WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) * DeltaTime / GRID_X_DISTANCE / GRID_Y_DISTANCE;
+}

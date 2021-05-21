@@ -5,19 +5,12 @@
  * 侵蚀模块的 Compute Shader，包括水力、热力侵蚀
  */
 
-#define HEIGHT(Index) TerrainData[Index].x
-#define WATER(Index) TerrainData[Index].y
-#define SEDIMENT(Index) TerrainData[Index].z
-#define HARDNESS(Index) TerrainData[Index].w
 
-#define TEMP_HEIGHT(Index) TempTerrainData[Index].x
-#define TEMP_WATER(Index) TempTerrainData[Index].y
-#define TEMP_SEDIMENT(Index) TempTerrainData[Index].z
-#define TEMP_HARDNESS(Index) TempTerrainData[Index].w
 
-#define GRAVITY 9.8f
-#define FLUX_CONST 1.0f	// (2) Value of (A / l)
-#define GRID_DISTANCE_CONST 1.0f		// (4) Value of (lx * ly)
+#define FLUX_CONST 10000.0f	// (2) Value of (A / l)
+#define GRID_DISTANCE_CONST 10000.0f		// (4) Value of (lx * ly)
+
+
 #define K_D_MAX 100.0f
 #define K_H 5.0f
 #define R_MIN 0.1f
@@ -58,7 +51,7 @@ RWStructuredBuffer<float4> TempTerrainFlux;
 float LMax(float Water)
 {
 	if(Water <= 0.0f) return 0.0f;
-	else if(Water < K_D_MAX) return 1.0f - (K_D_MAX - Water) / K_D_MAX;
+	else if(Water < MAX_EROSION_DEPTH) return 1.0f - (MAX_EROSION_DEPTH - Water) / MAX_EROSION_DEPTH;
 	else return 1.0f;
 }
 
@@ -74,13 +67,13 @@ void ApplyFlowSimulation(uint3 id)
 	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
 	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
 	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + WATER(B_INDEX);
-	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].x,
-							  (Value - RValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].y,
-							  (Value - TValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].z,
-							  (Value - BValue) * DeltaTime * GRAVITY * FLUX_CONST + Flux[INDEX].w);
+	float4 FluxValue = float4((Value - LValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].x,
+							  (Value - RValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].y,
+							  (Value - TValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].z,
+							  (Value - BValue) * DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].w);
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
 	float K = min(1.0f, TEMP_WATER(INDEX) * GRID_DISTANCE_CONST / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w));
-	K = max(0.0f, K);
+	// K = max(0.0f, K);
 	TempFlux[INDEX] = FluxValue * K;
 }
 
@@ -91,7 +84,7 @@ void ApplyWaterFlowSimulation(uint3 id)
 	float RInValue = id.x == (uint)Size - 1? TempFlux[INDEX].y: Flux[R_INDEX].x;
 	float TInValue = id.y == 0? TempFlux[INDEX].z: Flux[T_INDEX].w;
 	float BInValue = id.y == (uint)Size - 1? TempFlux[INDEX].w: Flux[B_INDEX].z;
-	TEMP_WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_DISTANCE_CONST;
+	TEMP_WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) * DeltaTime / GRID_DISTANCE_CONST;
 }
 
 void ApplyErosionDepositionSimulation(uint3 id)
@@ -228,15 +221,19 @@ void Main(uint3 id : SV_DispatchThreadID)
 {
 	if(GBEnableHydroErosion)
 	{
-		// if(CurrentIteration < NumIteration / 2)
+		if(CurrentIteration < NumIteration / 2)
 		{
 			ApplyRainSimulation(id);
 		}
 		ApplyFlowSimulation(id);
 		ApplyWaterFlowSimulation(id);
-		ApplyErosionDepositionSimulation(id);
-		// ApplySedimentSimulation(id);
-		ApplyEvaporationSimulation(id);
+		if(CurrentIteration < NumIteration / 2)
+		{
+			ApplyErosionDepositionSimulation(id);
+			// ApplySedimentSimulation(id);
+			ApplyEvaporationSimulation(id);
+		}
+		
 	}
 	if(GBEnableThermalErosion)
 	{
