@@ -8,7 +8,7 @@
 IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader, "/TerrainShaders/WaterFlattenShader.usf", "Main", SF_Compute);
 IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader2, "/TerrainShaders/WaterFlattenShader2.usf", "Main", SF_Compute);
 
-FHITerrainWaterFlattenGPU::FHITerrainWaterFlattenGPU():NumIteration(2000), DeltaTime(0.02)
+FHITerrainWaterFlattenGPU::FHITerrainWaterFlattenGPU():NumIteration(500), DeltaTime(0.02)
 {
 }
 
@@ -85,8 +85,8 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
-				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 1, Size / 1, 1));
-				// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 1, Size / 1, 1));	
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));	
 					// AsyncTask(ENamedThreads::GameThread, []()
 					// {
 					// 	FRenderCommandFence Fence;

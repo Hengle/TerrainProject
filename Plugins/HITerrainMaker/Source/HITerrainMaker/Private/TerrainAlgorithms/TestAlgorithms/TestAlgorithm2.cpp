@@ -34,5 +34,5 @@ void UTestAlgorithm2::DebugAlgorithm(UHITerrainData* Data)
 	Super::ApplyAlgorithm(Data);
 	Perlin.ApplyModule(Data);
 	ErosionGPU.ApplyModule(Data);
-	WaterFlattenGPU.ApplyModule(Data);
+	// WaterFlattenGPU.ApplyModule(Data);
 }

@@ -8,7 +8,7 @@ int Size;
 RWStructuredBuffer<float3> TerrainData;
 RWStructuredBuffer<float4> Flux;
 
-[numthreads(8, 8, 1)]
+[NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
 	float LValue = id.x == 0? 0: Flux[L_INDEX].y;
@@ -17,5 +17,6 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float BValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
 	float DeltaWater = LValue + RValue + TValue + BValue - Flux[INDEX].x - Flux[INDEX].y - Flux[INDEX].z - Flux[INDEX].w;
 	WATER(INDEX) += DeltaWater;
+	WATER(INDEX) = max(WATER(INDEX), 0.0f);
 	Flux[INDEX] = float4(0.0f, 0.0f, 0.0f, 0.0f);
 }

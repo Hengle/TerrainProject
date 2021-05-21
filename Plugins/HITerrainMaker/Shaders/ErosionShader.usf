@@ -226,19 +226,21 @@ void ApplyEvaporationSimulation(uint3 id)
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	// if(CurrentIteration < NumIteration / 2)
+	if(GBEnableHydroErosion)
 	{
-		ApplyRainSimulation(id);
+		// if(CurrentIteration < NumIteration / 2)
+		{
+			ApplyRainSimulation(id);
+		}
+		ApplyFlowSimulation(id);
+		ApplyWaterFlowSimulation(id);
+		ApplyErosionDepositionSimulation(id);
+		// ApplySedimentSimulation(id);
+		ApplyEvaporationSimulation(id);
 	}
-	ApplyFlowSimulation(id);
-	ApplyWaterFlowSimulation(id);
-	ApplyErosionDepositionSimulation(id);
-	// ApplySedimentSimulation(id);
-	ApplyEvaporationSimulation(id);
-	ApplyThermalErosionSimulation(id);
-	ApplyThermalErosionMove(id);
-
-	// TerrainData[INDEX] = TempTerrainData[INDEX];
-	// Flux[INDEX] = TempFlux[INDEX];
-	// TerrainFlux[INDEX] = TempTerrainFlux[INDEX] ;
+	if(GBEnableThermalErosion)
+	{
+		ApplyThermalErosionSimulation(id);
+		ApplyThermalErosionMove(id);
+	}
 }

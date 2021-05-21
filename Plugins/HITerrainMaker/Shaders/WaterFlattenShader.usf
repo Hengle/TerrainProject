@@ -22,72 +22,23 @@ float DeltaTime;
 RWStructuredBuffer<float3> TerrainData;
 RWStructuredBuffer<float4> Flux;
 
-[numthreads(1, 1, 1)]
+[NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
 	float Value = HEIGHT(INDEX) + SEDIMENT(INDEX) + WATER(INDEX);
 	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + SEDIMENT(L_INDEX) + WATER(L_INDEX);
-	if(Value > LValue)
-	{
-		float FlowValue = 0.0f;
-		if(Value - LValue > WATER(INDEX))
-		{
-			FlowValue = WATER(INDEX);
-		}
-		else
-		{
-			FlowValue = (Value - LValue) / 2;
-		}
-		WATER(INDEX) -= FlowValue;
-		Value -= FlowValue;
-		WATER(L_INDEX) += FlowValue;
-	}
 	float RValue = id.x == (uint)Size - 1? Value: HEIGHT(R_INDEX) + SEDIMENT(R_INDEX) + WATER(R_INDEX);
-	if(Value > RValue)
-	{
-		float FlowValue = 0.0f;
-		if(Value - RValue > WATER(INDEX))
-		{
-			FlowValue = WATER(INDEX);
-		}
-		else
-		{
-			FlowValue = (Value - RValue) / 2;
-		}
-		WATER(INDEX) -= FlowValue;
-		Value -= FlowValue;
-		WATER(R_INDEX) += FlowValue;
-	}
 	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + SEDIMENT(T_INDEX) + WATER(T_INDEX);
-	if(Value > TValue)
-	{
-		float FlowValue = 0.0f;
-		if(Value - TValue > WATER(INDEX))
-		{
-			FlowValue = WATER(INDEX);
-		}
-		else
-		{
-			FlowValue = (Value - TValue) / 2;
-		}
-		WATER(INDEX) -= FlowValue;
-		Value -= FlowValue;
-		WATER(T_INDEX) += FlowValue;
-	}
 	float BValue = id.y == (uint)Size - 1? Value: HEIGHT(B_INDEX) + SEDIMENT(B_INDEX) + WATER(B_INDEX);
-	if(Value > BValue)
+	Flux[INDEX] = float4(Value - LValue, Value - RValue, Value - TValue, Value - BValue);
+	Flux[INDEX] = max(Flux[INDEX], 0.0f);
+	float FluxSum = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
+	if(FluxSum > 0.1f)
 	{
-		float FlowValue = 0.0f;
-		if(Value - BValue > WATER(INDEX))
-		{
-			FlowValue = WATER(INDEX);
-		}
-		else
-		{
-			FlowValue = (Value - BValue) / 2;
-		}
-		WATER(INDEX) -= FlowValue;
-		Value -= FlowValue;
-		WATER(B_INDEX) += FlowValue;
+		Flux[INDEX] *= (WATER(INDEX) / FluxSum);
+	}
+	else
+	{
+		Flux[INDEX] = 0.0f;
 	}
 }
