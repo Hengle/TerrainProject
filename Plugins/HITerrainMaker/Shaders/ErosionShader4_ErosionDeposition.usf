@@ -31,6 +31,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float BInValue = id.y == (uint)Size - 1? 0: Flux[B_INDEX].z;
 	Velocity[INDEX].x = (LInValue - Flux[INDEX].x + Flux[INDEX].y - RInValue) / 2;
 	Velocity[INDEX].y = (TInValue - Flux[INDEX].z + Flux[INDEX].w - BInValue) / 2;
+	Velocity[INDEX] = clamp(Velocity[INDEX], -100.0f, 100.0f);
 	float LHeight = id.x == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(L_INDEX) + SEDIMENT(L_INDEX);
 	float RHeight = id.x == (uint)Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(R_INDEX) + SEDIMENT(R_INDEX);
 	float THeight = id.y == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(T_INDEX) + SEDIMENT(T_INDEX);
@@ -47,7 +48,6 @@ void Main(uint3 id : SV_DispatchThreadID)
 	{
 		float ErosionValue = (SedimentCapacity - SEDIMENT(INDEX)) * ErosionScale * DeltaTime;
 		// float ErosionValue = (SedimentCapacity - SEDIMENT(INDEX)) * ErosionScale;
-		ErosionValue = clamp(ErosionValue, 0.0f, 1.0f);
 		TEMP_HEIGHT(INDEX) -= ErosionValue;
 		TEMP_SEDIMENT(INDEX) += ErosionValue;
 	}
@@ -55,7 +55,6 @@ void Main(uint3 id : SV_DispatchThreadID)
 	{
 		float DepositionValue = (SEDIMENT(INDEX) - SedimentCapacity) * DepositionScale * DeltaTime;
 		// float DepositionValue = (SEDIMENT(INDEX) - SedimentCapacity) * DepositionScale;
-		DepositionValue = clamp(DepositionValue, 0.0f, 1.0f);
 		TEMP_HEIGHT(INDEX) += DepositionValue;
 		TEMP_SEDIMENT(INDEX) -= DepositionValue;
 	}
