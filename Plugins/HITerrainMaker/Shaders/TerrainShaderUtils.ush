@@ -37,6 +37,8 @@
 #define HARDNESS_HIGH_LIMIT 1.0f
 #define SEDIMENT_SOFTEN_COEFFICIENT 5.0f
 #define SEDIMENT_CAPACITY_SCALE 1.0f
+#define K_A 0.8f
+#define K_I 0.1f
 
 int GetIndex(int idx, int idy, int Size)
 {

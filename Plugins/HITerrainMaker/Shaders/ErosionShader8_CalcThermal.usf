@@ -1,0 +1,56 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+float DeltaTime;
+float ThermalErosionScale;
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float4> TerrainFlux;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	float4 Neighbors = float4(id.x == 0? HEIGHT(INDEX): HEIGHT(L_INDEX),
+							id.x == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(R_INDEX),
+							id.y == 0? HEIGHT(INDEX): HEIGHT(T_INDEX),
+							id.y == (uint)Size - 1? HEIGHT(INDEX): HEIGHT(B_INDEX));
+	float4 DeltaHeight;
+	DeltaHeight.x = max(0.0f, HEIGHT(INDEX) - Neighbors.x);
+	DeltaHeight.y = max(0.0f, HEIGHT(INDEX) - Neighbors.y);
+	DeltaHeight.z = max(0.0f, HEIGHT(INDEX) - Neighbors.z);
+	DeltaHeight.w = max(0.0f, HEIGHT(INDEX) - Neighbors.w);
+	float4 MaxDeltaHeight=  max(max(DeltaHeight.x, DeltaHeight.y), max(DeltaHeight.z, DeltaHeight.w));
+	float DeltaMovedHeight = GRID_X_DISTANCE * GRID_Y_DISTANCE * DeltaTime * ThermalErosionScale * HARDNESS(INDEX) * MaxDeltaHeight / 2;
+	float4 TanAngle = DeltaHeight / 100.0f;
+	float Threshold = HARDNESS(INDEX) * K_A + K_I;
+	float4 K = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	bool bKFlag = false;
+	if(TanAngle.x > Threshold)
+	{
+		K.x = DeltaHeight.x;
+		bKFlag = true;
+	}
+	if(TanAngle.y > Threshold)
+	{
+		K.y = DeltaHeight.y;
+		bKFlag = true;
+	}
+	if(TanAngle.z > Threshold)
+	{
+		K.z = DeltaHeight.z;
+		bKFlag = true;
+	}
+	if(TanAngle.w > Threshold)
+	{
+		K.w = DeltaHeight.w;
+		bKFlag = true;
+	}
+	float4 KScale = 0.0f;
+	if(bKFlag)
+	{
+		float KSum = K.x + K.y + K.z + K.w;
+		KScale = K / KSum;
+	}
+	TerrainFlux[INDEX] = DeltaMovedHeight * KScale;
+}

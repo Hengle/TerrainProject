@@ -156,6 +156,19 @@ float UHITerrainData::GetSedimentValue(float X, float Y)
 	}
 }
 
+float UHITerrainData::GetSedimentValue(int32 X, int32 Y)
+{
+	if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return 0.0f;
+	}
+	else
+	{
+		return TerrainDataChannels["sediment"]->GetFloat(X, Y);
+	}
+}
+
 float UHITerrainData::GetWaterValue(float X, float Y)
 {
 	if (!bIsGenerated)
@@ -182,6 +195,19 @@ float UHITerrainData::GetWaterValue(float X, float Y)
 		
 		float Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
 		return Value;
+	}
+}
+
+float UHITerrainData::GetWaterValue(int32 X, int32 Y)
+{
+	if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return 0.0f;
+	}
+	else
+	{
+		return TerrainDataChannels["water"]->GetFloat(X, Y);
 	}
 }
 

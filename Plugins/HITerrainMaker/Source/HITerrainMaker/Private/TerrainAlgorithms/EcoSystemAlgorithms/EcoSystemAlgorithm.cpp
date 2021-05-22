@@ -41,10 +41,12 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	// 	}
 	// }
 	// Data->Mutex.Unlock();
-	Data->AddChannel("R", ETerrainDataType::FLOAT);
-	Data->AddChannel("G", ETerrainDataType::FLOAT);
-	Data->AddChannel("B", ETerrainDataType::FLOAT);
-	Data->AddChannel("A", ETerrainDataType::FLOAT);
+	Data->AddChannel("r", ETerrainDataType::FLOAT);
+	Data->AddChannel("g", ETerrainDataType::FLOAT);
+	Data->AddChannel("b", ETerrainDataType::FLOAT);
+	Data->AddChannel("a", ETerrainDataType::FLOAT);
+	Data->AddChannel("slope", ETerrainDataType::FLOAT);
+	CalculateSlope(Data);
 }
 
 void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)
@@ -62,6 +64,28 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 		{
 			FVector GrassLocation(LocationX, LocationY, LocationZ);
 			Data->AddChunkGrass(Index, GrassLocation);
+		}
+	}
+}
+
+void UEcoSystemAlgorithm::CalculateSlope(UHITerrainData* Data)
+{
+	int32 Size = Data->Size();
+	for(int32 i = 0; i < Size; i++)
+	{
+		for(int32 j = 0; j < Size; j++)
+		{
+			float LValue = i == 0? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
+									Data->GetHeightValue(i - 1, j) + Data->GetSedimentValue(i - 1, j);
+			float RValue = i == Size - 1? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
+											Data->GetHeightValue(i + 1, j) + Data->GetSedimentValue(i + 1, j);
+			float TValue = j == 0? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
+									Data->GetHeightValue(i, j - 1) + Data->GetSedimentValue(i, j - 1);
+			float BValue = i == Size - 1? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
+									Data->GetHeightValue(i, j + 1) + Data->GetSedimentValue(i, j + 1);
+			float SlopeValue = ((LValue - RValue) * (LValue - RValue) + (TValue - BValue) * (TValue - BValue)) / 40000.0f;
+			Data->SetChannelValue("slope", i, j, SlopeValue);
+			Data->SetChannelValue("r", i, j, SlopeValue);
 		}
 	}
 }

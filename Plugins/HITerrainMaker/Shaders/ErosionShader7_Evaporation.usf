@@ -1,0 +1,14 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+float DeltaTime;
+float EvaporationAmount;
+
+RWStructuredBuffer<float4> TerrainData;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	WATER(INDEX) = max(0.0f, WATER(INDEX) * (1 - EvaporationAmount * DeltaTime));
+}

@@ -64,7 +64,9 @@ public:
 	float GetHeightValue(float X, float Y);
 
 	float GetSedimentValue(float X, float Y);
+	float GetSedimentValue(int32 X, int32 Y);
 	float GetWaterValue(float X, float Y);
+	float GetWaterValue(int32 X, int32 Y);
 
 	/*
 	 * 添加指定名称、类型的通道。
