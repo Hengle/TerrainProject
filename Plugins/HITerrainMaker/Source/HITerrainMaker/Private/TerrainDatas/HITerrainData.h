@@ -92,6 +92,7 @@ public:
 	bool ContainsChannel(FString ChannelName);
 
 	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, float& Value);
+	bool GetChannelValue(FString ChannelName, float X, float Y, float& Value);
 	bool SetChannelValue(FString ChannelName, int32 X, int32 Y, const float& Value);
 
 	bool GetChannelValue(FString ChannelName, int32 X, int32 Y, FVector& Value);

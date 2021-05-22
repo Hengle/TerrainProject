@@ -136,10 +136,10 @@ float UHITerrainData::GetSedimentValue(float X, float Y)
 	}
 	else
 	{
-		float XFloor = FMath::FloorToInt(X / 100);
-		float YFloor = FMath::FloorToInt(Y / 100);
-		float XCeil = FMath::CeilToInt(X / 100);
-		float YCeil = FMath::CeilToInt(Y / 100);
+		int32 XFloor = FMath::FloorToInt(X / 100);
+		int32 YFloor = FMath::FloorToInt(Y / 100);
+		int32 XCeil = FMath::CeilToInt(X / 100);
+		int32 YCeil = FMath::CeilToInt(Y / 100);
 		float Alpha0 = X / 100 - XFloor;
 		float Alpha1 = Y / 100 - YFloor;
 		float Value00;
@@ -178,10 +178,10 @@ float UHITerrainData::GetWaterValue(float X, float Y)
 	}
 	else
 	{
-		float XFloor = FMath::FloorToInt(X / 100);
-		float YFloor = FMath::FloorToInt(Y / 100);
-		float XCeil = FMath::CeilToInt(X / 100);
-		float YCeil = FMath::CeilToInt(Y / 100);
+		int32 XFloor = FMath::FloorToInt(X / 100);
+		int32 YFloor = FMath::FloorToInt(Y / 100);
+		int32 XCeil = FMath::CeilToInt(X / 100);
+		int32 YCeil = FMath::CeilToInt(Y / 100);
 		float Alpha0 = X / 100 - XFloor;
 		float Alpha1 = Y / 100 - YFloor;
 		float Value00;
@@ -302,6 +302,35 @@ bool UHITerrainData::GetChannelValue(FString ChannelName, int32 X, int32 Y, floa
 		{
 			return false;
 		}
+	}
+}
+
+bool UHITerrainData::GetChannelValue(FString ChannelName, float X, float Y, float& Value)
+{
+	if (!bIsGenerated)
+	{
+		UE_LOG(LogHITerrain, Error, TEXT("UHITerrainDataBase::GetSample Not Generated!"));
+		return false;
+	}
+	else
+	{
+		int32 XFloor = FMath::FloorToInt(X / 100);
+		int32 YFloor = FMath::FloorToInt(Y / 100);
+		int32 XCeil = FMath::CeilToInt(X / 100);
+		int32 YCeil = FMath::CeilToInt(Y / 100);
+		float Alpha0 = X / 100 - XFloor;
+		float Alpha1 = Y / 100 - YFloor;
+		float Value00;
+		float Value01;
+		float Value10;
+		float Value11;
+		GetChannelValue(ChannelName, XFloor, YFloor, Value00);
+		GetChannelValue(ChannelName, XFloor, YCeil, Value01);
+		GetChannelValue(ChannelName, XCeil, YFloor, Value10);
+		GetChannelValue(ChannelName, XCeil, YCeil, Value11);
+		
+		Value = FHITerrainMathMisc::LinearLerp2D(Value00, Value01, Value10, Value11, Alpha0, Alpha1);
+		return true;
 	}
 }
 

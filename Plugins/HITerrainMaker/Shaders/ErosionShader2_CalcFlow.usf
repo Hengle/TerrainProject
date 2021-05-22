@@ -22,4 +22,5 @@ void Main(uint3 id : SV_DispatchThreadID)
 	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
 	float K = min(1.0f, WATER(INDEX) * GRID_X_DISTANCE * GRID_Y_DISTANCE / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) / DeltaTime);
 	Flux[INDEX] = FluxValue * K;
+	// Flux[INDEX] = max(FluxValue[INDEX], 100000.0f);
 }

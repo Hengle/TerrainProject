@@ -25,6 +25,7 @@ public:
 	void GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index);
 
 	void CalculateSlope(UHITerrainData* Data);
+	void CalculateUnderWaterTerrain(UHITerrainData* Data);
 
 private:
 	FHITerrainVoronoi Voronoi;

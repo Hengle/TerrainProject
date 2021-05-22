@@ -32,7 +32,7 @@ float FHITerrainChunkData::GetChannelFloatValue(FString ChannelName, int32 X, in
 float FHITerrainChunkData::GetChannelFloatValue(FString ChannelName, float X, float Y)
 {
 	float Value;
-	Data->GetChannelValue(ChannelName, X / 100.0f, Y / 100.0f, Value);
+	Data->GetChannelValue(ChannelName, (int32)(X / 100.0f), (int32)(Y / 100.0f), Value);
 	return Value;
 }
 

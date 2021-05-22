@@ -174,6 +174,9 @@ void AHITerrainActor::GeneratePointData(TArray<FVector>& Positions, TArray<FVect
 		// float SedimentValue = ChunkData->GetChannelFloatValue("slope", LocationX, LocationY);
 		// PointColor.R = FMath::Clamp(SedimentValue, 0.0f, 1.0f);
 		PointColor.R = ChunkData->GetChannelFloatValue("r", LocationX, LocationY);
+		PointColor.G = ChunkData->GetChannelFloatValue("g", LocationX, LocationY);
+		PointColor.B = ChunkData->GetChannelFloatValue("b", LocationX, LocationY);
+		PointColor.A = ChunkData->GetChannelFloatValue("a", LocationX, LocationY);
 	}
 	Colors.Add(PointColor);
 }

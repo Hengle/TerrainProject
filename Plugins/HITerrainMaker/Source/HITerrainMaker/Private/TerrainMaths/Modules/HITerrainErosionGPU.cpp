@@ -269,7 +269,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			// 	FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
 			// 	FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
 			// }
-			RHICmdList.SubmitCommandsAndFlushGPU();
+			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
 			TArray<float> ResultTerrainData;
