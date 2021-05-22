@@ -132,6 +132,7 @@ public:
 	void SetInformation(FTerrainInformationPtr InInformation);
 
 	FCriticalSection Mutex;
+	bool bAvailable = true;
 
 protected:
 	int32 GetIndex(int32 X, int32 Y, int32 InTotalSize);

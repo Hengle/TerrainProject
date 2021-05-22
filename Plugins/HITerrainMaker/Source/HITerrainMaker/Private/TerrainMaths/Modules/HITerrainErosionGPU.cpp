@@ -85,6 +85,11 @@ void FHITerrainErosionGPU::SetThermalErosionScale(float InThermalErosionScale)
 
 void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 {
+	while(!Data->bAvailable)
+	{
+		FPlatformProcess::Sleep(0.1);
+	}
+	Data->bAvailable = false;
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("hardness", ETerrainDataType::FLOAT);
@@ -268,5 +273,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			TempTerrainDataUAVRef.SafeRelease();
 			
 			// Data->Mutex.Unlock();
+			Data->bAvailable = true;
 		});
 }

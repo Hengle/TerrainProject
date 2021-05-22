@@ -60,6 +60,11 @@ void FHITerrainPerlin::SetOctaveCount(float InOctaveCount)
 void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 {
 	// Data->Mutex.Lock();
+	while(!Data->bAvailable)
+	{
+		FPlatformProcess::Sleep(0.1);
+	}
+	Data->bAvailable = false;
 	Data->AddChannel(ChannelName, ETerrainDataType::FLOAT);
 	auto Channel = Data->GetChannel(ChannelName);
 	for(int32 i = 0; i < Channel->GetSizeX(); i++)
@@ -70,5 +75,6 @@ void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 			Channel->SetFloat(i, j, Value);
 		}
 	}
+	Data->bAvailable = true;
 	// Data->Mutex.Unlock();
 }
