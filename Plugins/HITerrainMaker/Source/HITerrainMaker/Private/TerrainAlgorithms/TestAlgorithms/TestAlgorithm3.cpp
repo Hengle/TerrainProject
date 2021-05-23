@@ -19,6 +19,10 @@ void UTestAlgorithm3::ApplyAlgorithm(UHITerrainData* Data)
 void UTestAlgorithm3::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::DebugAlgorithm(Data);
+	Data->AddChannel("r", ETerrainDataType::FLOAT);
+	Data->AddChannel("g", ETerrainDataType::FLOAT);
+	Data->AddChannel("b", ETerrainDataType::FLOAT);
+	Data->AddChannel("a", ETerrainDataType::FLOAT);
 	Perlin.ApplyModule(Data);
 	int32 Size = Data->Size();
 	for(int32 i = 0; i < Size; i++)
@@ -36,4 +40,5 @@ void UTestAlgorithm3::DebugAlgorithm(UHITerrainData* Data)
 			}
 		}
 	}
+	SlopeGPU.ApplyModule(Data);
 }

@@ -60,6 +60,8 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, HumidityShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 			}
+
+			GDynamicRHI->RHIBlockUntilGPUIdle();
 			
 			float* WaterHumidityDataSrc = (float*)RHICmdList.LockStructuredBuffer(WaterHumidityRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 2, EResourceLockMode::RLM_ReadOnly);
 

@@ -247,6 +247,8 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			Parameters9.TerrainData = TerrainDataUAVRef;
 			Parameters9.TerrainFlux = TerrainFluxUAVRef;
 
+			
+
 			for(int32 i = 0; i < NumIteration; i++)
 			{
 				if(bEnableHydroErosion)
@@ -265,11 +267,9 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
 				}
 			}
-			// RHICmdList.ImmediateFlush(EImmediateFlushType::FlushRHIThreadFlushResources);
-			FPlatformProcess::Sleep(1.0f);
-			
+			GDynamicRHI->RHIBlockUntilGPUIdle();
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
-
+			
 			TArray<float> ResultTerrainData;
 			ResultTerrainData.Reserve(Size * Size * 4);
 			ResultTerrainData.AddUninitialized(Size * Size * 4);

@@ -6,6 +6,7 @@
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/Modules/HITerrainPerlin.h"
+#include "TerrainMaths/Modules/HITerrainSlopeGPU.h"
 #include "UObject/Object.h"
 #include "TestAlgorithm3.generated.h"
 
@@ -23,4 +24,5 @@ public:
 
 private:
 	FHITerrainPerlin Perlin;
+	FHITerrainSlopeGPU SlopeGPU;
 };

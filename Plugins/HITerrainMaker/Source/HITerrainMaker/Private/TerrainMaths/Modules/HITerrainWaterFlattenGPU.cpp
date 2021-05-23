@@ -88,14 +88,27 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			Parameters2.TerrainData = TerrainDataUAVRef;
 			Parameters2.Flux = FluxUAVRef;
 
+			
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));
 			}
+			GDynamicRHI->RHIBlockUntilGPUIdle();
 
-			FPlatformProcess::Sleep(1.0f);
+			auto Fence = RHICmdList.CreateComputeFence("Fence");
+			// FRHITransitionInfo Info(TerrainDataUAVRef, ERHIAccess::UAVMask, ERHIAccess::CPURead);
+			// FRHITransitionInfo Info;
+			// Info.StructuredBuffer = TerrainDataRHIRef;
+			// Info.AccessBefore = ERHIAccess::Unknown;
+			// Info.AccessAfter = ERHIAccess::ReadableMask;
+			// Info.Type = FRHITransitionInfo::EType::StructuredBuffer;
+			// TArray<FRHITransitionInfo> Infos;
+			// Infos.Add(Info);
+			// auto Transition = RHICreateTransition(ERHIPipeline::AsyncCompute, ERHIPipeline::Graphics, ERHICreateTransitionFlags::None, Infos);
+			// Fence->Transition = Transition;
+			// RHICmdList.WaitComputeFence(Fence);
 			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 		

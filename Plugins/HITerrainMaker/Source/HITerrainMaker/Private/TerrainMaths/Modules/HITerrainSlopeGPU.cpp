@@ -48,6 +48,8 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 			Parameters.TerrainSlopeData = TerrainSlopeUAVRef;
 			
 			FComputeShaderUtils::Dispatch(RHICmdList, SlopeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
+
+			GDynamicRHI->RHIBlockUntilGPUIdle();
 			
 			float* TerrainSlopeDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainSlopeRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 3, EResourceLockMode::RLM_ReadOnly);
 
