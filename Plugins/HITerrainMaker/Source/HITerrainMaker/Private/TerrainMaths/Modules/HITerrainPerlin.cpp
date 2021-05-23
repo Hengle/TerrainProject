@@ -4,7 +4,7 @@
 #include "TerrainMaths/Modules/HITerrainPerlin.h"
 
 
-FHITerrainPerlin::FHITerrainPerlin()
+FHITerrainPerlin::FHITerrainPerlin(): ChannelName("height"), Scale(1.0f), Amplitude(1.0f), Seed(0), Frequency(1.0f), Lacunarity(0.5f), Persistence(1.0f), OctaveCount(14)
 {
 }
 

@@ -14,6 +14,7 @@ enum class ETerrainType: uint8
 	RIDGED_MULTI,
 	TEST,
 	TEST2,
+	TEST3,
 };
 
 UENUM()

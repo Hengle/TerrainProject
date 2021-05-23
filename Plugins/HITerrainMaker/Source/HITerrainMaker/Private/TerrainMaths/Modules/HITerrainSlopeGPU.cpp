@@ -65,6 +65,7 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 				{
 					int32 Index = (i * Size + j) * 3;
 					float Slope = ResultSlopeData[Index + 2];
+					Slope = 1.0f - FMath::Clamp(Slope * 10, 0.0f, 1.0f);
 					Data->SetChannelValue("r", i, j, Slope);
 				}
 			}

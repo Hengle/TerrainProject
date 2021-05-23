@@ -265,7 +265,8 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
 				}
 			}
-			FPlatformProcess::Sleep(0.5);
+			// RHICmdList.ImmediateFlush(EImmediateFlushType::FlushRHIThreadFlushResources);
+			FPlatformProcess::Sleep(1.0f);
 			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 
@@ -288,6 +289,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					Data->SetChannelValue("hardness", i, j, ResultTerrainData[Index + 3]);
 				}
 			}
+			
 			TerrainDataRHIRef.SafeRelease();
 			TerrainDataUAVRef.SafeRelease();
 			FluxRHIRef.SafeRelease();

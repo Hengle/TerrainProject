@@ -12,6 +12,7 @@
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm2.h"
 #include "TerrainAlgorithms/EcoSystemAlgorithms/EcoSystemAlgorithm.h"
+#include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm3.h"
 #include "TerrainComponents/HITerrainChunkTicker.h"
 
 FTerrainInformationPtr AHITerrainInstance::GetTerrainInformation() const
@@ -217,6 +218,12 @@ void AHITerrainInstance::InitAlgorithms()
 		UEcoSystemAlgorithm* EcoSystemAlgorithm = NewObject<UEcoSystemAlgorithm>(this);
 		EcoSystemAlgorithm->Init(TerrainInformation);
 		Algorithms.Add(EcoSystemAlgorithm);
+	}
+	else if (TerrainInformation->TerrainType == ETerrainType::TEST3)
+	{
+		UTestAlgorithm3* Algorithm = NewObject<UTestAlgorithm3>(this);
+		Algorithm->Init(TerrainInformation);
+		Algorithms.Add(Algorithm);
 	}
 }
 
