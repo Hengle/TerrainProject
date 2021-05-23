@@ -1,5 +1,6 @@
 ﻿#include "/Engine/Public/Platform.ush"
 #include "TerrainShaderUtils.ush"
+#include "ErosionShaderUtils.ush"
 
 int Size;
 float DeltaTime;

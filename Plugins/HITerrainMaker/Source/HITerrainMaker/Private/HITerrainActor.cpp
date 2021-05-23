@@ -756,15 +756,16 @@ void AHITerrainActor::GenerateVegetation(ELODLevel InLODLevel)
 			StaticMeshActor->Destroy();
 		}
 		StaticMeshActors.Empty();
-		return;
 	}
 	else
 	{
+		FRandomStream RandomStream;
 		if(StaticMeshActors.Num() == 0)
 		{
 			TArray<FVector> GrassLocations = ChunkData->GetChunkGrass();
 			for(const FVector& Location: GrassLocations)
 			{
+				// FRotator Rotator = ChunkData->GetRotatorAtLocation(Location);
 				AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location);
 				GrassActor->SetMobility(EComponentMobility::Movable);
 				GrassActor->GetStaticMeshComponent()->SetStaticMesh(GrassStaticMesh);

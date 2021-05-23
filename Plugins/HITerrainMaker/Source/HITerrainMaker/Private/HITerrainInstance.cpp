@@ -235,6 +235,11 @@ void AHITerrainInstance::Tick(float DeltaTime)
 		FRenderCommandFence Fence;
 		Fence.BeginFence();
 		Fence.Wait();
+		while(!Data->bAvailable)
+		{
+			FPlatformProcess::Sleep(0.1);
+		}
+		Data->bAvailable = false;
 		bFirstTick = false;
 	}
 	ChunkTicker->TickChunks();

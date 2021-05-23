@@ -42,13 +42,15 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	Data->AddChannel("a", ETerrainDataType::FLOAT);
 	CalculateSlope(Data);
 	CalculateUnderWaterTerrain(Data);
-	int32 ChunkNum = Information->ChunkNum;
+	CalculateHumidity(Data);
+	// int32 ChunkNum = Information->ChunkNum;
+	int32 ChunkNum = 1;
 	for(int32 i = 0; i < ChunkNum; i++)
 	{
 		for(int32 j = 0; j < ChunkNum; j++)
 		{
 			TPair<int32, int32> Index(i, j);
-			// GenerateChunkGrassData(Data, Index);
+			GenerateChunkGrassData(Data, Index);
 		}
 	}
 	
@@ -57,22 +59,37 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 
 void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)
 {
-	Voronoi.SetSeed(Information->Seed + Information->ChunkNum * Index.Key + Index.Value);
-	Voronoi.ApplyModule(Data);
-	auto Sites = Voronoi.GetSites();
-	for(const FVector& Site: Sites)
+	int32 Size = Data->GetChunkSize() * 2;
+	float Step = 100.0f / 2;
+	float RecentX = Step, RecentY = Step;
+	FRandomStream RandomStream(Information->Seed);
+	for(int32 i = 0; i < Size - 1; i++)
 	{
-		float LocationX = Information->ChunkSize * Index.Key + Site.X;
-		float LocationY = Information->ChunkSize * Index.Key + Site.Y;
-		float LocationZ = Data->GetHeightValue(LocationX, LocationY);
-		float Slope = 0.0f;
-		Data->GetChannelValue("r", LocationX, LocationY, Slope);
-		if(Slope > 0.5f)
+		for(int32 j = 0; j < Size - 1; j++)
 		{
-			FVector GrassLocation(LocationX, LocationY, LocationZ);
-			Data->AddChunkGrass(Index, GrassLocation);
+			float LocationX = Index.Key * Information->ChunkSize + RecentX;
+			LocationX += RandomStream.FRand() * 25;
+			float LocationY = Index.Value * Information->ChunkSize + RecentY;
+			LocationY += RandomStream.FRand() * 25;
+			float SlopeValue = 1.0f;
+			float WaterValue = 0.0f;
+			float HumidityValue = 0.0f;
+			Data->GetChannelValue("r", LocationX, LocationY, SlopeValue);
+			Data->GetChannelValue("g", LocationX, LocationY, WaterValue);
+			Data->GetChannelValue("b", LocationX, LocationY, HumidityValue);
+			// if(SlopeValue < 0.1f && WaterValue < 0.1f)
+			if(HumidityValue > 0.2f)
+			{
+				float LocationZ = Data->GetHeightValue(LocationX, LocationY) - SlopeValue * 500;
+				FVector Location(LocationX, LocationY, LocationZ);
+				Data->AddChunkGrass(Index, Location);
+			}
+			RecentY += Step;
 		}
+		RecentX += Step;
+		RecentY = Step;
 	}
+	
 }
 
 void UEcoSystemAlgorithm::CalculateSlope(UHITerrainData* Data)
@@ -107,6 +124,34 @@ void UEcoSystemAlgorithm::CalculateUnderWaterTerrain(UHITerrainData* Data)
 			float WaterValue;
 			Data->GetChannelValue("water", i, j, WaterValue);
 			Data->SetChannelValue("g", i, j, WaterValue);
+		}
+	}
+}
+
+void UEcoSystemAlgorithm::CalculateHumidity(UHITerrainData* Data)
+{
+	int32 Size = Data->Size();
+	int32 Scope = 5;
+	for(int32 i = 0; i < Size; i++)
+	{
+		for(int32 j = 0; j < Size; j++)
+		{
+			float SumWaterValue = 0.0f;
+			int32 SumGrid = 0;
+			for(int32 u = i - Scope; u < i + Scope + 1; u++)
+			{
+				for(int32 v = j - Scope; v < j + Scope + 1; v++)
+				{
+					if(u >= 0 && u < Size && v >=0 && v < Size)
+					{
+						float UVWaterValue = 0.0f;
+						Data->GetChannelValue("water", i, j, UVWaterValue);
+						SumWaterValue += UVWaterValue;
+						SumGrid ++;
+					}
+				}
+			}
+			Data->SetChannelValue("b", i, j, SumWaterValue / SumGrid);
 		}
 	}
 }

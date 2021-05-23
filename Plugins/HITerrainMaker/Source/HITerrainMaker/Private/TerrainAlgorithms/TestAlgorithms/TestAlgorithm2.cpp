@@ -31,6 +31,8 @@ void UTestAlgorithm2::ApplyAlgorithm(UHITerrainData* Data)
 void UTestAlgorithm2::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
+	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
+	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Perlin.ApplyModule(Data);
 	ErosionGPU.ApplyModule(Data);
 	WaterFlattenGPU.ApplyModule(Data);

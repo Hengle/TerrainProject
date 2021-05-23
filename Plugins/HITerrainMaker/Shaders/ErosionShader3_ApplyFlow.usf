@@ -1,5 +1,6 @@
 ﻿#include "/Engine/Public/Platform.ush"
 #include "TerrainShaderUtils.ush"
+#include "ErosionShaderUtils.ush"
 
 int Size;
 float DeltaTime;
@@ -16,4 +17,8 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float TInValue = id.y == 0? Flux[INDEX].z: Flux[T_INDEX].w;
 	float BInValue = id.y == (uint)Size - 1? Flux[INDEX].w: Flux[B_INDEX].z;
 	WATER(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) * DeltaTime / GRID_X_DISTANCE / GRID_Y_DISTANCE;
+	if(isnan(WATER(INDEX)))
+	{
+		WATER(INDEX) = 0.0f;
+	}
 }

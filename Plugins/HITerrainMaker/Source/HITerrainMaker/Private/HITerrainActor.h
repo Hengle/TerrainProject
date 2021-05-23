@@ -76,7 +76,7 @@ private:
 	FTerrainInformationPtr TerrainInformation;
 
 	UPROPERTY()
-	UStaticMesh* GrassStaticMesh = LoadObject<UStaticMesh>(this,TEXT("/Game/KiteDemo/Environments/Foliage/Grass/FieldGrass/SM_FieldGrass_01"));
+	UStaticMesh* GrassStaticMesh = LoadObject<UStaticMesh>(this,TEXT("/Game/Light_Foliage/Meshes/SM_Grass_02.SM_Grass_02"));
 
 	UPROPERTY()
 	TArray<AStaticMeshActor*> StaticMeshActors;

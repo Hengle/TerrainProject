@@ -26,6 +26,7 @@ public:
 
 	void CalculateSlope(UHITerrainData* Data);
 	void CalculateUnderWaterTerrain(UHITerrainData* Data);
+	void CalculateHumidity(UHITerrainData* Data);
 
 private:
 	FHITerrainVoronoi Voronoi;

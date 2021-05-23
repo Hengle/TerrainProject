@@ -4,6 +4,7 @@
 */
 #include "HITerrainChunkData.h"
 #include "HITerrainData.h"
+#include "Kismet/KismetMathLibrary.h"
 
 float FHITerrainChunkData::GetHeightValue(int32 X, int32 Y) 
 {
@@ -142,4 +143,23 @@ float FHITerrainChunkData::GetStepOfLODLevel(const ELODLevel& LODLevel)
 TArray<FVector>& FHITerrainChunkData::GetChunkGrass()
 {
 	return Data->GetChunkGrass(Index);
+}
+
+FRotator FHITerrainChunkData::GetRotatorAtLocation(const FVector& Location)
+{
+	float Delta = 50.0f;
+	FVector LeftPoint(Location.X - Delta, Location.Y - Delta, 0.0f);
+	FVector RightPoint(Location.X + Delta, Location.Y + Delta, 0.0f);
+	FVector TopPoint(Location.X + Delta, Location.Y - Delta, 0.0f);
+	FVector BottomPoint(Location.X - Delta, Location.Y + Delta, 0.0f);
+	LeftPoint.Z = Data->GetHeightValue(LeftPoint.X, LeftPoint.Y) + Data->GetSedimentValue(LeftPoint.X, LeftPoint.Y);
+	RightPoint.Z = Data->GetHeightValue(RightPoint.X, RightPoint.Y) + Data->GetSedimentValue(RightPoint.X, RightPoint.Y);
+	TopPoint.Z = Data->GetHeightValue(TopPoint.X, TopPoint.Y) + Data->GetSedimentValue(TopPoint.X, TopPoint.Y);
+	BottomPoint.Z = Data->GetHeightValue(BottomPoint.X, BottomPoint.Y) + Data->GetSedimentValue(BottomPoint.X, BottomPoint.Y);
+	FVector XVector = (LeftPoint - RightPoint);
+	FVector YVector = (TopPoint - BottomPoint);
+	FVector Normal = XVector * YVector;
+	Normal.Normalize(10000.0f);
+	FRotator Rotator = UKismetMathLibrary::MakeRotFromX(Normal);
+	return Rotator;
 }

@@ -35,6 +35,8 @@ struct FHITerrainChunkData
 	float GetStepOfLODLevel(const ELODLevel& LODLevel);
 
 	TArray<FVector>& GetChunkGrass();
+
+	FRotator GetRotatorAtLocation(const FVector& Location);
 };
 
 typedef TSharedPtr<FHITerrainChunkData, ESPMode::ThreadSafe> FChunkDataPtr;

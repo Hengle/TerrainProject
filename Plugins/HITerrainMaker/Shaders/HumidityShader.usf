@@ -1,0 +1,15 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+int Size;
+
+#define WATER(index) WaterHumidityData[index].x
+#define HUMIDITY(index) WaterHumidityData[index].y
+
+RWStructuredBuffer<float2> WaterHumidityData;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	
+}
