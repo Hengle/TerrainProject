@@ -7,7 +7,7 @@
 
 IMPLEMENT_GLOBAL_SHADER(FHumidityShader, "/TerrainShaders/HumidityShader.usf", "Main", SF_Compute);
 
-FHITerrainHumidityGPU::FHITerrainHumidityGPU(): NumIteration(20)
+FHITerrainHumidityGPU::FHITerrainHumidityGPU(): NumIteration(10)
 {
 }
 
@@ -54,6 +54,7 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 			TShaderMapRef<FHumidityShader> HumidityShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			FHumidityShader::FParameters Parameters;
 			Parameters.Size = Size;
+			Parameters.Step = 1.0f / NumIteration;
 			Parameters.WaterHumidityData = WaterHumidityUAVRef;
 			for(int32 i = 0; i < NumIteration; i++)
 			{
@@ -80,8 +81,8 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 					// {
 					// 	// UE_LOG(LogHITerrain, Log, TEXT("HI"))
 					// }
-					Humidity = FMath::Clamp(Humidity / 100, 0.0f, 1.0f);
-					Data->SetChannelValue("b", i, j, 1.0f - Humidity);
+					// Humidity = FMath::Clamp(Humidity / 100, 0.0f, 1.0f);
+					Data->SetChannelValue("b", i, j, Humidity);
 				}
 			}
 			WaterHumidityRHIRef.SafeRelease();

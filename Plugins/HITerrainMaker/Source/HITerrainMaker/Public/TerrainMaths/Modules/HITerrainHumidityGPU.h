@@ -30,6 +30,7 @@ class HITERRAINMAKER_API FHumidityShader: public FGlobalShader
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 	
 	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER(float, Step)
 	SHADER_PARAMETER_UAV(RWStructuredBuffer<float2>, WaterHumidityData)
 	
 	END_SHADER_PARAMETER_STRUCT()
