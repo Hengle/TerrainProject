@@ -6,9 +6,9 @@
 void UEcoSystemAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
-	Voronoi.SetSizeX(InInformation->ChunkSize);
-	Voronoi.SetSizeY(InInformation->ChunkSize);
-	Voronoi.SetNumSites(1000);
+	// Voronoi.SetSizeX(InInformation->ChunkSize);
+	// Voronoi.SetSizeY(InInformation->ChunkSize);
+	// Voronoi.SetNumSites(1000);
 }
 
 void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
@@ -38,19 +38,36 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	
 	Data->AddChannel("r", ETerrainDataType::FLOAT);	// 坡度值
 	Data->AddChannel("g", ETerrainDataType::FLOAT);
-	Data->AddChannel("b", ETerrainDataType::FLOAT);
+	Data->AddChannel("b", ETerrainDataType::FLOAT); // 湿度值
 	Data->AddChannel("a", ETerrainDataType::FLOAT);
-	CalculateSlope(Data);
+	// CalculateSlope(Data);
 	CalculateUnderWaterTerrain(Data);
-	CalculateHumidity(Data);
-	// int32 ChunkNum = Information->ChunkNum;
-	int32 ChunkNum = 1;
+
+	Data->bAvailable = true;
+	SlopeGPU.ApplyModule(Data);
+	while(!Data->bAvailable)
+	{
+		FPlatformProcess::Sleep(0.1);
+	}
+	Data->bAvailable = false;
+	
+	Data->bAvailable = true;
+	HumidityGPU.ApplyModule(Data);
+	while(!Data->bAvailable)
+	{
+		FPlatformProcess::Sleep(0.1);
+	}
+	Data->bAvailable = false;
+	
+	// CalculateHumidity(Data);
+	int32 ChunkNum = Information->ChunkNum;
+	// int32 ChunkNum = 1;
 	for(int32 i = 0; i < ChunkNum; i++)
 	{
 		for(int32 j = 0; j < ChunkNum; j++)
 		{
 			TPair<int32, int32> Index(i, j);
-			GenerateChunkGrassData(Data, Index);
+			// GenerateChunkGrassData(Data, Index);
 		}
 	}
 	
@@ -78,7 +95,7 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 			Data->GetChannelValue("g", LocationX, LocationY, WaterValue);
 			Data->GetChannelValue("b", LocationX, LocationY, HumidityValue);
 			// if(SlopeValue < 0.1f && WaterValue < 0.1f)
-			if(HumidityValue > 0.2f)
+			if(HumidityValue > 0.1f)
 			{
 				float LocationZ = Data->GetHeightValue(LocationX, LocationY) - SlopeValue * 500;
 				FVector Location(LocationX, LocationY, LocationZ);
@@ -105,10 +122,11 @@ void UEcoSystemAlgorithm::CalculateSlope(UHITerrainData* Data)
 											Data->GetHeightValue(i + 1, j) + Data->GetSedimentValue(i + 1, j);
 			float TValue = j == 0? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
 									Data->GetHeightValue(i, j - 1) + Data->GetSedimentValue(i, j - 1);
-			float BValue = i == Size - 1? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
+			float BValue = j == Size - 1? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
 									Data->GetHeightValue(i, j + 1) + Data->GetSedimentValue(i, j + 1);
 			float SlopeValue = ((LValue - RValue) * (LValue - RValue) + (TValue - BValue) * (TValue - BValue)) / 40000.0f;
 			// Data->SetChannelValue("slope", i, j, SlopeValue);
+			SlopeValue = 1.0f - FMath::Clamp(SlopeValue, 0.0f, 1.0f);
 			Data->SetChannelValue("r", i, j, SlopeValue);
 		}
 	}

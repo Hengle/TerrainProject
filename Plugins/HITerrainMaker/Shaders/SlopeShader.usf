@@ -1,0 +1,25 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+
+#define HEIGHT(Index) TerrainSlopeData[Index].x
+#define SEDIMENT(Index) TerrainSlopeData[Index].y
+#define SLOPE(Index) TerrainSlopeData[Index].z
+
+int Size;
+RWStructuredBuffer<float3> TerrainSlopeData;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	float LValue = id.x == 0? HEIGHT(INDEX) + SEDIMENT(INDEX):
+							  HEIGHT(L_INDEX) + SEDIMENT(L_INDEX);
+	float RValue = id.x == Size - 1? HEIGHT(INDEX) + SEDIMENT(INDEX):
+									HEIGHT(R_INDEX) + SEDIMENT(R_INDEX);
+	float TValue = id.y == 0? HEIGHT(INDEX) + SEDIMENT(INDEX):
+							HEIGHT(T_INDEX) + SEDIMENT(T_INDEX);
+	float BValue = id.y == Size - 1? HEIGHT(INDEX) + SEDIMENT(INDEX):
+							HEIGHT(B_INDEX) + SEDIMENT(B_INDEX);
+	float SlopeValue = ((LValue - RValue) * (LValue - RValue) + (TValue - BValue) * (TValue - BValue)) / 40000.0f;
+	// SLOPE(INDEX) = 1.0f - clamp(SlopeValue / 2, 0.0f, 1.0f);
+	SLOPE(INDEX) = SlopeValue;
+}

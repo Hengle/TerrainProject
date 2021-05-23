@@ -93,6 +93,7 @@ void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 		FPlatformProcess::Sleep(0.1);
 	}
 	Data->bAvailable = false;
+	
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("hardness", ETerrainDataType::FLOAT);
@@ -264,11 +265,7 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
 				}
 			}
-			// for(int32 i = 0; i < NumIteration * 2; i++)
-			// {
-			// 	FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
-			// 	FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
-			// }
+			// FPlatformProcess::Sleep(0.1);
 			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 

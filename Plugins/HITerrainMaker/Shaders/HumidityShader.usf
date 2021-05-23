@@ -1,15 +1,22 @@
 ﻿#include "/Engine/Public/Platform.ush"
 #include "TerrainShaderUtils.ush"
 
-int Size;
-
 #define WATER(index) WaterHumidityData[index].x
 #define HUMIDITY(index) WaterHumidityData[index].y
 
+int Size;
 RWStructuredBuffer<float2> WaterHumidityData;
 
 [NUM_THREADS]
 void Main(uint3 id : SV_DispatchThreadID)
 {
-	
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), WATER(INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(L_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(R_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(T_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(B_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(LT_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(LB_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(RT_INDEX));
+	HUMIDITY(INDEX) = max(HUMIDITY(INDEX), HUMIDITY(RB_INDEX));
 }

@@ -7,30 +7,22 @@
 #include "HITerrainModule.h"
 #include "ShaderParameterStruct.h"
 
-
-class HITERRAINMAKER_API FHITerrainHumidityGPU : public FHITerrainModule
+class HITERRAINMAKER_API FHITerrainSlopeGPU: public FHITerrainModule
 {
 public:
-	FHITerrainHumidityGPU();
-	
-	void SetNumIteration(int32 InNumIteration);
-	
 	virtual void ApplyModule(UHITerrainData* Data) override;
-
-private:
-	int32 NumIteration;
 };
 
-class HITERRAINMAKER_API FHumidityShader: public FGlobalShader
+class HITERRAINMAKER_API FSlopeShader: public FGlobalShader
 {
-	DECLARE_GLOBAL_SHADER(FHumidityShader);
-	SHADER_USE_PARAMETER_STRUCT(FHumidityShader, FGlobalShader);
+	DECLARE_GLOBAL_SHADER(FSlopeShader);
+	SHADER_USE_PARAMETER_STRUCT(FSlopeShader, FGlobalShader);
 
 	public:
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 	
 	SHADER_PARAMETER(int, Size)
-	SHADER_PARAMETER_UAV(RWStructuredBuffer<float2>, WaterHumidityData)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float3>, TerrainSlopeData)
 	
 	END_SHADER_PARAMETER_STRUCT()
 	

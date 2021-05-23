@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
+#include "TerrainMaths/Modules/HITerrainHumidityGPU.h"
+#include "TerrainMaths/Modules/HITerrainSlopeGPU.h"
 #include "TerrainMaths/Modules/HITerrainVoronoi.h"
 #include "UObject/Object.h"
 #include "EcoSystemAlgorithm.generated.h"
@@ -29,5 +31,7 @@ public:
 	void CalculateHumidity(UHITerrainData* Data);
 
 private:
-	FHITerrainVoronoi Voronoi;
+	// FHITerrainVoronoi Voronoi;
+	FHITerrainHumidityGPU HumidityGPU;
+	FHITerrainSlopeGPU SlopeGPU;
 };
