@@ -25,6 +25,8 @@ public:
 	void SetPersistence(float InPersistence);
 	void SetOctaveCount(float InOctaveCount);
 
+	float GetValue(float X, float Y);
+
 	virtual void ApplyModule(UHITerrainData* Data) override;
 
 private:

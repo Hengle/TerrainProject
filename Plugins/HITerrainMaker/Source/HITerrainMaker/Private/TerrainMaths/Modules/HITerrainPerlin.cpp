@@ -57,6 +57,11 @@ void FHITerrainPerlin::SetOctaveCount(float InOctaveCount)
 	Perlin.SetOctaveCount(OctaveCount);
 }
 
+float FHITerrainPerlin::GetValue(float X, float Y)
+{
+	return Perlin.GetValue(X * Scale, Y * Scale, 0) * Amplitude;
+}
+
 void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 {
 	// Data->Mutex.Lock();

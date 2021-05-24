@@ -54,4 +54,20 @@ void Main(uint3 id : SV_DispatchThreadID)
 		KScale = K / KSum;
 	}
 	TerrainFlux[INDEX] = DeltaMovedHeight * KScale;
+	if(isnan(TerrainFlux[INDEX].x))
+	{
+		TerrainFlux[INDEX].x = 0.0f;
+	}
+	if(isnan(TerrainFlux[INDEX].y))
+	{
+		TerrainFlux[INDEX].y = 0.0f;
+	}
+	if(isnan(TerrainFlux[INDEX].z))
+	{
+		TerrainFlux[INDEX].z = 0.0f;
+	}
+	if(isnan(TerrainFlux[INDEX].w))
+	{
+		TerrainFlux[INDEX].w = 0.0f;
+	}
 }

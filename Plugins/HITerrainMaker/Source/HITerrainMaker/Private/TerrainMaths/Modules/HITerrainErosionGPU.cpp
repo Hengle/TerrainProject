@@ -7,6 +7,7 @@
 #include "RenderTargetPool.h"
 #include "Async/Async.h"
 
+
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderRain, "/TerrainShaders/ErosionShader1_Rain.usf", "Main", SF_Compute);
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderCalcFlow, "/TerrainShaders/ErosionShader2_CalcFlow.usf", "Main", SF_Compute);
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderApplyFlow, "/TerrainShaders/ErosionShader3_ApplyFlow.usf", "Main", SF_Compute);
@@ -266,8 +267,10 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader8_CalcThermal, Parameters8, FIntVector(Size / 8, Size / 8, 1));
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
 				}
+				// GDynamicRHI->RHIBlockUntilGPUIdle();
 			}
-			GDynamicRHI->RHIBlockUntilGPUIdle();
+			// GDynamicRHI->RHIBlockUntilGPUIdle();
+			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 			
 			TArray<float> ResultTerrainData;
@@ -290,16 +293,16 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				}
 			}
 			
-			TerrainDataRHIRef.SafeRelease();
-			TerrainDataUAVRef.SafeRelease();
-			FluxRHIRef.SafeRelease();
-			FluxUAVRef.SafeRelease();
-			TerrainFluxRHIRef.SafeRelease();
-			TerrainFluxUAVRef.SafeRelease();
-			VelocityRHIRef.SafeRelease();
-			VelocityUAVRef.SafeRelease();
-			TempTerrainDataRHIRef.SafeRelease();
-			TempTerrainDataUAVRef.SafeRelease();
+			// TerrainDataRHIRef->Release();
+			// TerrainDataUAVRef->Release();
+			// FluxRHIRef->Release();
+			// FluxUAVRef->Release();
+			// TerrainFluxRHIRef->Release();
+			// TerrainFluxUAVRef->Release();
+			// VelocityRHIRef->Release();
+			// VelocityUAVRef->Release();
+			// TempTerrainDataRHIRef->Release();
+			// TempTerrainDataUAVRef->Release();
 			
 			// Data->Mutex.Unlock();
 			Data->bAvailable = true;

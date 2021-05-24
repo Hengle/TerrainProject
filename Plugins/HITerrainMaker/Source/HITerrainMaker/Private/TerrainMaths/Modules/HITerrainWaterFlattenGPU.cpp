@@ -94,21 +94,9 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));
+				// GDynamicRHI->RHIBlockUntilGPUIdle();
 			}
 			GDynamicRHI->RHIBlockUntilGPUIdle();
-
-			auto Fence = RHICmdList.CreateComputeFence("Fence");
-			// FRHITransitionInfo Info(TerrainDataUAVRef, ERHIAccess::UAVMask, ERHIAccess::CPURead);
-			// FRHITransitionInfo Info;
-			// Info.StructuredBuffer = TerrainDataRHIRef;
-			// Info.AccessBefore = ERHIAccess::Unknown;
-			// Info.AccessAfter = ERHIAccess::ReadableMask;
-			// Info.Type = FRHITransitionInfo::EType::StructuredBuffer;
-			// TArray<FRHITransitionInfo> Infos;
-			// Infos.Add(Info);
-			// auto Transition = RHICreateTransition(ERHIPipeline::AsyncCompute, ERHIPipeline::Graphics, ERHICreateTransitionFlags::None, Infos);
-			// Fence->Transition = Transition;
-			// RHICmdList.WaitComputeFence(Fence);
 			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 		
@@ -128,11 +116,10 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 					Data->SetChannelValue("water", i, j, ResultTerrainData[Index + 1]);
 				}
 			}
-			TerrainDataRHIRef.SafeRelease();
-			TerrainDataUAVRef.SafeRelease();
-			FluxRHIRef.SafeRelease();
-			FluxUAVRef.SafeRelease();
-			
+			// TerrainDataRHIRef->Release();
+			// TerrainDataUAVRef->Release();
+			// FluxRHIRef->Release();
+			// FluxUAVRef->Release();
 			// Data->Mutex.Unlock();
 			Data->bAvailable = true;
 		});

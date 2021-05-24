@@ -9,6 +9,9 @@ void UEcoSystemAlgorithm::Init(FTerrainInformationPtr InInformation)
 	// Voronoi.SetSizeX(InInformation->ChunkSize);
 	// Voronoi.SetSizeY(InInformation->ChunkSize);
 	// Voronoi.SetNumSites(1000);
+	GrassPerlin.SetSeed(Information->Seed + 1);
+	GrassPerlin.SetAmplitude(1.0f);
+	GrassPerlin.SetScale(0.01);
 }
 
 void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
@@ -67,7 +70,7 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 		for(int32 j = 0; j < ChunkNum; j++)
 		{
 			TPair<int32, int32> Index(i, j);
-			// GenerateChunkGrassData(Data, Index);
+			GenerateChunkGrassData(Data, Index);
 		}
 	}
 	
@@ -76,10 +79,10 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 
 void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)
 {
-	int32 Size = Data->GetChunkSize() * 2;
-	float Step = 100.0f / 2;
+	int32 Size = Data->GetChunkSize();
+	float Step = 100.0f;
 	float RecentX = Step, RecentY = Step;
-	FRandomStream RandomStream(Information->Seed);
+	FRandomStream RandomStream(Information->Seed + Index.Key * Data->GetChunkNums() + Index.Value);
 	for(int32 i = 0; i < Size - 1; i++)
 	{
 		for(int32 j = 0; j < Size - 1; j++)
@@ -95,7 +98,8 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 			Data->GetChannelValue("g", LocationX, LocationY, WaterValue);
 			Data->GetChannelValue("b", LocationX, LocationY, HumidityValue);
 			// if(SlopeValue < 0.1f && WaterValue < 0.1f)
-			if(HumidityValue > 0.1f)
+			float GrassValue = GrassPerlin.GetValue(i, j);
+			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > 0.95f)
 			{
 				float LocationZ = Data->GetHeightValue(LocationX, LocationY) - SlopeValue * 500;
 				FVector Location(LocationX, LocationY, LocationZ);
@@ -141,7 +145,7 @@ void UEcoSystemAlgorithm::CalculateUnderWaterTerrain(UHITerrainData* Data)
 		{
 			float WaterValue;
 			Data->GetChannelValue("water", i, j, WaterValue);
-			Data->SetChannelValue("g", i, j, WaterValue);
+			Data->SetChannelValue("g", i, j, WaterValue / 100);
 		}
 	}
 }

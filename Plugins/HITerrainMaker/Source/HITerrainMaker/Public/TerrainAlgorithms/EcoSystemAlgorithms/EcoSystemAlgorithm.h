@@ -6,6 +6,7 @@
 
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainMaths/Modules/HITerrainHumidityGPU.h"
+#include "TerrainMaths/Modules/HITerrainPerlin.h"
 #include "TerrainMaths/Modules/HITerrainSlopeGPU.h"
 #include "TerrainMaths/Modules/HITerrainVoronoi.h"
 #include "UObject/Object.h"
@@ -31,7 +32,7 @@ public:
 	void CalculateHumidity(UHITerrainData* Data);
 
 private:
-	// FHITerrainVoronoi Voronoi;
+	FHITerrainPerlin GrassPerlin;
 	FHITerrainHumidityGPU HumidityGPU;
 	FHITerrainSlopeGPU SlopeGPU;
 };
