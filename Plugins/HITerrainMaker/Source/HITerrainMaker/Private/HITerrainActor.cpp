@@ -765,8 +765,8 @@ void AHITerrainActor::GenerateVegetation(ELODLevel InLODLevel)
 			TArray<FVector> GrassLocations = ChunkData->GetChunkGrass();
 			for(const FVector& Location: GrassLocations)
 			{
-				// FRotator Rotator = ChunkData->GetRotatorAtLocation(Location);
-				AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location);
+				FRotator Rotator = ChunkData->GetRotatorAtLocation(Location);
+				AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location, &Rotator);
 				GrassActor->SetMobility(EComponentMobility::Movable);
 				GrassActor->GetStaticMeshComponent()->SetStaticMesh(GrassStaticMesh);
 				GrassActor->SetMobility(EComponentMobility::Static);
