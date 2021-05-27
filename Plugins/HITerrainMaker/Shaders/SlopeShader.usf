@@ -19,7 +19,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 							HEIGHT(T_INDEX) + SEDIMENT(T_INDEX);
 	float BValue = id.y == Size - 1? HEIGHT(INDEX) + SEDIMENT(INDEX):
 							HEIGHT(B_INDEX) + SEDIMENT(B_INDEX);
-	float SlopeValue = ((LValue - RValue) * (LValue - RValue) + (TValue - BValue) * (TValue - BValue)) / 40000.0f;
+	float SlopeValue = sqrt(((LValue - RValue) * (LValue - RValue) + (TValue - BValue) * (TValue - BValue)) / 40000.0f);
 	// SLOPE(INDEX) = 1.0f - clamp(SlopeValue / 2, 0.0f, 1.0f);
 	SLOPE(INDEX) = SlopeValue;
 }

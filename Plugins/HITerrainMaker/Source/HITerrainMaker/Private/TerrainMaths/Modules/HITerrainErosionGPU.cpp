@@ -19,8 +19,8 @@ IMPLEMENT_GLOBAL_SHADER(FErosionShaderCalcThermal, "/TerrainShaders/ErosionShade
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderApplyThermal, "/TerrainShaders/ErosionShader9_ApplyThermal.usf", "Main", SF_Compute);
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
-	HydroErosionScale(0), RainAmount(10.0f),
-	EvaporationAmount(0.05), ErosionScale(0.008), DepositionScale(0.016), SedimentCapacityScale(1),
+	RainAmount(10.0f),
+	EvaporationAmount(0.05), ErosionScale(0.008), DepositionScale(0.016),
 	ThermalErosionScale(0.3)
 	
 {
@@ -52,11 +52,6 @@ void FHITerrainErosionGPU::SetEnableThermalErosion(bool InBool)
 	bEnableThermalErosion = InBool;
 }
 
-void FHITerrainErosionGPU::SetHydroErosionScale(float InHydroErosionScale)
-{
-	HydroErosionScale = InHydroErosionScale;
-}
-
 void FHITerrainErosionGPU::SetRainAmount(float InRainAmount)
 {
 	RainAmount = InRainAmount;
@@ -75,11 +70,6 @@ void FHITerrainErosionGPU::SetErosionScale(float InErosionScale)
 void FHITerrainErosionGPU::SetDepositionScale(float InDepositionScale)
 {
 	DepositionScale = InDepositionScale;
-}
-
-void FHITerrainErosionGPU::SetSedimentCapacityScale(float InSedimentCapacityScale)
-{
-	SedimentCapacityScale = InSedimentCapacityScale;
 }
 
 void FHITerrainErosionGPU::SetThermalErosionScale(float InThermalErosionScale)

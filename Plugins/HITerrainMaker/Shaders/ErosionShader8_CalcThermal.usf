@@ -21,7 +21,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 	DeltaHeight.y = max(0.0f, HEIGHT(INDEX) - Neighbors.y);
 	DeltaHeight.z = max(0.0f, HEIGHT(INDEX) - Neighbors.z);
 	DeltaHeight.w = max(0.0f, HEIGHT(INDEX) - Neighbors.w);
-	float4 MaxDeltaHeight=  max(max(DeltaHeight.x, DeltaHeight.y), max(DeltaHeight.z, DeltaHeight.w));
+	float4 MaxDeltaHeight = max(max(DeltaHeight.x, DeltaHeight.y), max(DeltaHeight.z, DeltaHeight.w));
 	float DeltaMovedHeight = GRID_X_DISTANCE * GRID_Y_DISTANCE * DeltaTime * ThermalErosionScale * HARDNESS(INDEX) * MaxDeltaHeight / 2;
 	float4 TanAngle = DeltaHeight / 100.0f;
 	float Threshold = HARDNESS(INDEX) * K_A + K_I;
@@ -53,7 +53,22 @@ void Main(uint3 id : SV_DispatchThreadID)
 		float KSum = K.x + K.y + K.z + K.w;
 		KScale = K / KSum;
 	}
-	TerrainFlux[INDEX] = DeltaMovedHeight * KScale;
+	if(DeltaHeight.x > 0.0f)
+	{
+		TerrainFlux[INDEX].x = DeltaMovedHeight * KScale;
+	}
+	if(DeltaHeight.y > 0.0f)
+	{
+		TerrainFlux[INDEX].y = DeltaMovedHeight * KScale;
+	}
+	if(DeltaHeight.z > 0.0f)
+	{
+		TerrainFlux[INDEX].z = DeltaMovedHeight * KScale;
+	}
+	if(DeltaHeight.w > 0.0f)
+	{
+		TerrainFlux[INDEX].w = DeltaMovedHeight * KScale;
+	}
 	if(isnan(TerrainFlux[INDEX].x))
 	{
 		TerrainFlux[INDEX].x = 0.0f;

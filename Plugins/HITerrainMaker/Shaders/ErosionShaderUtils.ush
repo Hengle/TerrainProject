@@ -23,3 +23,5 @@
 #define SEDIMENT_CAPACITY_SCALE 1.0f
 #define K_A 0.8f
 #define K_I 0.1f
+#define R_MIN 0.0f
+#define R_MAX 1.0f

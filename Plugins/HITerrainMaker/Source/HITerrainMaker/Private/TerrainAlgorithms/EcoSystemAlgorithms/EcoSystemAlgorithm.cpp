@@ -101,7 +101,8 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 			float GrassValue = GrassPerlin.GetValue(i, j);
 			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > 0.95f)
 			{
-				float LocationZ = Data->GetHeightValue(LocationX, LocationY) - SlopeValue * 500;
+				// float LocationZ = Data->GetHeightValue(LocationX, LocationY) - SlopeValue * 500;
+				float LocationZ = Data->GetHeightValue(LocationX, LocationY);
 				FVector Location(LocationX, LocationY, LocationZ);
 				Data->AddChunkGrass(Index, Location);
 			}

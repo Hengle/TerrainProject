@@ -20,13 +20,10 @@ class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
 	void SetEnableHydroErosion(bool InBool);
 	void SetEnableThermalErosion(bool InBool);
 	
-	void SetHydroErosionScale(float InHydroErosionScale);
 	void SetRainAmount(float InRainAmount);
 	void SetEvaporationAmount(float InEvaporationAmount);
 	void SetErosionScale(float InErosionScale);
 	void SetDepositionScale(float InDepositionScale);
-	void SetSedimentCapacityScale(float InSedimentCapacityScale);
-	void SetNumFlowIteration(int32 InNumFlowIteration);
 	
 	void SetThermalErosionScale(float InThermalErosionScale);
 	
@@ -40,12 +37,10 @@ class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
 	bool bEnableHydroErosion;
 	bool bEnableThermalErosion;
 	
-	float HydroErosionScale;
 	float RainAmount;
 	float EvaporationAmount;
 	float ErosionScale;
 	float DepositionScale;
-	float SedimentCapacityScale;
 
 	float ThermalErosionScale;
 };
