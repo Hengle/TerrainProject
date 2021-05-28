@@ -106,7 +106,7 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 				FFoliageData FoliageData;
 				FoliageData.Location = FVector(LocationX, LocationY, LocationZ);
 				FoliageData.Rotation = Data->GetRotatorAtLocation(FoliageData.Location);
-				FoliageData.Type = 1;
+				FoliageData.Type = RandomStream.RandRange(1, 5);
 				Data->AddChunkFoliage(Index, FoliageData);
 				// Data->AddChunkGrass(Index, Location);
 			}
