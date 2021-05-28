@@ -4,6 +4,7 @@
 */
 #include "HITerrainData.h"
 
+#include "Kismet/KismetMathLibrary.h"
 #include "TerrainMaths/HITerrainMathMisc.h"
 
 uint32 UHITerrainData::Run()
@@ -19,7 +20,8 @@ uint32 UHITerrainData::Run()
 		for(int32 j = 0; j < ChunkNums; j++)
 		{
 			TPair<int32, int32> Index(i, j);
-			GrassData.Add(Index, TArray<FVector>());
+			// GrassData.Add(Index, TArray<FVector>());
+			FoliageData.Add(Index, TArray<FFoliageData>());
 		}
 	}
 	
@@ -518,7 +520,36 @@ void UHITerrainData::AddChunkGrass(TPair<int32, int32>& Index, FVector& GrassPos
 	GrassData[Index].Add(GrassPosition);
 }
 
+void UHITerrainData::AddChunkFoliage(TPair<int32, int32>& Index, FFoliageData& Data)
+{
+	FoliageData[Index].Add(Data);
+}
+
+FRotator UHITerrainData::GetRotatorAtLocation(const FVector& Location)
+{
+	float Delta = 50.0f;
+	FVector LeftPoint(Location.X - Delta, Location.Y - Delta, 0.0f);
+	FVector RightPoint(Location.X + Delta, Location.Y + Delta, 0.0f);
+	FVector TopPoint(Location.X + Delta, Location.Y - Delta, 0.0f);
+	FVector BottomPoint(Location.X - Delta, Location.Y + Delta, 0.0f);
+	LeftPoint.Z = GetHeightValue(LeftPoint.X, LeftPoint.Y) + GetSedimentValue(LeftPoint.X, LeftPoint.Y);
+	RightPoint.Z = GetHeightValue(RightPoint.X, RightPoint.Y) + GetSedimentValue(RightPoint.X, RightPoint.Y);
+	TopPoint.Z = GetHeightValue(TopPoint.X, TopPoint.Y) + GetSedimentValue(TopPoint.X, TopPoint.Y);
+	BottomPoint.Z = GetHeightValue(BottomPoint.X, BottomPoint.Y) + GetSedimentValue(BottomPoint.X, BottomPoint.Y);
+	FVector XVector = (LeftPoint - RightPoint);
+	FVector YVector = (TopPoint - BottomPoint);
+	FVector Normal = XVector * YVector;
+	Normal.Normalize(10000.0f);
+	FRotator Rotator = UKismetMathLibrary::MakeRotFromX(Normal);
+	return Rotator;
+}
+
 TArray<FVector>& UHITerrainData::GetChunkGrass(TPair<int32, int32>& Index)
 {
 	return GrassData[Index];
+}
+
+TArray<FFoliageData>& UHITerrainData::GetChunkFoliage(TPair<int32, int32>& Index)
+{
+	return FoliageData[Index];
 }

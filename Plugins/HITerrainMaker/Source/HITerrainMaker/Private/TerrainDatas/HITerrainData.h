@@ -1,27 +1,18 @@
 #pragma once
 #include "CoreMinimal.h"
 
+#include "FoliageData.h"
 #include "HITerrainCommons.h"
 #include "HITerrainChunkData.h"
 #include "HITerrainChannel.h"
 #include "TerrainAlgorithms/HITerrainAlgorithm.h"
-#include "TerrainMaths/2DArray.h"
 
 
 #include "HITerrainData.generated.h"
 
 DECLARE_DELEGATE(OnDataGeneratedEvent)
 
-/*
- * 单个地形采样点的数据
- */
-struct FTerrainSample
-{
-public:
-	FTerrainSample():Value(0.0f){}
-	
-	float Value;	// 采样点高度
-};
+
 
 /*
  * 地形数据类
@@ -116,7 +107,13 @@ public:
 
 	void AddChunkGrass(TPair<int32, int32>& Index, FVector& GrassPosition);
 
+	void AddChunkFoliage(TPair<int32, int32>& Index, FFoliageData& Data);
+
+	FRotator GetRotatorAtLocation(const FVector& Location);
+
 	TArray<FVector>& GetChunkGrass(TPair<int32, int32>& Index);
+
+	TArray<FFoliageData>& GetChunkFoliage(TPair<int32, int32>& Index);
 	
 /*
  * 内部用public
@@ -158,4 +155,5 @@ protected:
 	FTerrainInformationPtr Information;
 
 	TMap<TPair<int32, int32>, TArray<FVector>> GrassData;
+	TMap<TPair<int32, int32>, TArray<FFoliageData>> FoliageData;
 };

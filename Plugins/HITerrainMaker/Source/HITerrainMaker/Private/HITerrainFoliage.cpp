@@ -14,3 +14,12 @@ UHITerrainFoliage* UHITerrainFoliage::Get()
 	}
 	return Instance;
 }
+
+UStaticMesh* UHITerrainFoliage::GetFoliageOfType(uint8 Type)
+{
+	if(Type == 1)
+	{
+		return StaticMeshBush01;
+	}
+	return StaticMeshBush01;
+}

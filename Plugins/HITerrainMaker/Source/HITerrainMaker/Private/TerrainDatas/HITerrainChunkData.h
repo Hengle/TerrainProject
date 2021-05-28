@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 
+#include "FoliageData.h"
 #include "HITerrainCommons.h"
 
 /*
@@ -35,6 +36,8 @@ struct FHITerrainChunkData
 	float GetStepOfLODLevel(const ELODLevel& LODLevel);
 
 	TArray<FVector>& GetChunkGrass();
+
+	TArray<FFoliageData>& GetChunkFoliage();
 
 	FRotator GetRotatorAtLocation(const FVector& Location);
 };

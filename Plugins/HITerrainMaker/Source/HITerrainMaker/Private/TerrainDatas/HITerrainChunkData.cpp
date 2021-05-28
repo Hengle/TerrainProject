@@ -145,6 +145,11 @@ TArray<FVector>& FHITerrainChunkData::GetChunkGrass()
 	return Data->GetChunkGrass(Index);
 }
 
+TArray<FFoliageData>& FHITerrainChunkData::GetChunkFoliage()
+{
+	return Data->GetChunkFoliage(Index);
+}
+
 FRotator FHITerrainChunkData::GetRotatorAtLocation(const FVector& Location)
 {
 	float Delta = 50.0f;

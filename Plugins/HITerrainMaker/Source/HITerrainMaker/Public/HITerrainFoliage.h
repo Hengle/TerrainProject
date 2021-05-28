@@ -17,6 +17,8 @@ class HITERRAINMAKER_API UHITerrainFoliage : public UObject
 public:
 	static UHITerrainFoliage* Get();
 
+	UStaticMesh* GetFoliageOfType(uint8 Type);
+
 	UPROPERTY()
 	UStaticMesh* StaticMeshBush01 = LoadObject<UStaticMesh>(this,TEXT("/Game/Light_Foliage/Meshes/SM_Bush_01"));
 	
@@ -37,6 +39,7 @@ public:
 
 	UPROPERTY()
 	UStaticMesh* StaticMeshGrass02 = LoadObject<UStaticMesh>(this,TEXT("/Game/Light_Foliage/Meshes/SM_Grass_02"));
+	
 	UPROPERTY()
 	UStaticMesh* StaticMeshGrass05 = LoadObject<UStaticMesh>(this,TEXT("/Game/Light_Foliage/Meshes/SM_Grass_05"));
 

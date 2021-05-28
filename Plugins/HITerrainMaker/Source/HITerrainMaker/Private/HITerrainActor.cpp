@@ -4,6 +4,7 @@
 */
 #include "HITerrainActor.h"
 
+#include "HITerrainFoliage.h"
 #include "Engine/StaticMeshActor.h"
 #include "Providers/RuntimeMeshProviderStatic.h"
 #include "TerrainDatas/HITerrainChunkData.h"
@@ -759,18 +760,27 @@ void AHITerrainActor::GenerateVegetation(ELODLevel InLODLevel)
 	}
 	else
 	{
-		FRandomStream RandomStream;
+		UHITerrainFoliage* FoliageManager = UHITerrainFoliage::Get();
 		if(StaticMeshActors.Num() == 0)
 		{
-			TArray<FVector> GrassLocations = ChunkData->GetChunkGrass();
-			for(const FVector& Location: GrassLocations)
+			// TArray<FVector> GrassLocations = ChunkData->GetChunkGrass();
+			// for(const FVector& Location: GrassLocations)
+			// {
+			// 	FRotator Rotator = ChunkData->GetRotatorAtLocation(Location);
+			// 	AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location, &Rotator);
+			// 	GrassActor->SetMobility(EComponentMobility::Movable);
+			// 	GrassActor->GetStaticMeshComponent()->SetStaticMesh(GrassStaticMesh);
+			// 	GrassActor->SetMobility(EComponentMobility::Static);
+			// 	StaticMeshActors.Add(GrassActor);
+			// }
+			TArray<FFoliageData> FoliageDatas = ChunkData->GetChunkFoliage();
+			for(const FFoliageData& FoliageData: FoliageDatas)
 			{
-				FRotator Rotator = ChunkData->GetRotatorAtLocation(Location);
-				AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location, &Rotator);
-				GrassActor->SetMobility(EComponentMobility::Movable);
-				GrassActor->GetStaticMeshComponent()->SetStaticMesh(GrassStaticMesh);
-				GrassActor->SetMobility(EComponentMobility::Static);
-				StaticMeshActors.Add(GrassActor);
+				AStaticMeshActor* FoliageActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &FoliageData.Location, &FoliageData.Rotation);
+				FoliageActor->SetMobility(EComponentMobility::Movable);
+				FoliageActor->GetStaticMeshComponent()->SetStaticMesh(FoliageManager->GetFoliageOfType(FoliageData.Type));
+				FoliageActor->SetMobility(EComponentMobility::Static);
+				StaticMeshActors.Add(FoliageActor);
 			}
 		}
 	}
