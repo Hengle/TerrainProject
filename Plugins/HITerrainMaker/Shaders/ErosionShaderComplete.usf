@@ -1,0 +1,299 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "/Engine/Private/Common.ush"
+
+
+/*
+* Shader的一些通用宏、函数
+*/
+#define NUM_THREADS numthreads(8, 8, 1)
+#define INDEX GetIndex(id.xy)
+#define POINT_INDEX(x, y) GetIndex(x, y)
+#define L_INDEX GetIndex(id.xy + int2(-1, 0))
+#define R_INDEX GetIndex(id.xy + int2(1, 0))
+#define T_INDEX GetIndex(id.xy + int2(0, -1))
+#define B_INDEX GetIndex(id.xy + int2(0, 1))
+#define GRAVITY 9.8f
+
+int GetIndex(int idx, int idy)
+{
+	return idx * ErosionParameter.Size + idy;
+}
+
+int GetIndex(int2 id)
+{
+	return id.x * ErosionParameter.Size + id.y;
+};
+
+float Lerp2D(float LL, float LH, float HL, float HH, float LA, float HA)
+{
+	float L1 = lerp(LL, LH, LA);
+	float L2 = lerp(HL, HH, LA);
+	return lerp(L1, L2, HA);
+}
+/*
+* ErosionShader的通用宏、参数
+*/
+#define HEIGHT(Index) TerrainData[Index].x
+#define WATER(Index) TerrainData[Index].y
+#define SEDIMENT(Index) TerrainData[Index].z
+#define HARDNESS(Index) TerrainData[Index].w
+#define TEMP_HEIGHT(Index) TempTerrainData[Index].x
+#define TEMP_WATER(Index) TempTerrainData[Index].y
+#define TEMP_SEDIMENT(Index) TempTerrainData[Index].z
+#define TEMP_HARDNESS(Index) TempTerrainData[Index].w
+
+#define PIPE_CROSS_SECTION_AREA 90000.0f
+#define PIPE_LENGTH 10.0f
+#define GRID_X_DISTANCE 100.0f
+#define GRID_Y_DISTANCE 100.0f
+#define MAX_EROSION_DEPTH 100.0f	// 让Erosion只出现在1米以下的水深中
+#define HARDNESS_LOW_LIMIT 0.1f
+#define HARDNESS_HIGH_LIMIT 1.0f
+#define SEDIMENT_SOFTEN_COEFFICIENT 5.0f
+#define SEDIMENT_CAPACITY_SCALE 1.0f
+#define K_A 0.8f
+#define K_I 0.1f
+#define R_MIN 0.0f
+#define R_MAX 1.0f
+
+RWStructuredBuffer<float4> TerrainData;
+RWStructuredBuffer<float4> Flux;
+RWStructuredBuffer<float4> TerrainFlux;
+RWStructuredBuffer<float2> Velocity;
+RWStructuredBuffer<float4> TempTerrainData;
+
+[NUM_THREADS]
+void Rain(uint3 id : SV_DispatchThreadID)
+{
+	WATER(INDEX) += ErosionParameter.RainAmount * ErosionParameter.DeltaTime;
+}
+
+
+[NUM_THREADS]
+void CalcFlow(uint3 id : SV_DispatchThreadID)
+{
+	float Value = HEIGHT(INDEX) + WATER(INDEX);
+	float LValue = id.x == 0? Value: HEIGHT(L_INDEX) + WATER(L_INDEX);
+	float RValue = id.x == ErosionParameter.Size - 1? Value: HEIGHT(R_INDEX) + WATER(R_INDEX);
+	float TValue = id.y == 0? Value: HEIGHT(T_INDEX) + WATER(T_INDEX);
+	float BValue = id.y == ErosionParameter.Size - 1? Value: HEIGHT(B_INDEX) + WATER(B_INDEX);
+	float4 FluxValue = float4((Value - LValue) * ErosionParameter.DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].x,
+							(Value - RValue) * ErosionParameter.DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].y,
+							(Value - TValue) * ErosionParameter.DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].z,
+							(Value - BValue) * ErosionParameter.DeltaTime * GRAVITY * PIPE_CROSS_SECTION_AREA / PIPE_LENGTH + Flux[INDEX].w);
+	FluxValue = max(float4(0.0f, 0.0f, 0.0f, 0.0f), FluxValue);
+	float K = min(1.0f, WATER(INDEX) * GRID_X_DISTANCE * GRID_Y_DISTANCE / (FluxValue.x + FluxValue.y + FluxValue.z + FluxValue.w) / ErosionParameter.DeltaTime);
+	Flux[INDEX] = FluxValue * K;
+	if(isnan(Flux[INDEX].x))
+	{
+		Flux[INDEX].x = 0.0f;
+	}
+	if(isnan(Flux[INDEX].y))
+	{
+		Flux[INDEX].y = 0.0f;
+	}
+	if(isnan(Flux[INDEX].z))
+	{
+		Flux[INDEX].z = 0.0f;
+	}
+	if(isnan(Flux[INDEX].w))
+	{
+		Flux[INDEX].w = 0.0f;
+	}
+	// Flux[INDEX] = max(FluxValue[INDEX], 100000.0f);
+}
+
+
+[NUM_THREADS]
+void ApplyFlow(uint3 id : SV_DispatchThreadID)
+{
+	float OutValue = Flux[INDEX].x + Flux[INDEX].y + Flux[INDEX].z + Flux[INDEX].w;
+	float LInValue = id.x == 0?					Flux[INDEX].x: Flux[L_INDEX].y;
+	float RInValue = id.x == ErosionParameter.Size - 1?	Flux[INDEX].y: Flux[R_INDEX].x;
+	float TInValue = id.y == 0?					Flux[INDEX].z: Flux[T_INDEX].w;
+	float BInValue = id.y == ErosionParameter.Size - 1?	Flux[INDEX].w: Flux[B_INDEX].z;
+	float DeltaWater = (LInValue + RInValue + TInValue + BInValue - OutValue) * ErosionParameter.DeltaTime / GRID_X_DISTANCE / GRID_Y_DISTANCE;
+	WATER(INDEX) += DeltaWater;
+	if(isnan(WATER(INDEX)))
+	{
+		WATER(INDEX) = 0.0f;
+	}
+}
+
+inline float LMax(float Water)
+{
+	if(Water <= 0.0f) return 0.0f;
+	else if(Water < MAX_EROSION_DEPTH) return 1.0f - (MAX_EROSION_DEPTH - Water) / MAX_EROSION_DEPTH;
+	else return 1.0f;
+}
+
+[NUM_THREADS]
+void CalcErosionDeposition(uint3 id : SV_DispatchThreadID)
+{
+	TEMP_HEIGHT(INDEX) = HEIGHT(INDEX);
+	TEMP_SEDIMENT(INDEX) = SEDIMENT(INDEX);
+	TEMP_WATER(INDEX) = WATER(INDEX);
+	
+	float LInValue = id.x == 0? 0: Flux[L_INDEX].y;
+	float RInValue = id.x == ErosionParameter.Size - 1? 0: Flux[R_INDEX].x;
+	float TInValue = id.y == 0? 0: Flux[T_INDEX].w;
+	float BInValue = id.y == ErosionParameter.Size - 1? 0: Flux[B_INDEX].z;
+	Velocity[INDEX].x = (LInValue - Flux[INDEX].x + Flux[INDEX].y - RInValue) / 2;
+	Velocity[INDEX].y = (TInValue - Flux[INDEX].z + Flux[INDEX].w - BInValue) / 2;
+	Velocity[INDEX] = clamp(Velocity[INDEX], -100.0f, 100.0f);
+	float LHeight = id.x == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(L_INDEX) + SEDIMENT(L_INDEX);
+	float RHeight = id.x == ErosionParameter.Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(R_INDEX) + SEDIMENT(R_INDEX);
+	float THeight = id.y == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(T_INDEX) + SEDIMENT(T_INDEX);
+	float BHeight = id.y == ErosionParameter.Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(B_INDEX) + SEDIMENT(B_INDEX);
+
+	// float VelocityValue = sqrt(Velocity[INDEX].x * Velocity[INDEX].x + Velocity[INDEX].y * Velocity[INDEX].y);
+	
+	float SinTiltAngle = sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
+	SinTiltAngle /= sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
+	float LMaxValue = LMax(WATER(INDEX));
+	float SedimentCapacity = SinTiltAngle * length(Velocity[INDEX]) * LMaxValue * SEDIMENT_CAPACITY_SCALE;
+	if(SedimentCapacity > SEDIMENT(INDEX))
+	{
+		float ErosionValue = (SedimentCapacity - SEDIMENT(INDEX)) * ErosionParameter.ErosionScale * ErosionParameter.DeltaTime * HARDNESS(INDEX);
+		TEMP_HEIGHT(INDEX) -= ErosionValue;
+		TEMP_SEDIMENT(INDEX) += ErosionValue;
+		// TEMP_WATER(INDEX) += ErosionValue;
+	}
+	else
+	{
+		float DepositionValue = (SEDIMENT(INDEX) - SedimentCapacity) * ErosionParameter.DepositionScale * ErosionParameter.DeltaTime;
+		TEMP_HEIGHT(INDEX) += DepositionValue;
+		TEMP_SEDIMENT(INDEX) -= DepositionValue;
+		// TEMP_WATER(INDEX) -= DepositionValue;
+		// HARDNESS(INDEX) = max(R_MIN, HARDNESS(INDEX) - SEDIMENT_SOFTEN_COEFFICIENT * DepositionValue);
+	}
+	HARDNESS(INDEX) = clamp(HARDNESS(INDEX) - SEDIMENT_SOFTEN_COEFFICIENT * (SEDIMENT(INDEX) - SedimentCapacity) * ErosionParameter.ErosionScale * ErosionParameter.DeltaTime, 0.0f, 1.0f);
+}
+
+[NUM_THREADS]
+void ApplyErosionDeposition(uint3 id : SV_DispatchThreadID)
+{
+	HEIGHT(INDEX) = TEMP_HEIGHT(INDEX);
+	SEDIMENT(INDEX) = TEMP_SEDIMENT(INDEX);
+	WATER(INDEX) = TEMP_WATER(INDEX);
+}
+
+
+[NUM_THREADS]
+void SedimentFlow(uint3 id : SV_DispatchThreadID)
+{
+	float FromPosX = id.x - Velocity[INDEX].x * ErosionParameter.DeltaTime;
+	float FromPosY = id.y - Velocity[INDEX].y * ErosionParameter.DeltaTime;
+	int X0 = floor(FromPosX);
+	int Y0 = floor(FromPosY);
+	int X1 = X0 + 1;
+	int Y1 = Y0 + 1;
+	X0 = clamp(X0, 0, ErosionParameter.Size - 1);
+	Y0 = clamp(Y0, 0, ErosionParameter.Size - 1);
+	X1 = clamp(X1, 0, ErosionParameter.Size - 1);
+	Y1 = clamp(Y1, 0, ErosionParameter.Size - 1);
+	float S00 = SEDIMENT(POINT_INDEX(X0, Y0));
+	float S01 = SEDIMENT(POINT_INDEX(X0, Y1));
+	float S10 = SEDIMENT(POINT_INDEX(X1, Y0));
+	float S11 = SEDIMENT(POINT_INDEX(X1, Y1));
+	int AlphaX = FromPosX - floor(FromPosX);
+	int AlphaY = FromPosY - floor(FromPosY);
+	float NewSediment = Lerp2D(S00, S01, S10, S11, AlphaX, AlphaY);
+	SEDIMENT(INDEX) = NewSediment;
+}
+
+[NUM_THREADS]
+void Evaporation(uint3 id : SV_DispatchThreadID)
+{
+	WATER(INDEX) = max(0.0f, WATER(INDEX) * (1 - ErosionParameter.EvaporationAmount * ErosionParameter.DeltaTime));
+}
+
+
+[NUM_THREADS]
+void CalcThermal(uint3 id : SV_DispatchThreadID)
+{
+	float4 Neighbors = float4(id.x == 0? HEIGHT(INDEX): HEIGHT(L_INDEX),
+							id.x == ErosionParameter.Size - 1? HEIGHT(INDEX): HEIGHT(R_INDEX),
+							id.y == 0? HEIGHT(INDEX): HEIGHT(T_INDEX),
+							id.y == ErosionParameter.Size - 1? HEIGHT(INDEX): HEIGHT(B_INDEX));
+	float4 DeltaHeight;
+	DeltaHeight.x = max(0.0f, HEIGHT(INDEX) - Neighbors.x);
+	DeltaHeight.y = max(0.0f, HEIGHT(INDEX) - Neighbors.y);
+	DeltaHeight.z = max(0.0f, HEIGHT(INDEX) - Neighbors.z);
+	DeltaHeight.w = max(0.0f, HEIGHT(INDEX) - Neighbors.w);
+	float4 MaxDeltaHeight = max(max(DeltaHeight.x, DeltaHeight.y), max(DeltaHeight.z, DeltaHeight.w));
+	float DeltaMovedHeight = GRID_X_DISTANCE * GRID_Y_DISTANCE * ErosionParameter.DeltaTime * ErosionParameter.ThermalErosionScale * HARDNESS(INDEX) * MaxDeltaHeight / 2;
+	float4 TanAngle = DeltaHeight / 100.0f;
+	float Threshold = HARDNESS(INDEX) * K_A + K_I;
+	float4 K = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	bool bKFlag = false;
+	if(TanAngle.x > Threshold)
+	{
+		K.x = DeltaHeight.x;
+		bKFlag = true;
+	}
+	if(TanAngle.y > Threshold)
+	{
+		K.y = DeltaHeight.y;
+		bKFlag = true;
+	}
+	if(TanAngle.z > Threshold)
+	{
+		K.z = DeltaHeight.z;
+		bKFlag = true;
+	}
+	if(TanAngle.w > Threshold)
+	{
+		K.w = DeltaHeight.w;
+		bKFlag = true;
+	}
+	float4 KScale = 0.0f;
+	if(bKFlag)
+	{
+		float KSum = K.x + K.y + K.z + K.w;
+		KScale = K / KSum;
+	}
+	if(DeltaHeight.x > 0.0f)
+	{
+		TerrainFlux[INDEX].x = DeltaMovedHeight * KScale;
+	}
+	if(DeltaHeight.y > 0.0f)
+	{
+		TerrainFlux[INDEX].y = DeltaMovedHeight * KScale;
+	}
+	if(DeltaHeight.z > 0.0f)
+	{
+		TerrainFlux[INDEX].z = DeltaMovedHeight * KScale;
+	}
+	if(DeltaHeight.w > 0.0f)
+	{
+		TerrainFlux[INDEX].w = DeltaMovedHeight * KScale;
+	}
+	if(isnan(TerrainFlux[INDEX].x))
+	{
+		TerrainFlux[INDEX].x = 0.0f;
+	}
+	if(isnan(TerrainFlux[INDEX].y))
+	{
+		TerrainFlux[INDEX].y = 0.0f;
+	}
+	if(isnan(TerrainFlux[INDEX].z))
+	{
+		TerrainFlux[INDEX].z = 0.0f;
+	}
+	if(isnan(TerrainFlux[INDEX].w))
+	{
+		TerrainFlux[INDEX].w = 0.0f;
+	}
+}
+
+[NUM_THREADS]
+void ApplyThermal(uint3 id : SV_DispatchThreadID)
+{
+	float OutValue = TerrainFlux[INDEX].x + TerrainFlux[INDEX].y + TerrainFlux[INDEX].z + TerrainFlux[INDEX].w;
+	float LInValue = id.x == 0? TerrainFlux[INDEX].x: TerrainFlux[L_INDEX].y;
+	float RInValue = id.x == ErosionParameter.Size - 1? TerrainFlux[INDEX].y: TerrainFlux[R_INDEX].x;
+	float TInValue = id.y == 0? TerrainFlux[INDEX].z: TerrainFlux[T_INDEX].w;
+	float BInValue = id.y == ErosionParameter.Size - 1? TerrainFlux[INDEX].w: TerrainFlux[B_INDEX].z;
+	HEIGHT(INDEX) += (LInValue + RInValue + TInValue + BInValue - OutValue) / GRID_X_DISTANCE / GRID_Y_DISTANCE;
+}

@@ -261,18 +261,22 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				{
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader1_Rain, Parameters1, FIntVector(Size / 8, Size / 8, 1));
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
-					RHICmdList.ImmediateFlush(EImmediateFlushType::FlushRHIThreadFlushResources);
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
-					// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader4_CalcErosionDeposition, Parameters4, FIntVector(Size / 8, Size / 8, 1));
-					// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader5_ApplyErosionDeposition, Parameters5, FIntVector(Size / 8, Size / 8, 1));
-					// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader6_SedimentFlow, Parameters6, FIntVector(Size / 8, Size / 8, 1));
-					// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader7_Evaporation, Parameters7, FIntVector(Size / 8, Size / 8, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader4_CalcErosionDeposition, Parameters4, FIntVector(Size / 8, Size / 8, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader5_ApplyErosionDeposition, Parameters5, FIntVector(Size / 8, Size / 8, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader6_SedimentFlow, Parameters6, FIntVector(Size / 8, Size / 8, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader7_Evaporation, Parameters7, FIntVector(Size / 8, Size / 8, 1));
 				}
 				if(bEnableThermalErosion)
 				{
-					// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader8_CalcThermal, Parameters8, FIntVector(Size / 8, Size / 8, 1));
-					// FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader8_CalcThermal, Parameters8, FIntVector(Size / 8, Size / 8, 1));
+					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
 				}
+			}
+			for(int32 i = 0; i < NumIteration; i++)
+			{
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
+				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));
 			}
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainData.Buffer.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 			
@@ -296,24 +300,12 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 				}
 			}
 
-			// TerrainData.Release();
-			// Flux.Release();
-			// TerrainFlux.Release();
-			// Velocity.Release();
-			// TempTerrainData.Release();
+			TerrainData.Release();
+			Flux.Release();
+			TerrainFlux.Release();
+			Velocity.Release();
+			TempTerrainData.Release();
 			
-			// TerrainDataRHIRef->Release();
-			// TerrainDataUAVRef->Release();
-			// FluxRHIRef->Release();
-			// FluxUAVRef->Release();
-			// TerrainFluxRHIRef->Release();
-			// TerrainFluxUAVRef->Release();
-			// VelocityRHIRef->Release();
-			// VelocityUAVRef->Release();
-			// TempTerrainDataRHIRef->Release();
-			// TempTerrainDataUAVRef->Release();
-			//
-			// Data->Mutex.Unlock();
 			Data->bAvailable = true;
 		});
 }

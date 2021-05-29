@@ -53,7 +53,7 @@ void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 		GenerateChunk3(Triangles, InLODLevel);
 		if(bGenerated) 
 		{
-			StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+			// StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
 		}
 		else
 		{
@@ -374,7 +374,7 @@ void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 		GenerateWater3(Triangles, InLODLevel);
 		if(bWaterGenerated)
 		{
-			StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+			// StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
 		}
 		else
 		{

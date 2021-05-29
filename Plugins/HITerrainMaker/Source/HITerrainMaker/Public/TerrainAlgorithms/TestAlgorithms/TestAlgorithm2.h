@@ -21,12 +21,12 @@ class HITERRAINMAKER_API UTestAlgorithm2 : public UHITerrainAlgorithm
 {
 	GENERATED_BODY()
 
-	public:
+public:
 	virtual void Init(FTerrainInformationPtr InInformation) override;
 	virtual void ApplyAlgorithm(UHITerrainData* Data) override;
 	virtual void DebugAlgorithm(UHITerrainData* Data) override;
 
-	private:
+private:
 	FHITerrainPerlin Perlin;
 	FHITerrainErosionGPU ErosionGPU;
 	FHITerrainWaterFlattenGPU WaterFlattenGPU;
