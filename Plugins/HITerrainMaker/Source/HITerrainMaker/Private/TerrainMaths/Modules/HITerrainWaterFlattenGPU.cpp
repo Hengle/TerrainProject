@@ -94,9 +94,7 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2, Parameters2, FIntVector(Size / 8, Size / 8, 1));
-				// GDynamicRHI->RHIBlockUntilGPUIdle();
 			}
-			GDynamicRHI->RHIBlockUntilGPUIdle();
 			
 			float* TerrainDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainDataRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 4, EResourceLockMode::RLM_ReadOnly);
 		

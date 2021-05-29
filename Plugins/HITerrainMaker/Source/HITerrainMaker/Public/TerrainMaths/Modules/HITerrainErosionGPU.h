@@ -43,6 +43,12 @@ class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
 	float DepositionScale;
 
 	float ThermalErosionScale;
+
+	FTerrainRWBufferStructured TerrainData;
+	FTerrainRWBufferStructured Flux;
+	FTerrainRWBufferStructured TerrainFlux;
+	FTerrainRWBufferStructured Velocity;
+	FTerrainRWBufferStructured TempTerrainData;
 };
 
 
@@ -70,6 +76,7 @@ class HITERRAINMAKER_API FErosionShaderRain: public FGlobalShader
 	{
 		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
 	}
+
 };
 
 class HITERRAINMAKER_API FErosionShaderCalcFlow: public FGlobalShader
@@ -96,6 +103,7 @@ class HITERRAINMAKER_API FErosionShaderCalcFlow: public FGlobalShader
 	{
 		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
 	}
+
 };
 
 class HITERRAINMAKER_API FErosionShaderApplyFlow: public FGlobalShader
@@ -176,6 +184,10 @@ class HITERRAINMAKER_API FErosionShaderApplyErosionDeposition: public FGlobalSha
 	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
 	{
 		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+	static bool ValidateCompiledResult(EShaderPlatform InPlatform, const FShaderParameterMap& InParameterMap, TArray<FString>& OutError)
+	{
+		return true;
 	}
 };
 
@@ -281,5 +293,10 @@ class HITERRAINMAKER_API FErosionShaderApplyThermal: public FGlobalShader
 	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
 	{
 		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+
+	static bool ValidateCompiledResult(EShaderPlatform InPlatform, const FShaderParameterMap& InParameterMap, TArray<FString>& OutError)
+	{
+		return true;
 	}
 };

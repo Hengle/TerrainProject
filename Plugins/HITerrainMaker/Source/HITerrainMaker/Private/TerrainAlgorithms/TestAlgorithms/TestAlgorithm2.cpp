@@ -35,6 +35,6 @@ void UTestAlgorithm2::DebugAlgorithm(UHITerrainData* Data)
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Perlin.ApplyModule(Data);
 	ErosionGPU.ApplyModule(Data);
-	WaterFlattenGPU.ApplyModule(Data);
+	// WaterFlattenGPU.ApplyModule(Data);
 	// ThreadSafeTest.ApplyModule(Data);
 }

@@ -33,48 +33,48 @@ void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::DebugAlgorithm(Data);
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-	
+	// while(!Data->bAvailable)
+	// {
+	// 	FPlatformProcess::Sleep(0.1);
+	// }
+	// Data->bAvailable = false;
+	//
 	Data->AddChannel("r", ETerrainDataType::FLOAT);	// 坡度值
 	Data->AddChannel("g", ETerrainDataType::FLOAT);
 	Data->AddChannel("b", ETerrainDataType::FLOAT); // 湿度值
 	Data->AddChannel("a", ETerrainDataType::FLOAT);
-	// CalculateSlope(Data);
-	CalculateUnderWaterTerrain(Data);
-
-	Data->bAvailable = true;
-	SlopeGPU.ApplyModule(Data);
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-	
-	Data->bAvailable = true;
-	HumidityGPU.ApplyModule(Data);
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-	
-	// CalculateHumidity(Data);
-	int32 ChunkNum = Information->ChunkNum;
-	// int32 ChunkNum = 1;
-	for(int32 i = 0; i < ChunkNum; i++)
-	{
-		for(int32 j = 0; j < ChunkNum; j++)
-		{
-			TPair<int32, int32> Index(i, j);
-			GenerateChunkGrassData(Data, Index);
-		}
-	}
-	
-	Data->bAvailable = true;
+	// // CalculateSlope(Data);
+	// CalculateUnderWaterTerrain(Data);
+	//
+	// Data->bAvailable = true;
+	// SlopeGPU.ApplyModule(Data);
+	// while(!Data->bAvailable)
+	// {
+	// 	FPlatformProcess::Sleep(0.1);
+	// }
+	// Data->bAvailable = false;
+	//
+	// Data->bAvailable = true;
+	// HumidityGPU.ApplyModule(Data);
+	// while(!Data->bAvailable)
+	// {
+	// 	FPlatformProcess::Sleep(0.1);
+	// }
+	// Data->bAvailable = false;
+	//
+	// // CalculateHumidity(Data);
+	// int32 ChunkNum = Information->ChunkNum;
+	// // int32 ChunkNum = 1;
+	// for(int32 i = 0; i < ChunkNum; i++)
+	// {
+	// 	for(int32 j = 0; j < ChunkNum; j++)
+	// 	{
+	// 		TPair<int32, int32> Index(i, j);
+	// 		GenerateChunkGrassData(Data, Index);
+	// 	}
+	// }
+	//
+	// Data->bAvailable = true;
 }
 
 void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)

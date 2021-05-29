@@ -5,6 +5,64 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LogHITerrain, Log, All)
 
+#define FENCE	AsyncTask(ENamedThreads::GameThread, []()	\
+				{											\
+					FRenderCommandFence Fence;				\
+					Fence.BeginFence();						\
+					Fence.Wait();							\
+				});											
+
+struct FTerrainRWBufferStructured
+{
+	FStructuredBufferRHIRef Buffer;
+	FUnorderedAccessViewRHIRef UAV;
+	FShaderResourceViewRHIRef SRV;
+	uint32 NumBytes;
+
+	FTerrainRWBufferStructured(): NumBytes(0) {}
+
+	~FTerrainRWBufferStructured()
+	{
+		Release();
+	}
+
+	void Initialize(uint32 BytesPerElement, uint32 NumElements, FRHIResourceCreateInfo CreateInfo, uint32 AdditionalUsage = 0, bool bUseUavCounter = false, bool bAppendBuffer = false)
+	{
+		check(GMaxRHIFeatureLevel == ERHIFeatureLevel::SM5 || GMaxRHIFeatureLevel == ERHIFeatureLevel::ES3_1);
+		// Provide a debug name if using Fast VRAM so the allocators diagnostics will work
+		ensure(!((AdditionalUsage & BUF_FastVRAM)));
+
+		NumBytes = BytesPerElement * NumElements;
+		Buffer = RHICreateStructuredBuffer(BytesPerElement, NumBytes, BUF_UnorderedAccess | BUF_ShaderResource | AdditionalUsage, ERHIAccess::UAVMask, CreateInfo);
+		UAV = RHICreateUnorderedAccessView(Buffer, bUseUavCounter, bAppendBuffer);
+		SRV = RHICreateShaderResourceView(Buffer);
+	}
+
+	void Release()
+	{
+		int32 BufferRefCount = Buffer ? Buffer->GetRefCount() : -1;
+
+		if (BufferRefCount == 1)
+		{
+			DiscardTransientResource();
+		}
+
+		NumBytes = 0;
+		Buffer.SafeRelease();
+		UAV.SafeRelease();
+		SRV.SafeRelease();
+	}
+
+	void AcquireTransientResource()
+	{
+		RHIAcquireTransientResource(Buffer);
+	}
+	void DiscardTransientResource()
+	{
+		RHIDiscardTransientResource(Buffer);
+	}
+};
+
 UENUM()
 enum class ETerrainType: uint8
 {
