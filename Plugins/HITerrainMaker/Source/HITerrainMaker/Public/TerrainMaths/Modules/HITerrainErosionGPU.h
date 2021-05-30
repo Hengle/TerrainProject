@@ -300,3 +300,33 @@ class HITERRAINMAKER_API FErosionShaderApplyThermal: public FGlobalShader
 		return true;
 	}
 };
+
+
+class HITERRAINMAKER_API FErosionShaderClearFlow: public FGlobalShader
+{
+	DECLARE_GLOBAL_SHADER(FErosionShaderClearFlow);
+	SHADER_USE_PARAMETER_STRUCT(FErosionShaderClearFlow, FGlobalShader);
+
+	public:
+	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
+	
+	SHADER_PARAMETER(int, Size)
+	SHADER_PARAMETER_UAV(RWStructuredBuffer<float4>, Flux)
+	
+	END_SHADER_PARAMETER_STRUCT()
+	
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+	}
+
+	static inline void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+	}
+
+	static bool ValidateCompiledResult(EShaderPlatform InPlatform, const FShaderParameterMap& InParameterMap, TArray<FString>& OutError)
+	{
+		return true;
+	}
+};

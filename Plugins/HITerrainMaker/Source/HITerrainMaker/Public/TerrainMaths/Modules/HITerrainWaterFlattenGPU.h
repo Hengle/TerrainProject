@@ -75,4 +75,7 @@ public:
 private:
 	int32 NumIteration;
 	float DeltaTime;
+
+	FTerrainRWBufferStructured TerrainData;
+	FTerrainRWBufferStructured Flux;
 };

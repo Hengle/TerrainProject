@@ -1,0 +1,13 @@
+﻿#include "/Engine/Public/Platform.ush"
+#include "TerrainShaderUtils.ush"
+#include "ErosionShaderUtils.ush"
+
+int Size;
+
+RWStructuredBuffer<float4> Flux;
+
+[NUM_THREADS]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+	Flux[INDEX] = 0.0f;
+}

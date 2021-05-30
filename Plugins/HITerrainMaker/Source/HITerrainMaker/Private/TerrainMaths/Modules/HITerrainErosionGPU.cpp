@@ -17,6 +17,7 @@ IMPLEMENT_GLOBAL_SHADER(FErosionShaderSedimentFlow, "/TerrainShaders/ErosionShad
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderEvaporation, "/TerrainShaders/ErosionShader7_Evaporation.usf", "Main", SF_Compute);
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderCalcThermal, "/TerrainShaders/ErosionShader8_CalcThermal.usf", "Main", SF_Compute);
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderApplyThermal, "/TerrainShaders/ErosionShader9_ApplyThermal.usf", "Main", SF_Compute);
+IMPLEMENT_GLOBAL_SHADER(FErosionShaderClearFlow, "/TerrainShaders/ErosionShader10_ClearFlow.usf", "Main", SF_Compute);
 
 
 FHITerrainErosionGPU::FHITerrainErosionGPU():NumIteration(1200), DeltaTime(0.02),bEnableHydroErosion(true), bEnableThermalErosion(true),
@@ -253,7 +254,10 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			Parameters9.TerrainData = TerrainData.UAV;
 			Parameters9.TerrainFlux = TerrainFlux.UAV;
 
-			
+			TShaderMapRef<FErosionShaderClearFlow> ComputeShader10_ClearFlow(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+			FErosionShaderClearFlow::FParameters Parameters10;
+			Parameters10.Size = Size;
+			Parameters10.Flux = Flux.UAV;
 
 			for(int32 i = 0; i < NumIteration; i++)
 			{
@@ -273,7 +277,8 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 					FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader9_ApplyThermal, Parameters9, FIntVector(Size / 8, Size / 8, 1));
 				}
 			}
-			for(int32 i = 0; i < NumIteration; i++)
+			FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader10_ClearFlow, Parameters10, FIntVector(Size / 8, Size / 8, 1));
+			for(int32 i = 0; i < 1000; i++)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader2_CalcFlow, Parameters2, FIntVector(Size / 8, Size / 8, 1));
 				FComputeShaderUtils::Dispatch(RHICmdList, ComputeShader3_ApplyFlow, Parameters3, FIntVector(Size / 8, Size / 8, 1));

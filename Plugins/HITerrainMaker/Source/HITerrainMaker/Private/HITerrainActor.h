@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "HITerrainCommons.h"
+#include "ProceduralMeshComponent.h"
 #include "RuntimeMeshActor.h"
 #include "Engine/StaticMeshActor.h"
 #include "TerrainDatas/HITerrainData.h"
@@ -26,7 +27,7 @@ public:
 
 	void GeneratePointData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors, float RecentX, float RecentY);
 
-	void GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
+	void GenerateChunk2(TArray<FVector>& Normals, TArray<FProcMeshTangent>& Tangents, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
 
 	void GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLevel);
 
@@ -36,7 +37,7 @@ public:
 
 	void GeneratePointWaterData(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords, TArray<FLinearColor>& Colors, float RecentX, float RecentY);
 
-	void GenerateWater2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
+	void GenerateWater2(TArray<FVector>& Normals, TArray<FProcMeshTangent>& Tangents, TArray<FLinearColor>& Colors, ELODLevel InLODLevel);
 
 	void GenerateWater3(TArray<int32>& Triangles, ELODLevel InLODLevel);
 
@@ -80,4 +81,7 @@ private:
 
 	UPROPERTY()
 	TArray<AStaticMeshActor*> StaticMeshActors;
+
+	UPROPERTY()
+	UProceduralMeshComponent* ProceduralMesh;
 };

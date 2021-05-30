@@ -19,10 +19,8 @@ void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr In
 	{
 		GetRuntimeMeshComponent()->Initialize(StaticProvider);
 	}
-	if(TerrainInformation->bEnableLOD)
-	{
-	
-	}
+	ProceduralMesh = NewObject<UProceduralMeshComponent>(this, UProceduralMeshComponent::StaticClass());
+	ProceduralMesh->RegisterComponent();
 }
 
 void AHITerrainActor::DeleteChunk()
@@ -38,26 +36,33 @@ void AHITerrainActor::DeleteChunk()
 
 void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 {
-	if (StaticProvider){
+	// if (StaticProvider)
+	{
 		LODLevel = InLODLevel;
-		StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
+		ProceduralMesh->SetMaterial(0, Material);
+		// StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
 		TArray<FVector> Positions;
 		TArray<FLinearColor> Colors;
 		TArray<int32> Triangles;
 		TArray<FVector> Normals;
 		TArray<FVector2D> TexCoords;
-		TArray<FRuntimeMeshTangent> Tangents;
-
+		// TArray<FRuntimeMeshTangent> Tangents;
+		TArray<FProcMeshTangent> Tangents;
+		
 		GenerateChunk1(Positions, TexCoords, Colors, InLODLevel);
 		GenerateChunk2(Normals, Tangents, Colors, InLODLevel);
 		GenerateChunk3(Triangles, InLODLevel);
 		if(bGenerated) 
 		{
+			// StaticProvider->ClearSection(0, 0);
 			// StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
+			ProceduralMesh->ClearMeshSection(0);
+			
 		}
-		else
+		// else
 		{
-			StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, true);
+			// StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Average, true);
+			ProceduralMesh->CreateMeshSection_LinearColor(0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, true);
 			bGenerated = true;
 		}
 
@@ -182,7 +187,7 @@ void AHITerrainActor::GeneratePointData(TArray<FVector>& Positions, TArray<FVect
 	Colors.Add(PointColor);
 }
 
-void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents,
+void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FProcMeshTangent>& Tangents,
                                      TArray<FLinearColor>& Colors, ELODLevel InLODLevel)
 {
 	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
@@ -195,7 +200,7 @@ void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	for (int32 i = 0; i < InnerSize; i++) {
 		for (int32 j = 0; j < InnerSize; j++) {
 			Normals.Add(FVector(0, 0, 1));
-			Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+			Tangents.Add(FProcMeshTangent(1, 0, 0));
 			if(!bContainSediment)
 			{
 				Colors.Add(FColor(127, 127, 127, 255));
@@ -208,7 +213,7 @@ void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	for(int32 i = 0; i < (MediumSize - 1) * 4; i++)
 	{
 		Normals.Add(FVector(0, 0, 1));
-		Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+		Tangents.Add(FProcMeshTangent(1, 0, 0));
 		if(!bContainSediment)
 		{
 			Colors.Add(FColor(127, 127, 127, 255));
@@ -220,7 +225,7 @@ void AHITerrainActor::GenerateChunk2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	for(int32 i = 0; i < (OuterSize - 1) * 4; i++)
 	{
 		Normals.Add(FVector(0, 0, 1));
-		Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+		Tangents.Add(FProcMeshTangent(1, 0, 0));
 		if(!bContainSediment)
 		{
 			Colors.Add(FColor(127, 127, 127, 255));
@@ -354,15 +359,19 @@ void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLe
 
 void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 {
-	if (StaticProvider){
-		StaticProvider->SetupMaterialSlot(1, TEXT("Material"), WaterMaterial);
+	// if (StaticProvider)
+	{
+		// StaticProvider->SetupMaterialSlot(1, TEXT("Material"), WaterMaterial);
+		ProceduralMesh->SetMaterial(1, WaterMaterial);
 		TArray<FVector> Positions;
 		TArray<FLinearColor> Colors;
 		TArray<int32> Triangles;
 		TArray<FVector> Normals;
 		TArray<FVector2D> TexCoords;
-		TArray<FRuntimeMeshTangent> Tangents;
+		// TArray<FRuntimeMeshTangent> Tangents;
 
+		TArray<FProcMeshTangent> Tangents;
+		
 		// GenerateWaterPositions(Positions, InLODLevel);
 		// GenerateWaterTriangles(Triangles, InLODLevel);
 		// GenerateWaterNormals(Normals, InLODLevel);
@@ -374,11 +383,13 @@ void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 		GenerateWater3(Triangles, InLODLevel);
 		if(bWaterGenerated)
 		{
+			ProceduralMesh->ClearMeshSection(1);
 			// StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
 		}
-		else
+		// else
 		{
-			StaticProvider->CreateSectionFromComponents(0, 1, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, false);
+			ProceduralMesh->CreateMeshSection_LinearColor(1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, false);
+			// StaticProvider->CreateSectionFromComponents(0, 1, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, false);
 			bWaterGenerated = true;
 		}
 		
@@ -472,7 +483,7 @@ void AHITerrainActor::GeneratePointWaterData(TArray<FVector>& Positions, TArray<
 	Colors.Add(PointColor);
 }
 
-void AHITerrainActor::GenerateWater2(TArray<FVector>& Normals, TArray<FRuntimeMeshTangent>& Tangents,
+void AHITerrainActor::GenerateWater2(TArray<FVector>& Normals, TArray<FProcMeshTangent>& Tangents,
 	TArray<FLinearColor>& Colors, ELODLevel InLODLevel)
 {
 	int32 InnerSize = ChunkData->GetInnerPointSize(InLODLevel);
@@ -484,7 +495,7 @@ void AHITerrainActor::GenerateWater2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	for (int32 i = 0; i < InnerSize; i++) {
 		for (int32 j = 0; j < InnerSize; j++) {
 			Normals.Add(FVector(0, 0, 1));
-			Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+			Tangents.Add(FProcMeshTangent(1, 0, 0));
 		}
 	}
 	/*
@@ -493,7 +504,7 @@ void AHITerrainActor::GenerateWater2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	for(int32 i = 0; i < (MediumSize - 1) * 4; i++)
 	{
 		Normals.Add(FVector(0, 0, 1));
-		Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+		Tangents.Add(FProcMeshTangent(1, 0, 0));
 	}
 	/*
 	* 外圈的点
@@ -501,7 +512,7 @@ void AHITerrainActor::GenerateWater2(TArray<FVector>& Normals, TArray<FRuntimeMe
 	for(int32 i = 0; i < (OuterSize - 1) * 4; i++)
 	{
 		Normals.Add(FVector(0, 0, 1));
-		Tangents.Add(FRuntimeMeshTangent(1, 0, 0));
+		Tangents.Add(FProcMeshTangent(1, 0, 0));
 	}
 }
 
