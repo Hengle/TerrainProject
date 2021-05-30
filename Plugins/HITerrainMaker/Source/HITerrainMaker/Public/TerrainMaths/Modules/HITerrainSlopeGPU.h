@@ -11,6 +11,9 @@ class HITERRAINMAKER_API FHITerrainSlopeGPU: public FHITerrainModule
 {
 public:
 	virtual void ApplyModule(UHITerrainData* Data) override;
+
+private:
+	FTerrainRWBufferStructured Slope;
 };
 
 class HITERRAINMAKER_API FSlopeShader: public FGlobalShader

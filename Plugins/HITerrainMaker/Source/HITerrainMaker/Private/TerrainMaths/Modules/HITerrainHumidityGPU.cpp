@@ -47,15 +47,15 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 			
 			FRHIResourceCreateInfo WaterHumidityCreateInfo;
 			WaterHumidityCreateInfo.ResourceArray = &WaterHumidityBuffer;
+			WaterHumidityCreateInfo.DebugName = TEXT("WaterHumidity");
+			WaterHumidity.Initialize(sizeof(float), Size * Size * 2, WaterHumidityCreateInfo);
 			
-			FStructuredBufferRHIRef WaterHumidityRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 2, BUF_UnorderedAccess | BUF_ShaderResource, WaterHumidityCreateInfo);
-			FUnorderedAccessViewRHIRef WaterHumidityUAVRef = RHICreateUnorderedAccessView(WaterHumidityRHIRef, true, false);
-
 			TShaderMapRef<FHumidityShader> HumidityShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			FHumidityShader::FParameters Parameters;
 			Parameters.Size = Size;
 			Parameters.Step = 1.0f / NumIteration;
-			Parameters.WaterHumidityData = WaterHumidityUAVRef;
+			Parameters.WaterHumidityData = WaterHumidity.UAV;
+			
 			for(int32 i = 0; i < NumIteration; i++)
 			{
 				FComputeShaderUtils::Dispatch(RHICmdList, HumidityShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
@@ -63,7 +63,7 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 
 			GDynamicRHI->RHIBlockUntilGPUIdle();
 			
-			float* WaterHumidityDataSrc = (float*)RHICmdList.LockStructuredBuffer(WaterHumidityRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 2, EResourceLockMode::RLM_ReadOnly);
+			float* WaterHumidityDataSrc = (float*)RHICmdList.LockStructuredBuffer(WaterHumidity.Buffer.GetReference(), 0, sizeof(float) * Size * Size * 2, EResourceLockMode::RLM_ReadOnly);
 
 			TArray<float> ResultHumidityData;
 			ResultHumidityData.Reserve(Size * Size * 2);
@@ -71,7 +71,7 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 
 			FMemory::Memcpy(ResultHumidityData.GetData(), WaterHumidityDataSrc, sizeof(float) * Size * Size * 2);
 			
-			RHICmdList.UnlockStructuredBuffer(WaterHumidityRHIRef.GetReference());
+			RHICmdList.UnlockStructuredBuffer(WaterHumidity.Buffer.GetReference());
 
 			for(int32 i = 0; i < Size; i++)
 			{
@@ -79,16 +79,11 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 				{
 					int32 Index = (i * Size + j) * 2;
 					float Humidity = ResultHumidityData[Index + 1];
-					// if(Humidity != 0.0f)
-					// {
-					// 	// UE_LOG(LogHITerrain, Log, TEXT("HI"))
-					// }
-					// Humidity = FMath::Clamp(Humidity / 100, 0.0f, 1.0f);
 					Data->SetChannelValue("b", i, j, Humidity);
 				}
 			}
-			WaterHumidityRHIRef.SafeRelease();
-			WaterHumidityUAVRef.SafeRelease();
+
+			WaterHumidity.Release();
 			
 			// Data->Mutex.Unlock();
 			Data->bAvailable = true;

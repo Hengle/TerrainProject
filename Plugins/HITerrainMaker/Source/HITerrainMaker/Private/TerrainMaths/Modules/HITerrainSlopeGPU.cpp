@@ -38,20 +38,23 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 			
 			FRHIResourceCreateInfo TerrainSlopeCreateInfo;
 			TerrainSlopeCreateInfo.ResourceArray = &TerrainSlopeBuffer;
+			TerrainSlopeCreateInfo.DebugName = TEXT("Slope");
+			//
+			// FStructuredBufferRHIRef TerrainSlopeRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, TerrainSlopeCreateInfo);
+			// FUnorderedAccessViewRHIRef TerrainSlopeUAVRef = RHICreateUnorderedAccessView(TerrainSlopeRHIRef, true, false);
+	
+			Slope.Initialize(sizeof(float), Size * Size * 3, TerrainSlopeCreateInfo);
 			
-			FStructuredBufferRHIRef TerrainSlopeRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, TerrainSlopeCreateInfo);
-			FUnorderedAccessViewRHIRef TerrainSlopeUAVRef = RHICreateUnorderedAccessView(TerrainSlopeRHIRef, true, false);
-
 			TShaderMapRef<FSlopeShader> SlopeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			FSlopeShader::FParameters Parameters;
 			Parameters.Size = Size;
-			Parameters.TerrainSlopeData = TerrainSlopeUAVRef;
+			Parameters.TerrainSlopeData = Slope.UAV;
 			
 			FComputeShaderUtils::Dispatch(RHICmdList, SlopeShader, Parameters, FIntVector(Size / 8, Size / 8, 1));
 
 			GDynamicRHI->RHIBlockUntilGPUIdle();
 			
-			float* TerrainSlopeDataSrc = (float*)RHICmdList.LockStructuredBuffer(TerrainSlopeRHIRef.GetReference(), 0, sizeof(float) * Size * Size * 3, EResourceLockMode::RLM_ReadOnly);
+			float* TerrainSlopeDataSrc = (float*)RHICmdList.LockStructuredBuffer(Slope.Buffer.GetReference(), 0, sizeof(float) * Size * Size * 3, EResourceLockMode::RLM_ReadOnly);
 
 			TArray<float> ResultSlopeData;
 			ResultSlopeData.Reserve(Size * Size * 3);
@@ -59,7 +62,7 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 
 			FMemory::Memcpy(ResultSlopeData.GetData(), TerrainSlopeDataSrc, sizeof(float) * Size * Size * 3);
 			
-			RHICmdList.UnlockStructuredBuffer(TerrainSlopeRHIRef.GetReference());
+			RHICmdList.UnlockStructuredBuffer(Slope.Buffer.GetReference());
 
 			for(int32 i = 0; i < Size; i++)
 			{
@@ -71,8 +74,8 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 					Data->SetChannelValue("r", i, j, Slope);
 				}
 			}
-			TerrainSlopeRHIRef.SafeRelease();
-			TerrainSlopeUAVRef.SafeRelease();
+
+			Slope.Release();
 			
 			// Data->Mutex.Unlock();
 			Data->bAvailable = true;

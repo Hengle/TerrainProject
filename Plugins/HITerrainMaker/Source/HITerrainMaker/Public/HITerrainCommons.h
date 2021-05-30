@@ -23,7 +23,7 @@ struct FTerrainRWBufferStructured
 
 	~FTerrainRWBufferStructured()
 	{
-		Release();
+		// Release();
 	}
 
 	void Initialize(uint32 BytesPerElement, uint32 NumElements, FRHIResourceCreateInfo CreateInfo, uint32 AdditionalUsage = 0, bool bUseUavCounter = false, bool bAppendBuffer = false)
@@ -49,6 +49,7 @@ struct FTerrainRWBufferStructured
 
 		NumBytes = 0;
 		Buffer.SafeRelease();
+		UAV->SetCommitted(false);
 		UAV.SafeRelease();
 		SRV.SafeRelease();
 	}

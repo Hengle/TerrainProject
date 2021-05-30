@@ -19,6 +19,7 @@ public:
 
 private:
 	int32 NumIteration;
+	FTerrainRWBufferStructured WaterHumidity;
 };
 
 class HITERRAINMAKER_API FHumidityShader: public FGlobalShader
