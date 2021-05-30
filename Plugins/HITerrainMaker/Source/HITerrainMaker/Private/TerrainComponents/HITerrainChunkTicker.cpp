@@ -1,11 +1,4 @@
-﻿/*
-* This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-* PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-*/
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainComponents/HITerrainChunkTicker.h"
+﻿#include "TerrainComponents/HITerrainChunkTicker.h"
 
 #include "HITerrainManager.h"
 
@@ -27,7 +20,6 @@ void UHITerrainChunkTicker::TickChunks()
 	int32 yStart = PlayerIndex.Value - RenderDistance;
 	int32 yEnd = PlayerIndex.Value + RenderDistance;
 	TSet<TPair<int32, int32>> UpdateSet;
-	// UE_LOG(LogHITerrain, Log, TEXT("UHITerrainChunkTicker::TickChunks: x0:%d x1:%d y0:%d y1:%d"), xStart, xEnd, yStart, yEnd);
 	// 对视野范围内的Chunk进行遍历
 	for (int32 x = xStart; x <= xEnd; x++)
 	{
@@ -48,7 +40,6 @@ void UHITerrainChunkTicker::TickChunks()
 			// Chunk在合法区域内，且未生成
 			else 
 			{
-				// UE_LOG(LogHITerrain, Log, TEXT("HITerrainInstance: Need ProceduralMesh[%d, %d]"), Index.Key, Index.Value)
 				CreateChunkQueue.Enqueue(Index);
 			}
 		}

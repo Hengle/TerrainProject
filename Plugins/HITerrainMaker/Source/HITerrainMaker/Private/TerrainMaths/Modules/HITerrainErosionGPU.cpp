@@ -1,11 +1,7 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/HITerrainErosionGPU.h"
+﻿#include "TerrainMaths/Modules/HITerrainErosionGPU.h"
 
 #include "RenderGraphUtils.h"
 #include "RenderTargetPool.h"
-#include "Async/Async.h"
 
 
 IMPLEMENT_GLOBAL_SHADER(FErosionShaderRain, "/TerrainShaders/ErosionShader1_Rain.usf", "Main", SF_Compute);
@@ -102,9 +98,6 @@ void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 
 void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 {
-	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
-	// Data->Mutex.Lock();
-	
 	ENQUEUE_RENDER_COMMAND(ErosionModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
 		{
@@ -174,19 +167,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			TempTerrainDataCreateInfo.DebugName = TEXT("TempTerrainData");
 			TempTerrainData.Initialize(sizeof(float), Size * Size * 4, TempTerrainDataCreateInfo, 0, true, false);
 
-			
-			// FStructuredBufferRHIRef TerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainDataCreateInfo);
-			// FUnorderedAccessViewRHIRef TerrainDataUAVRef = RHICreateUnorderedAccessView(TerrainDataRHIRef, true, false);
-			// FStructuredBufferRHIRef FluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, FluxCreateInfo);
-			// FUnorderedAccessViewRHIRef FluxUAVRef = RHICreateUnorderedAccessView(FluxRHIRef, true, false);
-			// FStructuredBufferRHIRef TerrainFluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainFluxCreateInfo);
-			// FUnorderedAccessViewRHIRef TerrainFluxUAVRef = RHICreateUnorderedAccessView(TerrainFluxRHIRef, true, false);
-			// FStructuredBufferRHIRef VelocityRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 2, BUF_UnorderedAccess | BUF_ShaderResource, VelocityCreateInfo);
-			// FUnorderedAccessViewRHIRef VelocityUAVRef = RHICreateUnorderedAccessView(VelocityRHIRef, true, false);
-			//
-			// FStructuredBufferRHIRef TempTerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TempTerrainDataCreateInfo);
-			// FUnorderedAccessViewRHIRef TempTerrainDataUAVRef = RHICreateUnorderedAccessView(TempTerrainDataRHIRef, true, false);
-			//
 			TShaderMapRef<FErosionShaderRain> ComputeShader1_Rain(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			FErosionShaderRain::FParameters Parameters1;
 			Parameters1.Size = Size;

@@ -1,8 +1,4 @@
-﻿/*
-* This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-* PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-*/
-#include "TerrainAlgorithms/HITerrainAlgorithm.h"
+﻿#include "TerrainAlgorithms/HITerrainAlgorithm.h"
 #include "TerrainDatas/HITerrainData.h"
 
 void UHITerrainAlgorithm::Init(FTerrainInformationPtr InInformation)

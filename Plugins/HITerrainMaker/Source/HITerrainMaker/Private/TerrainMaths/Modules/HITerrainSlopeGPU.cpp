@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/HITerrainSlopeGPU.h"
+﻿#include "TerrainMaths/Modules/HITerrainSlopeGPU.h"
 
 #include "RenderGraphUtils.h"
 IMPLEMENT_GLOBAL_SHADER(FSlopeShader, "/TerrainShaders/SlopeShader.usf", "Main", SF_Compute);
@@ -39,10 +36,6 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 			FRHIResourceCreateInfo TerrainSlopeCreateInfo;
 			TerrainSlopeCreateInfo.ResourceArray = &TerrainSlopeBuffer;
 			TerrainSlopeCreateInfo.DebugName = TEXT("Slope");
-			//
-			// FStructuredBufferRHIRef TerrainSlopeRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 3, BUF_UnorderedAccess | BUF_ShaderResource, TerrainSlopeCreateInfo);
-			// FUnorderedAccessViewRHIRef TerrainSlopeUAVRef = RHICreateUnorderedAccessView(TerrainSlopeRHIRef, true, false);
-	
 			Slope.Initialize(sizeof(float), Size * Size * 3, TerrainSlopeCreateInfo);
 			
 			TShaderMapRef<FSlopeShader> SlopeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
@@ -77,7 +70,6 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 
 			Slope.Release();
 			
-			// Data->Mutex.Unlock();
 			Data->bAvailable = true;
 		});
 }

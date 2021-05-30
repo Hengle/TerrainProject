@@ -1,7 +1,3 @@
-/*
-* This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-* PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-*/
 #include "HITerrainInstance.h"
 #include "HITerrainActor.h"
 #include "TerrainDatas/HITerrainData.h"
@@ -181,8 +177,6 @@ void AHITerrainInstance::InitAlgorithms()
 	// 根据类型，初始化地形生成算法
 	if(TerrainInformation->TerrainType == ETerrainType::PERLIN)
 	{
-		//UFinalPlanetAlgorithm* Algorithm = NewObject<UFinalPlanetAlgorithm>(this);
-		// USmallIslandAlgorithm* Algorithm = NewObject<USmallIslandAlgorithm>(this);
 		UPerlinAlgorithm* Algorithm = NewObject<UPerlinAlgorithm>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);

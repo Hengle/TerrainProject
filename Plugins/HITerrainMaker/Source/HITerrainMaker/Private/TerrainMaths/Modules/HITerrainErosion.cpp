@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/HITerrainErosion.h"
+﻿#include "TerrainMaths/Modules/HITerrainErosion.h"
 
 #include "TerrainMaths/HITerrainMathMisc.h"
 
@@ -116,7 +113,6 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 	 * 四个方向上的流量，顺序是L、R、T、B
 	 */
 	ApplyInitialization();
-	// ApplyRainSimulation();
 	for(int32 Iterate = 0; Iterate < NumIteration; Iterate++)
 	{
 		UE_LOG(LogHITerrain, Warning, TEXT("Erosion Iteration %d"), Iterate);
@@ -130,14 +126,14 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 			for(int32 FlowIterate = 0; FlowIterate < NumFlowIteration; FlowIterate++)
 			{
 				ApplyFlowSimulation();
-				// ApplyErosionDepositionSimulation();
+				ApplyErosionDepositionSimulation();
 			}
-			// ApplySedimentSimulation();
-			// ApplyEvaporationSimulation();
+			ApplySedimentSimulation();
+			ApplyEvaporationSimulation();
 		}
 		if(bEnableThermalErosion)
 		{
-			// ApplyThermalErosionSimulation();
+			ApplyThermalErosionSimulation();
 		}
 	}
 }
@@ -268,7 +264,6 @@ void FHITerrainErosion::ApplyErosionDepositionSimulation()
 			float BHeight = j == SizeY - 1? HeightChannel->GetFloat(i, j): HeightChannel->GetFloat(i, j + 1);
 			float TiltAngle = FMath::Sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
 			TiltAngle /= FMath::Sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight + BHeight) * (THeight + BHeight) / 4);
-			// float SedimentCapacity = FMath::Sin(HydroErosionAngle) * VelocityValue;
 			float SedimentCapacity = TiltAngle * VelocityValue;
 			float SedimentValue = SedimentChannel->GetFloat(i, j);
 			float Sediment = SedimentChannel->GetFloat(i, j);

@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 
@@ -8,9 +6,6 @@
 #include "TerrainMaths/noiselib/noise.h"
 #include "RidgedMultiAlgorithm.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class HITERRAINMAKER_API URidgedMultiAlgorithm : public UHITerrainAlgorithm
 {

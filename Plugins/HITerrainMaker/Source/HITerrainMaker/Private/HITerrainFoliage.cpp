@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "HITerrainFoliage.h"
+﻿#include "HITerrainFoliage.h"
 
 UHITerrainFoliage* UHITerrainFoliage::Instance = nullptr;
 

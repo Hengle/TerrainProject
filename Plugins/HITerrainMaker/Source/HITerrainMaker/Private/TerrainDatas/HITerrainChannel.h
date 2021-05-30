@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "TerrainMaths/2DArray.h"
@@ -69,7 +67,7 @@ class FHITerrainFloatChannel: public FHITerrainChannel
 public:
 	FHITerrainFloatChannel(int32 InSizeX, int32 InSizeY): Data(TFixed2DArray<float>(InSizeX, InSizeY, 0.0f))
 	{
-		// Data = TFixed2DArray<float>(InSizeX, InSizeY, 0.0f);
+
 	}
 	
 	virtual FString GetTypeName() override

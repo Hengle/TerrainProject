@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm3.h"
+﻿#include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm3.h"
 
 void UTestAlgorithm3::Init(FTerrainInformationPtr InInformation)
 {

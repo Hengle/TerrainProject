@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "HITerrainChannel.h"
+﻿#include "HITerrainChannel.h"
 
 TSharedPtr<FHITerrainChannel> FHITerrainChannel::CreateChannelByType(FString InChannelName, int32 InSizeX,
 	int32 InSizeY, ETerrainDataType InType)

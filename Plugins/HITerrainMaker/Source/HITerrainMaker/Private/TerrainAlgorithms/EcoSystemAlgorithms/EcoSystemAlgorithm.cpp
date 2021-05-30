@@ -1,14 +1,8 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainAlgorithms/EcoSystemAlgorithms/EcoSystemAlgorithm.h"
+﻿#include "TerrainAlgorithms/EcoSystemAlgorithms/EcoSystemAlgorithm.h"
 
 void UEcoSystemAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
-	// Voronoi.SetSizeX(InInformation->ChunkSize);
-	// Voronoi.SetSizeY(InInformation->ChunkSize);
-	// Voronoi.SetNumSites(1000);
 	GrassPerlin.SetSeed(Information->Seed + 1);
 	GrassPerlin.SetAmplitude(1.0f);
 	GrassPerlin.SetScale(0.01);
@@ -95,18 +89,15 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 			Data->GetChannelValue("r", LocationX, LocationY, SlopeValue);
 			Data->GetChannelValue("g", LocationX, LocationY, WaterValue);
 			Data->GetChannelValue("b", LocationX, LocationY, HumidityValue);
-			// if(SlopeValue < 0.1f && WaterValue < 0.1f)
 			float GrassValue = GrassPerlin.GetValue(i, j);
 			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > 0.95f)
 			{
-				// float LocationZ = Data->GetHeightValue(LocationX, LocationY) - SlopeValue * 500;
 				float LocationZ = Data->GetHeightValue(LocationX, LocationY);
 				FFoliageData FoliageData;
 				FoliageData.Location = FVector(LocationX, LocationY, LocationZ);
 				FoliageData.Rotation = Data->GetRotatorAtLocation(FoliageData.Location);
 				FoliageData.Type = RandomStream.RandRange(1, 5);
 				Data->AddChunkFoliage(Index, FoliageData);
-				// Data->AddChunkGrass(Index, Location);
 			}
 			RecentY += Step;
 		}
@@ -132,7 +123,6 @@ void UEcoSystemAlgorithm::CalculateSlope(UHITerrainData* Data)
 			float BValue = j == Size - 1? Data->GetHeightValue(i, j) + Data->GetSedimentValue(i, j):
 									Data->GetHeightValue(i, j + 1) + Data->GetSedimentValue(i, j + 1);
 			float SlopeValue = ((LValue - RValue) * (LValue - RValue) + (TValue - BValue) * (TValue - BValue)) / 40000.0f;
-			// Data->SetChannelValue("slope", i, j, SlopeValue);
 			SlopeValue = 1.0f - FMath::Clamp(SlopeValue, 0.0f, 1.0f);
 			Data->SetChannelValue("r", i, j, SlopeValue);
 		}

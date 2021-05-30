@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/HITerrainPerlin.h"
+﻿#include "TerrainMaths/Modules/HITerrainPerlin.h"
 
 
 FHITerrainPerlin::FHITerrainPerlin(): ChannelName("height"), Scale(1.0f), Amplitude(1.0f), Seed(0), Frequency(1.0f), Lacunarity(0.5f), Persistence(1.0f), OctaveCount(14)
@@ -64,7 +61,6 @@ float FHITerrainPerlin::GetValue(float X, float Y)
 
 void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 {
-	// Data->Mutex.Lock();
 	while(!Data->bAvailable)
 	{
 		FPlatformProcess::Sleep(0.1);
@@ -81,5 +77,4 @@ void FHITerrainPerlin::ApplyModule(UHITerrainData* Data)
 		}
 	}
 	Data->bAvailable = true;
-	// Data->Mutex.Unlock();
 }

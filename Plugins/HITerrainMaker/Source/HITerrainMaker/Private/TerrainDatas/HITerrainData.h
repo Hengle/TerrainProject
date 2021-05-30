@@ -12,8 +12,6 @@
 
 DECLARE_DELEGATE(OnDataGeneratedEvent)
 
-
-
 /*
  * 地形数据类
  * 使用一个TFixed2DArray来保存一片地形的采样点数据

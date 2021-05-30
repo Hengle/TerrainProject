@@ -70,14 +70,9 @@ private:
 
 	ELODLevel LODLevel;
 	
-	URuntimeMeshProviderStatic* StaticProvider;
-	
 	FChunkDataPtr ChunkData;
 
 	FTerrainInformationPtr TerrainInformation;
-
-	UPROPERTY()
-	UStaticMesh* GrassStaticMesh = LoadObject<UStaticMesh>(this,TEXT("/Game/Light_Foliage/Meshes/SM_Bush_01"));
 
 	UPROPERTY()
 	TArray<AStaticMeshActor*> StaticMeshActors;

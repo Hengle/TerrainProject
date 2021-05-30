@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/ThreadSafeTest.h"
+﻿#include "TerrainMaths/Modules/ThreadSafeTest.h"
 
 void FThreadSafeTest::ApplyModule(UHITerrainData* Data)
 {
@@ -16,8 +13,6 @@ void FThreadSafeTest::ApplyModule(UHITerrainData* Data)
 	{
 		for(int32 j = 0; j < Size; j++)
 		{
-			// float WaterValue = 0.0f;
-			// Data->GetChannelValue("water", i, j, WaterValue);
 			Data->SetChannelValue("water", i, j, 1.0f);
 		}
 	}

@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 
@@ -8,9 +6,7 @@
 #include "TerrainMaths/noiselib/noise.h"
 #include "PerlinAlgorithm.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class HITERRAINMAKER_API UPerlinAlgorithm : public UHITerrainAlgorithm
 {

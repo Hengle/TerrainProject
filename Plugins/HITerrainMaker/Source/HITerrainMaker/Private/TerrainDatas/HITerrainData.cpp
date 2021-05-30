@@ -1,7 +1,3 @@
-/*
-* This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-* PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-*/
 #include "HITerrainData.h"
 
 #include "Kismet/KismetMathLibrary.h"
@@ -11,7 +7,6 @@ uint32 UHITerrainData::Run()
 {
 	TotalSize = ChunkSize * ChunkNums + 1;
 	RealTotalSize = Information->RealTotalSize;
-	// TerrainData = TFixed2DArray<FTerrainSample>(TotalSize, TotalSize, FTerrainSample());
 	AddChannel("height", ETerrainDataType::FLOAT);
 	bIsGenerated = true;
 
@@ -74,7 +69,7 @@ int32 UHITerrainData::GetIndex(int32 X, int32 Y, int32 InTotalSize)
 
 void UHITerrainData::ApplyAlgorithm(UHITerrainAlgorithm* Algorithm)
 {
-	// TODO
+
 }
 
 float UHITerrainData::GetHeightValue(int32 X, int32 Y)
@@ -86,7 +81,6 @@ float UHITerrainData::GetHeightValue(int32 X, int32 Y)
 	}
 	else
 	{
-		// return TerrainData.GetValue(X, Y).Value;
 		return TerrainDataChannels["height"]->GetFloat(X, Y);
 	}
 }
@@ -99,7 +93,6 @@ void UHITerrainData::SetHeightValue(int32 X, int32 Y, float Value)
 	}
 	else
 	{
-		// TerrainData.GetValueRef(X, Y).Value = Value;
 		TerrainDataChannels["height"]->SetFloat(X, Y, Value);
 	}
 }
@@ -262,8 +255,7 @@ void UHITerrainData::CopyChannel(FString FromChannelName, FString ToChannelName)
 			}
 			else
 			{
-				//TODO
-				// TerrainDataChannels[ToChannelName]->CopyFromChannel(TerrainDataChannels[FromChannelName]);
+
 			}
 		}
 		else

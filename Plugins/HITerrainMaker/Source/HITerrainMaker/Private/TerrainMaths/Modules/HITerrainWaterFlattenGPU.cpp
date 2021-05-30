@@ -1,8 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/HITerrainWaterFlattenGPU.h"
-#include "Async/Async.h"
+﻿#include "TerrainMaths/Modules/HITerrainWaterFlattenGPU.h"
 #include "RenderGraphUtils.h"
 
 IMPLEMENT_GLOBAL_SHADER(FWaterFlattenShader, "/TerrainShaders/ErosionShader2_CalcFlow.usf", "Main", SF_Compute);
@@ -36,9 +32,6 @@ void FHITerrainWaterFlattenGPU::ApplyModule(UHITerrainData* Data)
 
 void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 {
-	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
-	// Data->Mutex.Lock();
-	
 	ENQUEUE_RENDER_COMMAND(WaterFlattenModuleCommand)(
 		[=](FRHICommandListImmediate& RHICmdList)
 		{
@@ -72,12 +65,6 @@ void FHITerrainWaterFlattenGPU::ApplyWaterFlattenShader(UHITerrainData* Data)
 			FRHIResourceCreateInfo FluxCreateInfo;
 			FluxCreateInfo.ResourceArray = &FluxBuffer;
 			FluxCreateInfo.DebugName = TEXT("FluxFlatten");
-			//
-			// FStructuredBufferRHIRef TerrainDataRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, TerrainDataCreateInfo);
-			// FUnorderedAccessViewRHIRef TerrainDataUAVRef = RHICreateUnorderedAccessView(TerrainDataRHIRef, true, false);
-			// FStructuredBufferRHIRef FluxRHIRef = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * Size * Size * 4, BUF_UnorderedAccess | BUF_ShaderResource, FluxCreateInfo);
-			// FUnorderedAccessViewRHIRef FluxUAVRef = RHICreateUnorderedAccessView(FluxRHIRef, true, false);
-			//
 
 			TerrainData.Initialize(sizeof(float), Size * Size * 4, TerrainDataCreateInfo);
 			Flux.Initialize(sizeof(float), Size * Size * 4, FluxCreateInfo); 

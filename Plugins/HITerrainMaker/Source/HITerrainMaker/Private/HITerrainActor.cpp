@@ -1,12 +1,6 @@
-/*
-* This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-* PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-*/
 #include "HITerrainActor.h"
-
 #include "HITerrainFoliage.h"
 #include "Engine/StaticMeshActor.h"
-#include "Providers/RuntimeMeshProviderStatic.h"
 #include "TerrainDatas/HITerrainChunkData.h"
 
 void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr InTerrainInformation, const TPair<int32, int32>& InIndex)
@@ -14,64 +8,45 @@ void AHITerrainActor::Initialize(UHITerrainData* Data, FTerrainInformationPtr In
 	Index = InIndex;
 	ChunkData = Data->GetChunkData(Index);
 	TerrainInformation = InTerrainInformation;
-	StaticProvider = NewObject<URuntimeMeshProviderStatic>(this, TEXT("RuntimeMeshProvider-Static"));
-	if (StaticProvider)
-	{
-		GetRuntimeMeshComponent()->Initialize(StaticProvider);
-	}
 	ProceduralMesh = NewObject<UProceduralMeshComponent>(this, UProceduralMeshComponent::StaticClass());
 	ProceduralMesh->RegisterComponent();
 }
 
 void AHITerrainActor::DeleteChunk()
 {
-	if(StaticProvider)
-	{
-		StaticProvider->ClearSection(0, 0);
-		StaticProvider->ClearSection(0, 1);
-		bGenerated = false;
-		bWaterGenerated = false;
-	}
+	ProceduralMesh->ClearMeshSection(0);
+	ProceduralMesh->ClearMeshSection(1);
+	bGenerated = false;
+	bWaterGenerated = false;
 }
 
 void AHITerrainActor::GenerateChunk(ELODLevel InLODLevel)
 {
-	// if (StaticProvider)
+	LODLevel = InLODLevel;
+	ProceduralMesh->SetMaterial(0, Material);
+	TArray<FVector> Positions;
+	TArray<FLinearColor> Colors;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> TexCoords;
+	TArray<FProcMeshTangent> Tangents;
+	
+	GenerateChunk1(Positions, TexCoords, Colors, InLODLevel);
+	GenerateChunk2(Normals, Tangents, Colors, InLODLevel);
+	GenerateChunk3(Triangles, InLODLevel);
+	if(bGenerated) 
 	{
-		LODLevel = InLODLevel;
-		ProceduralMesh->SetMaterial(0, Material);
-		// StaticProvider->SetupMaterialSlot(0, TEXT("Material"), Material);
-		TArray<FVector> Positions;
-		TArray<FLinearColor> Colors;
-		TArray<int32> Triangles;
-		TArray<FVector> Normals;
-		TArray<FVector2D> TexCoords;
-		// TArray<FRuntimeMeshTangent> Tangents;
-		TArray<FProcMeshTangent> Tangents;
+		ProceduralMesh->ClearMeshSection(0);
 		
-		GenerateChunk1(Positions, TexCoords, Colors, InLODLevel);
-		GenerateChunk2(Normals, Tangents, Colors, InLODLevel);
-		GenerateChunk3(Triangles, InLODLevel);
-		if(bGenerated) 
-		{
-			// StaticProvider->ClearSection(0, 0);
-			// StaticProvider->UpdateSectionFromComponents(0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
-			ProceduralMesh->ClearMeshSection(0);
-			
-		}
-		// else
-		{
-			// StaticProvider->CreateSectionFromComponents(0, 0, 0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Average, true);
-			ProceduralMesh->CreateMeshSection_LinearColor(0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, true);
-			bGenerated = true;
-		}
-
-		if(ChunkData->Data->ContainsChannel("water"))
-		{
-			GenerateWater(InLODLevel);
-		}
-		GenerateVegetation(InLODLevel);
 	}
+	ProceduralMesh->CreateMeshSection_LinearColor(0, Positions, Triangles, Normals, TexCoords, Colors, Tangents, true);
+	bGenerated = true;
+
+	if(ChunkData->Data->ContainsChannel("water"))
+	{
+		GenerateWater(InLODLevel);
+	}
+	GenerateVegetation(InLODLevel);
 }
 
 const ELODLevel& AHITerrainActor::GetLODLevel()
@@ -359,41 +334,23 @@ void AHITerrainActor::GenerateChunk3(TArray<int32>& Triangles, ELODLevel InLODLe
 
 void AHITerrainActor::GenerateWater(ELODLevel InLODLevel)
 {
-	// if (StaticProvider)
+	ProceduralMesh->SetMaterial(1, WaterMaterial);
+	TArray<FVector> Positions;
+	TArray<FLinearColor> Colors;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> TexCoords;
+	TArray<FProcMeshTangent> Tangents;
+	
+	GenerateWater1(Positions, TexCoords, Colors, InLODLevel);
+	GenerateWater2(Normals, Tangents, Colors, InLODLevel);
+	GenerateWater3(Triangles, InLODLevel);
+	if(bWaterGenerated)
 	{
-		// StaticProvider->SetupMaterialSlot(1, TEXT("Material"), WaterMaterial);
-		ProceduralMesh->SetMaterial(1, WaterMaterial);
-		TArray<FVector> Positions;
-		TArray<FLinearColor> Colors;
-		TArray<int32> Triangles;
-		TArray<FVector> Normals;
-		TArray<FVector2D> TexCoords;
-		// TArray<FRuntimeMeshTangent> Tangents;
-
-		TArray<FProcMeshTangent> Tangents;
-		
-		// GenerateWaterPositions(Positions, InLODLevel);
-		// GenerateWaterTriangles(Triangles, InLODLevel);
-		// GenerateWaterNormals(Normals, InLODLevel);
-		// GenerateWaterTexCoords(TexCoords, InLODLevel);
-		// GenerateWaterTangents(Tangents, InLODLevel);
-		// GenerateWaterColors(Colors, InLODLevel);
-		GenerateWater1(Positions, TexCoords, Colors, InLODLevel);
-		GenerateWater2(Normals, Tangents, Colors, InLODLevel);
-		GenerateWater3(Triangles, InLODLevel);
-		if(bWaterGenerated)
-		{
-			ProceduralMesh->ClearMeshSection(1);
-			// StaticProvider->UpdateSectionFromComponents(0, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents);
-		}
-		// else
-		{
-			ProceduralMesh->CreateMeshSection_LinearColor(1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, false);
-			// StaticProvider->CreateSectionFromComponents(0, 1, 1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, ERuntimeMeshUpdateFrequency::Frequent, false);
-			bWaterGenerated = true;
-		}
-		
+		ProceduralMesh->ClearMeshSection(1);
 	}
+	ProceduralMesh->CreateMeshSection_LinearColor(1, Positions, Triangles, Normals, TexCoords, Colors, Tangents, false);
+	bWaterGenerated = true;
 }
 
 void AHITerrainActor::GenerateWater1(TArray<FVector>& Positions, TArray<FVector2D>& TexCoords,
@@ -650,8 +607,6 @@ void AHITerrainActor::GenerateWaterPositions(TArray<FVector>& Positions, ELODLev
 		for (int32 j = 0; j < Size; j++) {
 			float LocationX = ChunkData->GetChunkSize() * Index.Key + RecentX;
 			float LocationY = ChunkData->GetChunkSize() * Index.Value + RecentY;
-			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j);
-			// float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY) + ChunkData->GetChannelFloatValue("sediment", i, j) + ChunkData->GetChannelFloatValue("water", i, j) - 0.1f;
 			float LocationZ = ChunkData->GetHeightValue(LocationX, LocationY)
 							+ ChunkData->Data->GetSedimentValue(LocationX, LocationY)
 							+ ChunkData->Data->GetWaterValue(LocationX, LocationY) - 0.1f;
@@ -713,19 +668,6 @@ void AHITerrainActor::GenerateWaterTangents(TArray<FRuntimeMeshTangent>& Tangent
 void AHITerrainActor::GenerateWaterTexCoords(TArray<FVector2D>& TexCoords, ELODLevel InLODLevel)
 {
 	int32 Size = ChunkData->GetPointSize(InLODLevel);
-	// float UVStep = 1.0 / Size;
-	// float RecentX = 0, RecentY = 0;
-	// for (int32 i = 0; i <= Size; i++)
-	// {
-	// 	for (int32 j = 0; j <= Size; j++)
-	// 	{
-	// 		TexCoords.Add(FVector2D(RecentX, RecentY));
-	// 		RecentY += UVStep;
-	// 	}
-	// 	RecentX += UVStep;
-	// 	RecentY = 0.0;
-	// }
-	// 1个格子一个uv的实现
 	bool bEvenX = false, bEvenY = false;
 	float RecentX = 0, RecentY = 0;
 	for (int32 i = 0; i < Size; i++) {
@@ -774,16 +716,6 @@ void AHITerrainActor::GenerateVegetation(ELODLevel InLODLevel)
 		UHITerrainFoliage* FoliageManager = UHITerrainFoliage::Get();
 		if(StaticMeshActors.Num() == 0)
 		{
-			// TArray<FVector> GrassLocations = ChunkData->GetChunkGrass();
-			// for(const FVector& Location: GrassLocations)
-			// {
-			// 	FRotator Rotator = ChunkData->GetRotatorAtLocation(Location);
-			// 	AStaticMeshActor* GrassActor = (AStaticMeshActor*)GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(), &Location, &Rotator);
-			// 	GrassActor->SetMobility(EComponentMobility::Movable);
-			// 	GrassActor->GetStaticMeshComponent()->SetStaticMesh(GrassStaticMesh);
-			// 	GrassActor->SetMobility(EComponentMobility::Static);
-			// 	StaticMeshActors.Add(GrassActor);
-			// }
 			TArray<FFoliageData> FoliageDatas = ChunkData->GetChunkFoliage();
 			for(const FFoliageData& FoliageData: FoliageDatas)
 			{

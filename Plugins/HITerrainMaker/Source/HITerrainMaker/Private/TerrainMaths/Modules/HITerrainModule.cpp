@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TerrainMaths/Modules/HITerrainModule.h"
+﻿#include "TerrainMaths/Modules/HITerrainModule.h"
 
 
 FHITerrainModule::FHITerrainModule()

@@ -38,9 +38,6 @@ void Main(uint3 id : SV_DispatchThreadID)
 	float RHeight = id.x == (uint)Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(R_INDEX) + SEDIMENT(R_INDEX);
 	float THeight = id.y == 0?					HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(T_INDEX) + SEDIMENT(T_INDEX);
 	float BHeight = id.y == (uint)Size - 1?		HEIGHT(INDEX) + SEDIMENT(INDEX):	HEIGHT(B_INDEX) + SEDIMENT(B_INDEX);
-
-	// float VelocityValue = sqrt(Velocity[INDEX].x * Velocity[INDEX].x + Velocity[INDEX].y * Velocity[INDEX].y);
-	
 	float SinTiltAngle = sqrt((LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
 	SinTiltAngle /= sqrt(1 + (LHeight - RHeight) * (LHeight - RHeight) / 4 + (THeight - BHeight) * (THeight - BHeight) / 4);
 	float LMaxValue = LMax(WATER(INDEX));
@@ -50,15 +47,12 @@ void Main(uint3 id : SV_DispatchThreadID)
 		float ErosionValue = (SedimentCapacity - SEDIMENT(INDEX)) * ErosionScale * DeltaTime * HARDNESS(INDEX);
 		TEMP_HEIGHT(INDEX) -= ErosionValue;
 		TEMP_SEDIMENT(INDEX) += ErosionValue;
-		// TEMP_WATER(INDEX) += ErosionValue;
 	}
 	else
 	{
 		float DepositionValue = (SEDIMENT(INDEX) - SedimentCapacity) * DepositionScale * DeltaTime;
 		TEMP_HEIGHT(INDEX) += DepositionValue;
 		TEMP_SEDIMENT(INDEX) -= DepositionValue;
-		// TEMP_WATER(INDEX) -= DepositionValue;
-		// HARDNESS(INDEX) = max(R_MIN, HARDNESS(INDEX) - SEDIMENT_SOFTEN_COEFFICIENT * DepositionValue);
 	}
 	HARDNESS(INDEX) = clamp(HARDNESS(INDEX) - SEDIMENT_SOFTEN_COEFFICIENT * (SEDIMENT(INDEX) - SedimentCapacity) * ErosionScale * DeltaTime, 0.0f, 1.0f);
 }

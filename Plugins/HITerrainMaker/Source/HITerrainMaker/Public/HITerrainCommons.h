@@ -23,13 +23,11 @@ struct FTerrainRWBufferStructured
 
 	~FTerrainRWBufferStructured()
 	{
-		// Release();
 	}
 
 	void Initialize(uint32 BytesPerElement, uint32 NumElements, FRHIResourceCreateInfo CreateInfo, uint32 AdditionalUsage = 0, bool bUseUavCounter = false, bool bAppendBuffer = false)
 	{
 		check(GMaxRHIFeatureLevel == ERHIFeatureLevel::SM5 || GMaxRHIFeatureLevel == ERHIFeatureLevel::ES3_1);
-		// Provide a debug name if using Fast VRAM so the allocators diagnostics will work
 		ensure(!((AdditionalUsage & BUF_FastVRAM)));
 
 		NumBytes = BytesPerElement * NumElements;
