@@ -7,7 +7,7 @@ void URidgedMultiAlgorithm::Init(FTerrainInformationPtr InInformation)
     Super::Init(InInformation);
     RiverPositions_RidgedMulti.SetSeed (Information->Seed + 100);
     RiverPositions_RidgedMulti.SetFrequency (0.5);
-    RiverPositions_RidgedMulti.SetLacunarity (Information->BG_LandscapeLacunarity);
+    RiverPositions_RidgedMulti.SetLacunarity (2.0f);
     RiverPositions_RidgedMulti.SetOctaveCount (1);
     RiverPositions_RidgedMulti.SetNoiseQuality (noise::QUALITY_BEST);
 

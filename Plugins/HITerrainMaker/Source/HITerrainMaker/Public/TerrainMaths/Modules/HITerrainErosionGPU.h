@@ -8,7 +8,7 @@
 
 class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
 {
-	public:
+public:
 	FHITerrainErosionGPU();
 	virtual ~FHITerrainErosionGPU() override;
 	
@@ -29,17 +29,15 @@ class HITERRAINMAKER_API FHITerrainErosionGPU: public FHITerrainModule
 
 	void ApplyErosionShader(UHITerrainData* Data);
 
-	private:
+private:
 	int32 NumIteration;
 	float DeltaTime;
 	bool bEnableHydroErosion;
 	bool bEnableThermalErosion;
-	
 	float RainAmount;
 	float EvaporationAmount;
 	float ErosionScale;
 	float DepositionScale;
-
 	float ThermalErosionScale;
 
 	FTerrainRWBufferStructured TerrainData;

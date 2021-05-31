@@ -1,6 +1,6 @@
-﻿#include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm2.h"
+﻿#include "TerrainAlgorithms/FinalAlgorithm.h"
 
-void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
+void UFinalAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	Perlin.SetSeed(Information->Seed);
@@ -18,20 +18,21 @@ void UTestAlgorithm2::Init(FTerrainInformationPtr InInformation)
 	ErosionGPU.SetThermalErosionScale(Information->Erosion_ThermalErosionScale);
 }
 
-void UTestAlgorithm2::ApplyAlgorithm(UHITerrainData* Data)
-{
-	Super::ApplyAlgorithm(Data);
-	Perlin.ApplyModule(Data);
-	ErosionGPU.ApplyModule(Data);
-}
-
-void UTestAlgorithm2::DebugAlgorithm(UHITerrainData* Data)
+void UFinalAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Perlin.ApplyModule(Data);
 	ErosionGPU.ApplyModule(Data);
-	// WaterFlattenGPU.ApplyModule(Data);
+}
+
+void UFinalAlgorithm::DebugAlgorithm(UHITerrainData* Data)
+{
+	Super::ApplyAlgorithm(Data);
+	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
+	Data->AddChannel("water", ETerrainDataType::FLOAT);
+	Perlin.ApplyModule(Data);
+	ErosionGPU.ApplyModule(Data);
 	// ThreadSafeTest.ApplyModule(Data);
 }

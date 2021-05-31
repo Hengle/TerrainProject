@@ -3,10 +3,6 @@
 
 void UHITerrainAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
-	for(UHITerrainAlgorithm* SubAlgorithm: SubAlgorithms)
-	{
-		SubAlgorithm->Init(InInformation);
-	}
 	Information = InInformation;
 	bIsInited = true;
 }

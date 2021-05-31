@@ -7,10 +7,10 @@
 #include "TerrainMaths/Modules/HITerrainPerlin.h"
 #include "TerrainMaths/Modules/HITerrainWaterFlattenGPU.h"
 #include "TerrainMaths/Modules/ThreadSafeTest.h"
-#include "TestAlgorithm2.generated.h"
+#include "FinalAlgorithm.generated.h"
 
 UCLASS()
-class HITERRAINMAKER_API UTestAlgorithm2 : public UHITerrainAlgorithm
+class HITERRAINMAKER_API UFinalAlgorithm : public UHITerrainAlgorithm
 {
 	GENERATED_BODY()
 
@@ -22,6 +22,5 @@ public:
 private:
 	FHITerrainPerlin Perlin;
 	FHITerrainErosionGPU ErosionGPU;
-	FHITerrainWaterFlattenGPU WaterFlattenGPU;
 	FThreadSafeTest ThreadSafeTest;
 };

@@ -21,7 +21,7 @@ public:
 	void SetFrequency(float InFrequency);
 	void SetLacunarity(float InLacunarity);
 	void SetPersistence(float InPersistence);
-	void SetOctaveCount(float InOctaveCount);
+	void SetOctaveCount(int32 InOctaveCount);
 
 	float GetValue(float X, float Y);
 
@@ -37,5 +37,5 @@ private:
 	float Frequency;
 	float Lacunarity;
 	float Persistence;
-	float OctaveCount;
+	int32 OctaveCount;
 };

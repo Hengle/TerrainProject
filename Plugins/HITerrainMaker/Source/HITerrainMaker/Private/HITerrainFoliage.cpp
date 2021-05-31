@@ -34,5 +34,13 @@ UStaticMesh* UHITerrainFoliage::GetFoliageOfType(uint8 Type)
 	{
 		return StaticMeshBush05;
 	}
+	if(Type == 11)
+	{
+		return StaticMeshTree01;
+	}
+	if(Type == 12)
+	{
+		return StaticMeshTree02;
+	}
 	return StaticMeshBush01;
 }

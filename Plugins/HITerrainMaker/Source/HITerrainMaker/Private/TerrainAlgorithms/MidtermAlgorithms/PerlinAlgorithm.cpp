@@ -6,9 +6,9 @@ void UPerlinAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	BaseLandscape.SetSeed(Information->Seed);
-	BaseLandscape.SetFrequency(Information->BG_LandscapeFrequency);
-	BaseLandscape.SetLacunarity(Information->BG_LandscapeLacunarity);
-	BaseLandscape.SetOctaveCount(Information->BG_LandscapeOctaveCount);
+	BaseLandscape.SetFrequency(0.2f);
+	BaseLandscape.SetLacunarity(2.0f);
+	BaseLandscape.SetOctaveCount(14);
 	BaseLandscape.SetNoiseQuality(noise::QUALITY_STD);
 	BaseLandscape.SetPersistence(0.5f);
 

@@ -6,7 +6,7 @@
 #include "TerrainAlgorithms/MidtermAlgorithms/RidgedMultiAlgorithm.h"
 #include "TerrainAlgorithms/MidtermAlgorithms/VoronoiAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm.h"
-#include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm2.h"
+#include "TerrainAlgorithms/FinalAlgorithm.h"
 #include "TerrainAlgorithms/EcoSystemAlgorithms/EcoSystemAlgorithm.h"
 #include "TerrainAlgorithms/TestAlgorithms/TestAlgorithm3.h"
 #include "TerrainComponents/HITerrainChunkTicker.h"
@@ -203,9 +203,9 @@ void AHITerrainInstance::InitAlgorithms()
 		EcoSystemAlgorithm->Init(TerrainInformation);
 		Algorithms.Add(EcoSystemAlgorithm);
 	}
-	else if (TerrainInformation->TerrainType == ETerrainType::TEST2)
+	else if (TerrainInformation->TerrainType == ETerrainType::FINAL)
 	{
-		UTestAlgorithm2* Algorithm = NewObject<UTestAlgorithm2>(this);
+		UFinalAlgorithm* Algorithm = NewObject<UFinalAlgorithm>(this);
 		Algorithm->Init(TerrainInformation);
 		Algorithms.Add(Algorithm);
 		

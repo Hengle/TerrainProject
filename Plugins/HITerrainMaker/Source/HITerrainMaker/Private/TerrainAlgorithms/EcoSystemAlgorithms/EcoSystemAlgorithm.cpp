@@ -90,13 +90,22 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 			Data->GetChannelValue("g", LocationX, LocationY, WaterValue);
 			Data->GetChannelValue("b", LocationX, LocationY, HumidityValue);
 			float GrassValue = GrassPerlin.GetValue(i, j);
-			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > 0.95f)
+			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > 0.95f && WaterValue < 0.1f)
 			{
 				float LocationZ = Data->GetHeightValue(LocationX, LocationY);
 				FFoliageData FoliageData;
 				FoliageData.Location = FVector(LocationX, LocationY, LocationZ);
 				FoliageData.Rotation = Data->GetRotatorAtLocation(FoliageData.Location);
 				FoliageData.Type = RandomStream.RandRange(1, 5);
+				Data->AddChunkFoliage(Index, FoliageData);
+			}
+			else if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() < 0.005f && WaterValue < 0.1f)
+			{
+				float LocationZ = Data->GetHeightValue(LocationX, LocationY);
+				FFoliageData FoliageData;
+				FoliageData.Location = FVector(LocationX, LocationY, LocationZ);
+				FoliageData.Rotation = Data->GetRotatorAtLocation(FoliageData.Location);
+				FoliageData.Type = 10 + RandomStream.RandRange(1, 2);
 				Data->AddChunkFoliage(Index, FoliageData);
 			}
 			RecentY += Step;

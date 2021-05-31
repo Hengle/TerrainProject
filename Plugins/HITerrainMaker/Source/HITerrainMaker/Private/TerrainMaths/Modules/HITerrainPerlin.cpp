@@ -48,7 +48,7 @@ void FHITerrainPerlin::SetPersistence(float InPersistence)
 	Perlin.SetPersistence(Persistence);
 }
 
-void FHITerrainPerlin::SetOctaveCount(float InOctaveCount)
+void FHITerrainPerlin::SetOctaveCount(int32 InOctaveCount)
 {
 	OctaveCount = InOctaveCount;
 	Perlin.SetOctaveCount(OctaveCount);

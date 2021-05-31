@@ -26,9 +26,6 @@ public:
 
 protected:
 	FTerrainInformationPtr Information;
-
-	UPROPERTY()
-	TArray<UHITerrainAlgorithm*> SubAlgorithms;
 	
 	bool bIsInited = false;
 

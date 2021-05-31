@@ -69,7 +69,7 @@ void UHITerrainChunkTicker::ProcessQueue()
 			}
 		}
 	}
-	if(ProcessTime % 10 == 0)
+	if(ProcessTime % 4 == 0)
 	{
 		// 更新一个区块
 		if (!UpdateChunkQueue.IsEmpty()) 

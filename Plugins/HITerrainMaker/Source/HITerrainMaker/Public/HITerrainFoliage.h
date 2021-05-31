@@ -39,8 +39,11 @@ public:
 	UStaticMesh* StaticMeshGrass05 = LoadObject<UStaticMesh>(this,TEXT("/Game/Light_Foliage/Meshes/SM_Grass_05"));
 
 	UPROPERTY()
-	UStaticMesh* StaticMeshTree = LoadObject<UStaticMesh>(this,TEXT("/Game/KiteDemo/Environments/Trees/HillTree_Tall_02/HillTree_Tall_02"));
+	UStaticMesh* StaticMeshTree01 = LoadObject<UStaticMesh>(this,TEXT("/Game/PN_interactiveSpruceForest/Meshes/half/high/spruce_half_03.spruce_half_03"));
 
+	UPROPERTY()
+	UStaticMesh* StaticMeshTree02 = LoadObject<UStaticMesh>(this,TEXT("/Game/PN_interactiveSpruceForest/Meshes/half/high/spruce_half_04.spruce_half_04"));
+	
 private:
 	UHITerrainFoliage(){};
 

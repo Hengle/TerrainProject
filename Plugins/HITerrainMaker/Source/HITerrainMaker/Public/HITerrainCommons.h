@@ -46,9 +46,11 @@ struct FTerrainRWBufferStructured
 		}
 
 		NumBytes = 0;
+		Buffer->SetCommitted(false);
 		Buffer.SafeRelease();
 		UAV->SetCommitted(false);
 		UAV.SafeRelease();
+		SRV->SetCommitted(false);
 		SRV.SafeRelease();
 	}
 
@@ -70,7 +72,7 @@ enum class ETerrainType: uint8
 	VORONOI,
 	RIDGED_MULTI,
 	TEST,
-	TEST2,
+	FINAL,
 	TEST3,
 };
 
@@ -112,55 +114,6 @@ struct HITERRAINMAKER_API FTerrainInformation
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	int32 Seed = 11111; // 地形随机数种子
-
-	/*
-	* 基本生成算法信息
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_SeaLevel = 0.0f; // 海平面位置
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_SandLevel = 100.0f; // 沙子材质位置
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_GrassLevel = 200.0f; // 草材质位置
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_MountainLevel = 500.0f; // 山峰材质位置
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_LandscapeFrequency = 0.2f; // 地形噪声频率
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	float BG_LandscapeLacunarity = 2.0f; // 地形噪声间隔系数
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Generate Information")
-	int32 BG_LandscapeOctaveCount = 14; // 地形噪声间隔次数
-
-	/*
-	 * 岛屿生成算法信息
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	float IG_SeaLevel = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	int32 IG_VoronoiCount = 400;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	int32 IG_OceanWrapperCount = 4;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	float IG_OceanThreshold = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	float IG_MainlandFrequency = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	float IG_MainlandLacunarity = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Island Generate Information")
-	int32 IG_MainlandOctave = 14;
-
 
 	/*
 	 * 侵蚀算法参数
