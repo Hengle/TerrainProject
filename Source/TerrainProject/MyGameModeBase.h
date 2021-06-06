@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "HITerrainCommons.h"
+#include "Blueprint/UserWidget.h"
 #include "MyGameModeBase.generated.h"
 
 /**
@@ -30,7 +31,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TerrainInformation")
 	UMaterialInterface* WaterMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UMG")
+	TSubclassOf<UUserWidget> StartingWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* CurrentWidget;
+
 private:
 	UPROPERTY()
-		class AHITerrainInstance* TerrainInstance;
+	class AHITerrainInstance* TerrainInstance;
 };

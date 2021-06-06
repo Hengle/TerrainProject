@@ -15,12 +15,7 @@ void FHITerrainHumidityGPU::SetNumIteration(int32 InNumIteration)
 
 void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 {
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-
+	LOCK
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Data->AddChannel("b", ETerrainDataType::FLOAT);
 
@@ -79,6 +74,6 @@ void FHITerrainHumidityGPU::ApplyModule(UHITerrainData* Data)
 			}
 
 			WaterHumidity.Release();
-			Data->bAvailable = true;
+			UNLOCK
 		});
 }

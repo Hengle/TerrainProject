@@ -4,8 +4,8 @@ void UFinalAlgorithm::Init(FTerrainInformationPtr InInformation)
 {
 	Super::Init(InInformation);
 	Perlin.SetSeed(Information->Seed);
-	Perlin.SetAmplitude(4000);
-	Perlin.SetScale(0.002);
+	Perlin.SetAmplitude(Information->Terrain_Amplitude);
+	Perlin.SetScale(Information->Terrain_Scale);
 	Perlin.SetTargetChannel("height");
 	ErosionGPU.SetNumIteration(Information->Erosion_IterationNum);
 	ErosionGPU.SetDeltaTime(Information->Erosion_DeltaTime);
@@ -32,7 +32,13 @@ void UFinalAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	Super::ApplyAlgorithm(Data);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
+	FDateTime Time1 = FDateTime::Now();
 	Perlin.ApplyModule(Data);
+	FDateTime Time2 = FDateTime::Now();
 	ErosionGPU.ApplyModule(Data);
-	// ThreadSafeTest.ApplyModule(Data);
+	LOCK
+	UNLOCK
+	FDateTime Time3 = FDateTime::Now();
+	UE_LOG(LogHITerrain, Warning, TEXT("Perlin: %s"), *(Time2 - Time1).ToString())
+	UE_LOG(LogHITerrain, Warning, TEXT("Erosion: %s"), *(Time3 - Time2).ToString())
 }

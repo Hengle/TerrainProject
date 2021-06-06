@@ -17,6 +17,19 @@ AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UObject* WorldConte
 	}
 }
 
+AHITerrainInstance* UHITerrainManager::CreateTerrainInstance(UObject* WorldContextObject, FTerrainInformation TerrainInformation)
+{
+	return CreateTerrainInstance(WorldContextObject, MakeShareable<FTerrainInformation>(new FTerrainInformation(TerrainInformation)));
+}
+
+void UHITerrainManager::DeleteTerrainInstance(AHITerrainInstance* TerrainInstance)
+{
+	if(TerrainInstance != nullptr)
+	{
+		TerrainInstance->Destroy();
+	}
+}
+
 UHITerrainManager* UHITerrainManager::Get()
 {
 	if (Instance == nullptr)

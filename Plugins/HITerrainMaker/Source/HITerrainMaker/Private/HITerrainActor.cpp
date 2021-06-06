@@ -728,3 +728,11 @@ void AHITerrainActor::GenerateVegetation(ELODLevel InLODLevel)
 		}
 	}
 }
+
+void AHITerrainActor::Destroyed()
+{
+	for(auto StaticMesh: StaticMeshActors)
+	{
+		StaticMesh->Destroy();
+	}
+}

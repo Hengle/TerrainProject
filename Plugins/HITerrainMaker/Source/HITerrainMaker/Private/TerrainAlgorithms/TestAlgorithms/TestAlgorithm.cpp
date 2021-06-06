@@ -14,6 +14,10 @@ void UTestAlgorithm::Init(FTerrainInformationPtr InInformation)
 void UTestAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
+	Data->AddChannel("r", ETerrainDataType::FLOAT);
+	Data->AddChannel("g", ETerrainDataType::FLOAT);
+	Data->AddChannel("b", ETerrainDataType::FLOAT);
+	Data->AddChannel("a", ETerrainDataType::FLOAT);
 	Perlin.ApplyModule(Data);
 	Erosion.ApplyModule(Data);
 }
@@ -21,6 +25,10 @@ void UTestAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 void UTestAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 {
 	Super::ApplyAlgorithm(Data);
+	Data->AddChannel("r", ETerrainDataType::FLOAT);
+	Data->AddChannel("g", ETerrainDataType::FLOAT);
+	Data->AddChannel("b", ETerrainDataType::FLOAT);
+	Data->AddChannel("a", ETerrainDataType::FLOAT);
 	Perlin.ApplyModule(Data);
 	Erosion.ApplyModule(Data);
 }

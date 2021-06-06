@@ -12,7 +12,7 @@ public class TerrainProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "ProceduralMeshComponent" });
-		PublicDependencyModuleNames.AddRange(new string[] { "HITerrainMaker"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG"});
+		PublicDependencyModuleNames.AddRange(new string[] { "HITerrainMaker", "Slate", "SlateCore"});
 	}
 }

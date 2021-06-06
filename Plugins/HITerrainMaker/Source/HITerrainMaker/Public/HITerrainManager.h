@@ -7,12 +7,13 @@
  * 插件的Manager类
  * 目前就是主要用于生成TerrainInstance。
  */
-UCLASS()
+UCLASS(BlueprintType)
 class HITERRAINMAKER_API UHITerrainManager: public UObject
 {
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
 	static UHITerrainManager* Get();
 
 public:
@@ -21,7 +22,12 @@ public:
 	 */
 	class AHITerrainInstance* CreateTerrainInstance(UObject* WorldContextObject, FTerrainInformationPtr TerrainInformation);
 
+	UFUNCTION(BlueprintCallable)
+	class AHITerrainInstance* CreateTerrainInstance(UObject* WorldContextObject, FTerrainInformation TerrainInformation);
 
+	UFUNCTION(BlueprintCallable)
+	void DeleteTerrainInstance(AHITerrainInstance* TerrainInstance);
+	
 public:
 	/*
 	 * 获取玩家位置

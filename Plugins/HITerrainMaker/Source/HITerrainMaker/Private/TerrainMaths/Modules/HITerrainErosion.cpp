@@ -113,9 +113,11 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 	 * 四个方向上的流量，顺序是L、R、T、B
 	 */
 	ApplyInitialization();
+	FDateTime Time1 = FDateTime::Now();
+	FDateTime Time2 = FDateTime::Now();
 	for(int32 Iterate = 0; Iterate < NumIteration; Iterate++)
 	{
-		UE_LOG(LogHITerrain, Warning, TEXT("Erosion Iteration %d"), Iterate);
+		
 		if(bEnableHydroErosion)
 		{
 			if(Iterate < NumIteration / 2)
@@ -135,6 +137,9 @@ void FHITerrainErosion::ApplyModule(UHITerrainData* Data)
 		{
 			ApplyThermalErosionSimulation();
 		}
+		Time2 = Time1;
+		Time1 = FDateTime::Now();
+		UE_LOG(LogHITerrain, Warning, TEXT("Erosion Iteration %d, Time: %f"), Iterate, (Time2-Time1).GetTotalSeconds());
 	}
 }
 

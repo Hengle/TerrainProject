@@ -5,12 +5,7 @@ IMPLEMENT_GLOBAL_SHADER(FSlopeShader, "/TerrainShaders/SlopeShader.usf", "Main",
 
 void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 {
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-
+	LOCK
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("r", ETerrainDataType::FLOAT);
 
@@ -68,6 +63,6 @@ void FHITerrainSlopeGPU::ApplyModule(UHITerrainData* Data)
 
 			Slope.Release();
 			
-			Data->bAvailable = true;
+			UNLOCK
 		});
 }

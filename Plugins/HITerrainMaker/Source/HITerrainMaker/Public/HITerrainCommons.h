@@ -10,7 +10,15 @@ DECLARE_LOG_CATEGORY_CLASS(LogHITerrain, Log, All)
 					FRenderCommandFence Fence;				\
 					Fence.BeginFence();						\
 					Fence.Wait();							\
-				});											
+				});
+
+#define LOCK	while(!Data->bAvailable)					\
+				{											\
+					FPlatformProcess::Sleep(0.005f);		\
+				}											\
+				Data->bAvailable = false;
+
+#define UNLOCK	Data->bAvailable = true;
 
 struct FTerrainRWBufferStructured
 {
@@ -64,16 +72,16 @@ struct FTerrainRWBufferStructured
 	}
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum class ETerrainType: uint8
 {
-	NONE = 0,
-	PERLIN,
-	VORONOI,
-	RIDGED_MULTI,
-	TEST,
-	FINAL,
-	TEST3,
+	NONE = 0		UMETA(DisplayName = "无"),
+	PERLIN			UMETA(DisplayName = "中期1"),
+	VORONOI			UMETA(DisplayName = "中期2"),
+	RIDGED_MULTI	UMETA(DisplayName = "中期3"),
+	TEST			UMETA(DisplayName = "测试1"),
+	FINAL			UMETA(DisplayName = "结题"),
+	TEST3			UMETA(DisplayName = "测试2"),
 };
 
 UENUM()
@@ -113,7 +121,16 @@ struct HITERRAINMAKER_API FTerrainInformation
 	int32 RealTotalSize = 1024; // 实际大小，填充到一个比较好的2的倍数
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	int32 Seed = 11111; // 地形随机数种子
+	int32 Seed = 19999; // 地形随机数种子
+
+	/*
+	 * 基础地形参数
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Terrain Algorithm")
+	float Terrain_Amplitude = 4000.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Terrain Algorithm")
+	float Terrain_Scale = 0.002f;
 
 	/*
 	 * 侵蚀算法参数
@@ -137,13 +154,22 @@ struct HITERRAINMAKER_API FTerrainInformation
 	float Erosion_EvaporationScale = 0.05f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
-	float Erosion_HydroErosionScale = 0.008f;
+	float Erosion_HydroErosionScale = 0.024f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
 	float Erosion_HydroDepositionScale = 0.016f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Erosion Algorithm")
-	float Erosion_ThermalErosionScale = 0.03f;
+	float Erosion_ThermalErosionScale = 0.3f;
+
+	/*
+	 * 植被生成信息
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EcoSystem Algorithm")
+	float EcoSystem_GrassAmount = 0.05f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EcoSystem Algorithm")
+	float EcoSystem_TreeAmount = 0.005f;
 
 	/************************************************************************/
 	/* 渲染信息                                                               */
@@ -152,16 +178,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	int32 RenderDistance = 21; // 渲染区块范围
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float ChunkGenerateInterval = 0.05; // 区块生成间隔
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODHighQuality = 100; // LOD高质量
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODMediumQuality = 200; // LOD中质量
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Render Information")
-	float LODLowQuality = 400; // LOD低质量
+	float ChunkGenerateInterval = 0.1; // 区块生成间隔
 
 	/*
 	 * 测试信息
@@ -171,9 +188,6 @@ struct HITERRAINMAKER_API FTerrainInformation
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
 	bool bEnableLOD = true; // 使用LOD
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Information")
-	float TEST_VORONOI_FREQUENCY = 1.0;
 };
 
 typedef TSharedPtr<FTerrainInformation, ESPMode::ThreadSafe> FTerrainInformationPtr;

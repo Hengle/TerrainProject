@@ -9,7 +9,12 @@
 
 void AMyGameModeBase::BeginPlay()
 {
-	CreateTerrain();
+	CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), StartingWidgetClass);
+	if (CurrentWidget != nullptr)
+	{
+		CurrentWidget->AddToViewport();
+	}
+	// CreateTerrain();
 }
 
 void AMyGameModeBase::CreateTerrain() 

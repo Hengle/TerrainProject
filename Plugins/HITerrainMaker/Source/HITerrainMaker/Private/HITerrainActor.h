@@ -55,6 +55,8 @@ public:
 
 	void GenerateVegetation(ELODLevel InLODLevel);
 
+	virtual void Destroyed() override;
+
 public:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;

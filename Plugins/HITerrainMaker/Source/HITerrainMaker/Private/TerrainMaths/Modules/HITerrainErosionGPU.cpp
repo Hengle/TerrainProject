@@ -77,12 +77,7 @@ void FHITerrainErosionGPU::SetThermalErosionScale(float InThermalErosionScale)
 
 void FHITerrainErosionGPU::ApplyModule(UHITerrainData* Data)
 {
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-	
+	LOCK
 	Data->AddChannel("water", ETerrainDataType::FLOAT);
 	Data->AddChannel("sediment", ETerrainDataType::FLOAT);
 	Data->AddChannel("hardness", ETerrainDataType::FLOAT);
@@ -238,7 +233,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			FErosionShaderClearFlow::FParameters Parameters10;
 			Parameters10.Size = Size;
 			Parameters10.Flux = Flux.UAV;
-
 			for(int32 i = 0; i < NumIteration; i++)
 			{
 				if(bEnableHydroErosion)
@@ -291,6 +285,6 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			Velocity.Release();
 			TempTerrainData.Release();
 			
-			Data->bAvailable = true;
+			UNLOCK
 		});
 }

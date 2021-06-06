@@ -10,8 +10,14 @@ void UEcoSystemAlgorithm::Init(FTerrainInformationPtr InInformation)
 
 void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 {
-	Data->Mutex.Lock();
 	Super::ApplyAlgorithm(Data);
+	Data->AddChannel("r", ETerrainDataType::FLOAT);	// 坡度值
+	Data->AddChannel("g", ETerrainDataType::FLOAT);
+	Data->AddChannel("b", ETerrainDataType::FLOAT); // 湿度值
+	Data->AddChannel("a", ETerrainDataType::FLOAT);
+	CalculateUnderWaterTerrain(Data);
+	SlopeGPU.ApplyModule(Data);
+	HumidityGPU.ApplyModule(Data);
 	int32 ChunkNum = Information->ChunkNum;
 	for(int32 i = 0; i < ChunkNum; i++)
 	{
@@ -21,7 +27,6 @@ void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 			GenerateChunkGrassData(Data, Index);
 		}
 	}
-	Data->Mutex.Unlock();
 }
 
 void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
@@ -31,30 +36,20 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	Data->AddChannel("g", ETerrainDataType::FLOAT);
 	Data->AddChannel("b", ETerrainDataType::FLOAT); // 湿度值
 	Data->AddChannel("a", ETerrainDataType::FLOAT);
-	
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
+	FDateTime Time1 = FDateTime::Now();
+	LOCK
 	CalculateUnderWaterTerrain(Data);
-	
-	Data->bAvailable = true;
+	UNLOCK
+	FDateTime Time2 = FDateTime::Now();
 	SlopeGPU.ApplyModule(Data);
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-	
-	Data->bAvailable = true;
+	LOCK
+	UNLOCK
+	FDateTime Time3 = FDateTime::Now();
 	HumidityGPU.ApplyModule(Data);
-	while(!Data->bAvailable)
-	{
-		FPlatformProcess::Sleep(0.1);
-	}
-	Data->bAvailable = false;
-	
+	LOCK
+	UNLOCK
+	FDateTime Time4 = FDateTime::Now();
+	LOCK
 	int32 ChunkNum = Information->ChunkNum;
 	// int32 ChunkNum = 1;
 	for(int32 i = 0; i < ChunkNum; i++)
@@ -65,8 +60,12 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 			GenerateChunkGrassData(Data, Index);
 		}
 	}
-	
-	Data->bAvailable = true;
+	UNLOCK
+	FDateTime Time5 = FDateTime::Now();
+	UE_LOG(LogHITerrain, Warning, TEXT("Water: %s"), *(Time2 - Time1).ToString())
+	UE_LOG(LogHITerrain, Warning, TEXT("Slope: %s"), *(Time3 - Time2).ToString())
+	UE_LOG(LogHITerrain, Warning, TEXT("Humidity: %s"), *(Time4 - Time3).ToString())
+	UE_LOG(LogHITerrain, Warning, TEXT("Foliage: %s"), *(Time5 - Time4).ToString())
 }
 
 void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int32, int32>& Index)
@@ -90,7 +89,9 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 			Data->GetChannelValue("g", LocationX, LocationY, WaterValue);
 			Data->GetChannelValue("b", LocationX, LocationY, HumidityValue);
 			float GrassValue = GrassPerlin.GetValue(i, j);
-			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > 0.95f && WaterValue < 0.1f)
+			float GrassAmount = 1.0f - Information->EcoSystem_GrassAmount;
+			float TreeAmount = Information->EcoSystem_TreeAmount;
+			if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() > GrassAmount && WaterValue < 0.1f)
 			{
 				float LocationZ = Data->GetHeightValue(LocationX, LocationY);
 				FFoliageData FoliageData;
@@ -99,7 +100,7 @@ void UEcoSystemAlgorithm::GenerateChunkGrassData(UHITerrainData* Data, TPair<int
 				FoliageData.Type = RandomStream.RandRange(1, 5);
 				Data->AddChunkFoliage(Index, FoliageData);
 			}
-			else if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() < 0.005f && WaterValue < 0.1f)
+			else if(HumidityValue + SlopeValue / 2 > GrassValue && RandomStream.FRand() < TreeAmount && WaterValue < 0.1f)
 			{
 				float LocationZ = Data->GetHeightValue(LocationX, LocationY);
 				FFoliageData FoliageData;

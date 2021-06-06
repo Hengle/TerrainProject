@@ -172,6 +172,15 @@ void AHITerrainInstance::Init(FTerrainInformationPtr InTerrainInformation)
 	}
 }
 
+void AHITerrainInstance::Destroyed()
+{
+	for(auto Iterate: Chunks)
+	{
+		Iterate.Value->Destroy();
+	}
+	Super::Destroyed();
+}
+
 void AHITerrainInstance::InitAlgorithms()
 {
 	// 根据类型，初始化地形生成算法
@@ -202,6 +211,8 @@ void AHITerrainInstance::InitAlgorithms()
 		UEcoSystemAlgorithm* EcoSystemAlgorithm = NewObject<UEcoSystemAlgorithm>(this);
 		EcoSystemAlgorithm->Init(TerrainInformation);
 		Algorithms.Add(EcoSystemAlgorithm);
+		Material = LoadObject<UMaterial>(nullptr, TEXT("/Game/Mat_Basic.Mat_Basic"));
+		WaterMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Water/Materials/WaterSurface/Water_Material_CustomMesh.Water_Material_CustomMesh"));
 	}
 	else if (TerrainInformation->TerrainType == ETerrainType::FINAL)
 	{
@@ -212,6 +223,8 @@ void AHITerrainInstance::InitAlgorithms()
 		UEcoSystemAlgorithm* EcoSystemAlgorithm = NewObject<UEcoSystemAlgorithm>(this);
 		EcoSystemAlgorithm->Init(TerrainInformation);
 		Algorithms.Add(EcoSystemAlgorithm);
+		Material = LoadObject<UMaterial>(nullptr, TEXT("/Game/Mat_Basic.Mat_Basic"));
+		WaterMaterial = LoadObject<UMaterialInstance>(nullptr, TEXT("MaterialInstanceConstant'/Water/Materials/WaterSurface/Water_Material_CustomMesh.Water_Material_CustomMesh'"));
 	}
 	else if (TerrainInformation->TerrainType == ETerrainType::TEST3)
 	{
