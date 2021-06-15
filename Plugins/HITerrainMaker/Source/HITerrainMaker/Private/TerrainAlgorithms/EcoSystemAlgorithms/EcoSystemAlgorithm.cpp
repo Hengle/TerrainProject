@@ -18,6 +18,10 @@ void UEcoSystemAlgorithm::ApplyAlgorithm(UHITerrainData* Data)
 	CalculateUnderWaterTerrain(Data);
 	SlopeGPU.ApplyModule(Data);
 	HumidityGPU.ApplyModule(Data);
+	if(!Information->EcoSystem_bEnableFoliage)
+	{
+		return;
+	}
 	int32 ChunkNum = Information->ChunkNum;
 	for(int32 i = 0; i < ChunkNum; i++)
 	{
@@ -49,6 +53,10 @@ void UEcoSystemAlgorithm::DebugAlgorithm(UHITerrainData* Data)
 	LOCK
 	UNLOCK
 	FDateTime Time4 = FDateTime::Now();
+	if(!Information->EcoSystem_bEnableFoliage)
+	{
+		return;
+	}
 	LOCK
 	int32 ChunkNum = Information->ChunkNum;
 	// int32 ChunkNum = 1;

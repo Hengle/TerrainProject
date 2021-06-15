@@ -106,7 +106,7 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/* 基础信息                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
-	ETerrainType TerrainType = ETerrainType::PERLIN; //地形种类
+	ETerrainType TerrainType = ETerrainType::FINAL; //地形种类
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Information")
 	FVector Position = FVector(0.0, 0.0, 0.0); // 地形位置（左下角点）
@@ -165,6 +165,9 @@ struct HITERRAINMAKER_API FTerrainInformation
 	/*
 	 * 植被生成信息
 	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EcoSystem Algorithm")
+	bool EcoSystem_bEnableFoliage = true;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EcoSystem Algorithm")
 	float EcoSystem_GrassAmount = 0.05f;
 

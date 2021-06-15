@@ -140,27 +140,27 @@ void FHITerrainErosionGPU::ApplyErosionShader(UHITerrainData* Data)
 			FRHIResourceCreateInfo TerrainDataCreateInfo;
 			TerrainDataCreateInfo.ResourceArray = &TerrainDataBuffer;
 			TerrainDataCreateInfo.DebugName = TEXT("TerrainData");
-			TerrainData.Initialize(sizeof(float), Size * Size * 4, TerrainDataCreateInfo, 0, true, false);
+			TerrainData.Initialize(sizeof(float), Size * Size * 4, TerrainDataCreateInfo, 0, false, false);
 			
 			FRHIResourceCreateInfo FluxCreateInfo;
 			FluxCreateInfo.ResourceArray = &FluxBuffer;
 			FluxCreateInfo.DebugName = TEXT("Flux");
-			Flux.Initialize(sizeof(float), Size * Size * 4, FluxCreateInfo, 0, true, false);
+			Flux.Initialize(sizeof(float), Size * Size * 4, FluxCreateInfo, 0, false, false);
 			
 			FRHIResourceCreateInfo TerrainFluxCreateInfo;
 			TerrainFluxCreateInfo.ResourceArray = &TerrainFluxBuffer;
 			TerrainFluxCreateInfo.DebugName = TEXT("TerrainFlux");
-			TerrainFlux.Initialize(sizeof(float), Size * Size * 4, TerrainFluxCreateInfo, 0, true, false);
+			TerrainFlux.Initialize(sizeof(float), Size * Size * 4, TerrainFluxCreateInfo, 0, false, false);
 			
 			FRHIResourceCreateInfo VelocityCreateInfo;
 			VelocityCreateInfo.ResourceArray = &VelocityBuffer;
 			VelocityCreateInfo.DebugName = TEXT("Velocity");
-			Velocity.Initialize(sizeof(float), Size * Size * 2, VelocityCreateInfo, 0, true, false);
+			Velocity.Initialize(sizeof(float), Size * Size * 2, VelocityCreateInfo, 0, false, false);
 
 			FRHIResourceCreateInfo TempTerrainDataCreateInfo;
 			TempTerrainDataCreateInfo.ResourceArray = &TempTerrainDataBuffer;
 			TempTerrainDataCreateInfo.DebugName = TEXT("TempTerrainData");
-			TempTerrainData.Initialize(sizeof(float), Size * Size * 4, TempTerrainDataCreateInfo, 0, true, false);
+			TempTerrainData.Initialize(sizeof(float), Size * Size * 4, TempTerrainDataCreateInfo, 0, false, false);
 
 			TShaderMapRef<FErosionShaderRain> ComputeShader1_Rain(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 			FErosionShaderRain::FParameters Parameters1;
